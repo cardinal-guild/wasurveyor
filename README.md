@@ -9,6 +9,7 @@ composer require templating doctrine migrations
 ```
 
 * Template created: `/templates/home/welcome.html.twig`
-* Controller created: `src/Controller/HomeController.php`
+* Controller created: `/src/Controller/HomeController.php`
 * Routing added in `/config/routes.yaml`
 
+From there, the application is ready to be deployed with Dokku in the talk.
