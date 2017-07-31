@@ -15,7 +15,7 @@ services:
 
     session.memcached:
         class: Memcached
-        factory: ['AppBundle\Session\MemcachedFactory', createFromUrl]
+        factory: ['App\Session\MemcachedFactory', createFromUrl]
         arguments: ['%env(MEMCACHED_URL)%']
 
     session.handler.memcached:
