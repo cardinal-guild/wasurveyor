@@ -5,9 +5,9 @@ framework:
     #http_method_override: true
     #trusted_hosts: null
     # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-    #session:
-    #    handler_id: session.handler.native_file
-    #    save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+    session:
+        # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
+        handler_id: session.handler.memcached
     #esi: ~
     #fragments: ~
     php_errors:
