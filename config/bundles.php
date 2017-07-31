@@ -9,4 +9,5 @@ return [
     'Symfony\Bundle\WebServerBundle\WebServerBundle' => ['dev' => true],
     'Symfony\Bundle\WebProfilerBundle\WebProfilerBundle' => ['dev' => true, 'test' => true],
     'Symfony\Bundle\DebugBundle\DebugBundle' => ['dev' => true, 'test' => true],
+    'Symfony\Bundle\MonologBundle\MonologBundle' => ['all' => true],
 ];
