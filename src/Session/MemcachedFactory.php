@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types = 1);
+
 namespace App\Session;
 
 class MemcachedFactory
@@ -9,7 +10,7 @@ class MemcachedFactory
      * memcached://host-name:port
      *
      * We need to extract the host name and port from the string given
-     * and return a new \MemcachedFactory object to allow us to use this as a
+     * and return a new \Memcached object to allow us to use this as a
      * session handler in Symfony
      *
      * @param string $connectionString

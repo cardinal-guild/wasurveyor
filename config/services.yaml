@@ -15,12 +15,12 @@ services:
 
     session.memcached:
         class: Memcached
-        factory: ['App\Session\MemcachedFactory', createFromUrl]
+        factory: ['AppBundle\Session\MemcachedFactory', createFromUrl]
         arguments: ['%env(MEMCACHED_URL)%']
 
     session.handler.memcached:
             class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler
-            arguments: ['@session.memcached', { prefix: 'symfony_session_', expiretime: 43200
+            arguments: ['@session.memcached', { prefix: 'symfony_session_', expiretime: 43200 }]
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
