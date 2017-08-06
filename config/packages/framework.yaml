@@ -5,9 +5,6 @@ framework:
     #http_method_override: true
     #trusted_hosts: null
     # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-    session:
-        # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id: session.handler.memcached
     #esi: ~
     #fragments: ~
     php_errors:
