@@ -1,52 +1,48 @@
 version: '3.2'
 
 services:
-
-  traefik:
-    container_name: traefik
-    image: traefik
-    command: -c /dev/null --web --docker --logLevel=INFO
-    ports:
-      - '80:80'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - 'traefik.backend=traefik'
-      - 'traefik.port=8080'
-      - 'traefik.frontend.rule=Host:traefik.lc'
-
+#  traefik:
+#    container_name: traefik
+#    image: traefik
+#    command: -c /dev/null --web --docker --logLevel=INFO
+#    ports:
+#    - '80:80'
+#    volumes:
+#    - /var/run/docker.sock:/var/run/docker.sock
+#    labels:
+#    - 'traefik.backend=traefik'
+#    - 'traefik.port=8080'
+#    - 'traefik.frontend.rule=Host:traefik.lc'
   db:
     image: mariadb
-    depends_on:
-      - traefik
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: grafom
-      MYSQL_USER: grafom
-      MYSQL_PASSWORD: grafom
+      MYSQL_DATABASE: surveyor
+      MYSQL_USER: surveyor
+      MYSQL_PASSWORD: surveyor
     ports:
       - 3306:3306
     volumes:
-      - ./.mariadb-init:/docker-entrypoint-initdb.d
       - db:/var/lib/mysql
     labels:
       - 'traefik.backend=db'
       - 'traefik.port=3306'
-      - 'traefik.frontend.rule=Host:db.grafom.lc'
+      - 'traefik.frontend.rule=Host:db.surveyor.lc'
+    networks:
+      - dev
 
   mailhog:
     image: mailhog/mailhog
-    depends_on:
-      - traefik
     labels:
       - 'traefik.backend=mailhog'
       - 'traefik.port=8025'
-      - 'traefik.frontend.rule=Host:mailhog.grafom.lc'
+      - 'traefik.frontend.rule=Host:mailhog.surveyor.lc'
+    networks:
+      - dev
 
   pma:
     image: phpmyadmin/phpmyadmin
     depends_on:
-      - traefik
       - db
     environment:
       PMA_HOST: db
@@ -57,48 +53,32 @@ services:
     labels:
       - 'traefik.backend=pma'
       - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:pma.grafom.lc'
+      - 'traefik.frontend.rule=Host:pma.surveyor.lc'
+    networks:
+      - dev
 
-  php:
-    image: registry.creatiom.be/develop:php7.2
+  devops:
+    image: webdevops/php-nginx
     links:
-      - db:db.grafom.lc
-      - mailhog:mailhog.grafom.lc
+      - db:db.surveyor.lc
+      - mailhog:mailhog.surveyor.lc
     depends_on:
       - db
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
       PHP_SAFE_MODE: 0
     volumes:
-      - ./api:/var/www/html:rw,cached
-
-  nginx:
-    image: registry.creatiom.be/develop:nginx-sf4
-    depends_on:
-      - php
-    environment:
-      NGINX_STATIC_CONTENT_OPEN_FILE_CACHE: "off"
-      NGINX_ERROR_LOG_LEVEL: debug
-      NGINX_BACKEND_HOST: php
-    volumes:
-      - ./api:/var/www/html:ro
+      - ./:/var/www/html:rw,cached
+      - ./vhost.conf:/opt/docker/etc/nginx/vhost.conf:ro
     labels:
-      - 'traefik.backend=varnish'
+      - 'traefik.backend=devops'
       - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:api.grafom.lc'
-
-  nuxt:
-    image: registry.creatiom.be/develop:nuxt-2
-    links:
-      - nginx:api.grafom.lc
-    volumes:
-      - ./client:/usr/src/client
-    environment:
-      APP_ENV: development
-    labels:
-      - 'traefik.backend=nuxt'
-      - 'traefik.port=3000'
-      - 'traefik.frontend.rule=Host:grafom.lc,localhost'
-
+      - 'traefik.frontend.rule=Host:surveyor.lc'
+    networks:
+      - dev
+networks:
+  dev:
+    external:
+      name: dev
 volumes:
   db: {}
