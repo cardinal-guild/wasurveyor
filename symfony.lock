@@ -65,6 +65,9 @@
     "exsyst/swagger": {
         "version": "v0.4.1"
     },
+    "facebook/graph-sdk": {
+        "version": "5.6.3"
+    },
     "friendsofsymfony/ckeditor-bundle": {
         "version": "1.2.0"
     },
@@ -82,6 +85,9 @@
     },
     "gedmo/doctrine-extensions": {
         "version": "v2.4.36"
+    },
+    "hybridauth/hybridauth": {
+        "version": "v2.12.0"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -118,6 +124,9 @@
     },
     "paragonie/random_compat": {
         "version": "v2.0.17"
+    },
+    "paypal/rest-api-sdk-php": {
+        "version": "1.13.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"

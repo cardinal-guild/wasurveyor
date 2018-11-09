@@ -8,6 +8,7 @@
         "friendsofsymfony/ckeditor-bundle": "^1.2",
         "friendsofsymfony/rest-bundle": "^2.4",
         "friendsofsymfony/user-bundle": "^2.1",
+        "hybridauth/hybridauth": "^2.12",
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
         "sonata-project/admin-bundle": "^3.40",
