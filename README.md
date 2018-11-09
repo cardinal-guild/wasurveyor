@@ -1,4 +1,5 @@
-#Worlds Adrift Cardinal Guild Surveyor
+Worlds Adrift Cardinal Guild Surveyor
+============
 
 [![Build Status](https://travis-ci.org/fearlessjake/wasurveyor.svg?branch=master)](https://travis-ci.org/fearlessjake/wasurveyor)
 
