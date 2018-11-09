@@ -29,3 +29,24 @@ services:
         resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
+
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+        - { name: doctrine.event_subscriber, connection: default }
+        calls:
+        - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    admin.treetype:
+        class: App\Admin\TreeTypeAdmin
+        arguments: [~, App\Entity\TreeType, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, label: Tree Types }
+        public: true
+
+    admin.metaltype:
+        class: App\Admin\MetalTypeAdmin
+        arguments: [~, App\Entity\MetalType, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, label: Metal Types }
+        public: true

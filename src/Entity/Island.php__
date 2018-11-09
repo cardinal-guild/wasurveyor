@@ -1,0 +1,487 @@
+<?php
+
+namespace App\Entity;
+
+use Cocur\Slugify\Slugify;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Model\Translatable\Translatable;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="project")
+ * @ORM\Entity(repositoryClass="App\Repository\ProjectRepository")
+ * @ORM\HasLifecycleCallbacks
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ */
+class Island
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(name="id", type="guid")
+     * @ORM\GeneratedValue(strategy="UUID")
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(length=128)
+     */
+    protected $name;
+
+    /**
+     * @ORM\Column(length=128)
+     */
+    protected $nickname;
+
+    /**
+     * @Gedmo\Slug(fields={"nickname"})
+     * @ORM\Column(length=128)
+     */
+    protected $slug;
+
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|IslandImage
+     * @ORM\OneToMany(targetEntity="App\Entity\IslandImage", mappedBy="islands", cascade={"persist","remove"})
+     * @ORM\OrderBy({"position" = "ASC"})
+     */
+    protected $images;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Tree[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tree", cascade={"persist","remove"}, inversedBy="islands")
+     * @ORM\JoinTable(name="island_trees",
+     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
+     * )
+     */
+    protected $trees;
+
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $hasRevivors = false;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $hasCannons = false;
+
+    /**
+     * @var boolean
+     * @JMS\Expose
+     * @ORM\Column(type="boolean")
+     */
+    private $published = true;
+
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->translations = new ArrayCollection();
+        $this->projectStart = new \DateTime();
+        $this->projectEnd = clone $this->projectStart;
+        $this->projectEnd->add(new \DateInterval('P3W'));
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
+    /**
+     * @JMS\VirtualProperty(name="description")
+     * @JMS\Groups({"Details"})
+     * @JMS\Expose()
+     */
+    public function getDescription() {
+        return $this->__call('getDescription', null);
+    }
+
+    /**
+     * @JMS\VirtualProperty(name="short_description")
+     * @JMS\Expose()
+     */
+    public function getShortDescription() {
+        return $this->__call('getShortDescription', null);
+    }
+
+    /**
+     * @JMS\VirtualProperty(name="image")
+     * @JMS\Expose()
+     */
+    public function getMainImage() {
+        return $this->getImages()->first()->getImageName();
+    }
+
+    /**
+     * @JMS\VirtualProperty(name="image_padding")
+     * @JMS\Expose()
+     */
+    public function getMainImagePadding() {
+        return $this->getImages()->first()->getPadding();
+    }
+
+    /**
+     * @ORM\PostLoad
+     */
+    public function onPostLoad()
+    {
+        $images = $this->images->toArray();
+        usort($images, function($a, $b)
+        {
+            return $a->getPosition() == $b->getPosition() ? 0 : ($a->getPosition() > $b->getPosition() ? 1 : -1);
+        });
+        $this->images = new ArrayCollection($images);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return Island
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     * @return Island
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        $this->setSlug(Slugify::create()->slugify($title));
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param mixed $content
+     * @return Island
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param mixed $locale
+     * @return Island
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     * @return Island
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $tags
+     * @return Island
+     */
+    public function setTags(\Doctrine\Common\Collections\Collection $tags)
+    {
+        $this->tags = new ArrayCollection();
+        foreach($tags as $tag) {
+            $this->addTag($tag);
+        }
+        return $this;
+    }
+
+    /**
+     * @param Tag $tag
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function addTag(Tag $tag)
+    {
+        if(!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+        return $this->tags;
+    }
+
+    /**
+     * @param Tag $tag
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function removeTag(Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+        return $this->tags;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getProjectStart(): ?\DateTime
+    {
+        return $this->projectStart;
+    }
+
+    /**
+     * @param \DateTime $projectStart
+     */
+    public function setProjectStart(?\DateTime $projectStart)
+    {
+        $this->projectStart = $projectStart;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getProjectEnd()
+    {
+        return $this->projectEnd;
+    }
+
+    /**
+     * @param \DateTime $projectEnd
+     */
+    public function setProjectEnd(?\DateTime $projectEnd)
+    {
+        $this->projectEnd = $projectEnd;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $images
+     * @return Island
+     */
+    public function setImages(\Doctrine\Common\Collections\Collection $images)
+    {
+        $this->images = new ArrayCollection();
+        foreach($images as $image) {
+            $this->addImage($image);
+        }
+        return $this;
+    }
+
+    /**
+     * @param ProjectImage $image
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function addImage(ProjectImage $image)
+    {
+        $image->setProject($this);
+        $this->images->add($image);
+        return $this->images;
+    }
+
+    /**
+     * @param ProjectImage $image
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function removeImage(ProjectImage $image)
+    {
+        $this->images->removeElement($image);
+        return $this->images;
+    }
+
+    public function __call($method, $arguments)
+    {
+        if($method == '_action') return null;
+        // If arguments are passed can't use the property accessor, so no free obj.name in twig.
+        if($arguments && count($arguments)) {
+            return $this->proxyCurrentLocaleTranslation($method, $arguments);
+        } else {
+            return \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor()->getValue($this->translate(), $method);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @param bool $published
+     */
+    public function setHidden(bool $hidden)
+    {
+        $this->hidden = $hidden;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param bool $published
+     */
+    public function setPublished(bool $published)
+    {
+        $this->published = $published;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl(?string $url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getYoutubeId()
+    {
+        return $this->youtubeId;
+    }
+
+    /**
+     * @param string $youtubeId
+     * @return Island
+     */
+    public function setYoutubeId(?string $youtubeId)
+    {
+        $this->youtubeId = $youtubeId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTestUrl(): string
+    {
+        return $this->testUrl;
+    }
+
+    /**
+     * @param string $testUrl
+     */
+    public function setTestUrl(?string $testUrl)
+    {
+        $this->testUrl = $testUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTestAdminUrl(): string
+    {
+        return $this->testAdminUrl;
+    }
+
+    /**
+     * @param string $testAdminUrl
+     */
+    public function setTestAdminUrl(?string $testAdminUrl)
+    {
+        $this->testAdminUrl = $testAdminUrl;
+    }
+
+    public function __toString()
+    {
+        if($this->getTitle()) {
+            return $this->getTitle();
+        }
+
+        return "Nieuw project";
+    }
+
+}
