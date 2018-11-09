@@ -10,6 +10,8 @@ Class HomeController extends Controller
 {
     public function welcome(): Response
     {
-        return new Response('Hello,  test world!');
+        return $this->render(
+            'base.html.twig'
+        );
     }
 }
