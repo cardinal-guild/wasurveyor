@@ -7,5 +7,9 @@ framework:
     # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
     #esi: ~
     #fragments: ~
+    assets: ~
+    session: ~
+    templating:
+        engines: ["twig"]
     php_errors:
         log: true

@@ -1,6 +1,27 @@
 ###> symfony/framework-bundle ###
+.idea
+.mariadb-init
+*.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+.vscode
+.vagrant
+node_modules
 .env
 /public/bundles/
+/public/images/
+/public/media/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
