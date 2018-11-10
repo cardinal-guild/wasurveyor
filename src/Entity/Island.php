@@ -84,8 +84,8 @@ class Island
 
     public function __construct()
     {
-        $this->lat = floatval(rand(0,1000));
-        $this->lng = floatval(rand(0,1000));
+        $this->lat = 0;
+        $this->lng = 0;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
