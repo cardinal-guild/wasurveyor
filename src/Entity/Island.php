@@ -84,6 +84,8 @@ class Island
 
     public function __construct()
     {
+        $this->lat = floatval(rand(0,1000));
+        $this->lng = floatval(rand(0,1000));
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
@@ -248,6 +250,14 @@ class Island
     public function setPublished(bool $published): void
     {
         $this->published = $published;
+    }
+
+    public function getLeaflet()
+    {
+    }
+
+    public function setLeaflet($data)
+    {
     }
 
     public function __toString()

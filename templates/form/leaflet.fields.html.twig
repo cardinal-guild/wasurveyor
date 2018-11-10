@@ -1,0 +1,15 @@
+{# templates/form/fields.html.twig #}
+{% block leaflet_widget %}
+        <iframe id="{{ id }}" src="//map.cardinalguild.com?hideheader=true&admin=true" style="width: 100%;min-height: 240px; height: 40vh; border: none;" allow-scripts="true"></iframe>
+        {% verbatim %}
+        <script type="text/javascript">
+            var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';
+            window.addEventListener('message', function(e) {
+                if(e.data && e.data.lat && e.data.lng) {
+                    document.getElementById(uniqid+'_lat').value = e.data.lat;
+                    document.getElementById(uniqid+'_lng').value = e.data.lng;
+                }
+            });
+        </script>
+        {% endverbatim %}
+{% endblock %}

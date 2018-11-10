@@ -2,6 +2,7 @@
 
 namespace App\Admin;
 
+use App\Form\Type\LeafletType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -62,18 +63,19 @@ class IslandAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
+            ->with('Coordinates', ['class'=>'col-md-6'])
+            ->add('leaflet', LeafletType::class, ['required'=>false,'label'=>false,'help'=>'Click on the map to get lat and lng numbers'])
+            ->add('lat')
+            ->add('lng')
+            ->end()
             ->with('Name and nickname', ['class'=>'col-md-6'])
                 ->add('name')
                 ->add('nickname')
             ->end()
-            ->with('Coordinates', ['class'=>'col-md-6'])
-                ->add('lat')
-                ->add('lng')
-            ->end()
             ->with('Options', ['class'=>'col-md-6'])
-                ->add('revivors', null, ['help'=>'Does this island have revivors?'])
-                ->add('cannons', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
-                ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
+            ->add('revivors', null, ['help'=>'Does this island have revivors?'])
+            ->add('cannons', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
+            ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
             ->end()
         ;
     }
