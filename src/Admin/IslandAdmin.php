@@ -42,6 +42,7 @@ class IslandAdmin extends AbstractAdmin
     {
         $listMapper
             ->addIdentifier('id')
+            ->addIdentifier('mainImage', null , array('template' => 'admin/list_image.html.twig', 'label'=>'Image'))
             ->addIdentifier('name')
             ->addIdentifier('nickname')
             ->addIdentifier('slug')
@@ -90,8 +91,8 @@ class IslandAdmin extends AbstractAdmin
                 ->with('Island image list', array('class' => 'col-md-12', 'help'=> 'The top image will be used as main image'))
                     ->add('images', CollectionType::class, array(
                         'label' => false,
-                        'by_reference' => false
-
+                        'by_reference' => false,
+                        'help'=> 'The top image will be used as main image'
                     ), array(
                         'edit'              => 'inline',
                         'inline'            => 'table',

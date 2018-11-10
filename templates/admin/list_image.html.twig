@@ -1,0 +1,12 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+    <div>
+{% if object is defined and object.images is not empty and object.images.first is not empty %}
+    <img class="img-responsive img-rounded lazyload" src="{{ vich_uploader_asset(object.images.first, 'imageFile')|imagine_filter('preview_thumb') }}" />
+{% else %}
+    {{ 'No picture'|trans }}
+{% endif %}
+        {#<img src="{{  | imagine_filter('gallery_element_admin') }}" />#}
+    </div>
+{% endblock %}

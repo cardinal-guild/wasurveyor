@@ -96,7 +96,7 @@ class Island
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
      * @ORM\OneToMany(targetEntity="App\Entity\IslandImage", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
      * @ORM\OrderBy({"position" = "ASC"})
-     * @Assert\Count(min=1, minMessage="At least one picture is required.")
+     * @Assert\Count(min=1, minMessage="At least one picture is required.  Upload images in the media tab.")
      */
     protected $images;
 
