@@ -10,6 +10,7 @@
         "friendsofsymfony/rest-bundle": "^2.4",
         "friendsofsymfony/user-bundle": "^2.1",
         "jms/serializer-bundle": "~2.0",
+        "liip/imagine-bundle": "^2.1",
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
         "sonata-project/admin-bundle": "^3.40",

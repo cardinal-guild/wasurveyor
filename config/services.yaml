@@ -44,6 +44,20 @@ services:
         - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
+    admin.author:
+        class: App\Admin\AuthorAdmin
+        arguments: [~, App\Entity\Author, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Authors", icon: "<i class=\"fa fa-globe\"></i>" }
+        public: true
+
+    admin.island_image:
+        class: App\Admin\IslandImageAdmin
+        arguments: [~, App\Entity\IslandImage, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, label: 'Island Image', show_in_dashboard: false }
+        public: true
+
     admin.treetype:
         class: App\Admin\TreeTypeAdmin
         arguments: [~, App\Entity\TreeType, ~]
