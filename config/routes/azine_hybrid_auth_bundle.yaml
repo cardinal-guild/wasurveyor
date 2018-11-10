@@ -1,0 +1,3 @@
+azine_hybrid_auth_bundle:
+  resource: "@AzineHybridAuthBundle/Resources/config/routing.yml"
+  prefix:   /hybrid-auth/

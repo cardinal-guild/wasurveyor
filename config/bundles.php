@@ -21,9 +21,9 @@ return [
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
     Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle::class => ['all' => true],
     Sonata\EasyExtendsBundle\SonataEasyExtendsBundle::class => ['all' => true],
-    //FOS\UserBundle\FOSUserBundle::class => ['all' => true],
-    //Sonata\UserBundle\SonataUserBundle::class => ['all' => true],
     Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
     Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
+    JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
+    Azine\HybridAuthBundle\AzineHybridAuthBundle::class => ['all' => true],
 ];
