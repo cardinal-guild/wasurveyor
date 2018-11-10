@@ -31,7 +31,21 @@ liip_imagine:
         # create a 2px black border: center the thumbnail on a black background
         # 4px larger to create a 2px border around the final image
         background: { size: [162, 122], position: center, color: '#000000' }
+    preview_large_thumb:
 
+      # adjust the image quality to 75%
+      quality: 75
+
+      # list of transformations to apply (the "filters")
+      filters:
+
+        # create a thumbnail: set size to 120x90 and use the "outbound" mode
+        # to crop the image when the size ratio of the input differs
+        thumbnail: { size: [320, 240], mode: outbound }
+
+        # create a 2px black border: center the thumbnail on a black background
+        # 4px larger to create a 2px border around the final image
+        background: { size: [322, 242], position: center, color: '#000000' }
     island_tile_4by3_lq:
       quality: 20
       filters:

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Knp\DoctrineBehaviors\Model\Translatable\Translatable;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table()
@@ -33,6 +34,7 @@ class Island
      * @var string
      * @ORM\Column(length=128)
      * @JMS\Expose()
+     * @Assert\NotBlank()
      */
     protected $name;
 
@@ -53,12 +55,16 @@ class Island
     /**
      * @var float
      * @ORM\Column(type="decimal", scale=2)
+     * @Assert\NotBlank()
+     * @Assert\NotEqualTo(value="0")
      */
     protected $lat;
 
     /**
      * @var float
      * @ORM\Column(type="decimal", scale=2)
+     * @Assert\NotBlank()
+     * @Assert\NotEqualTo(value="0")
      */
     protected $lng;
 
@@ -88,8 +94,9 @@ class Island
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
-     * @ORM\OneToMany(targetEntity="App\Entity\IslandImage", mappedBy="island", cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\IslandImage", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
      * @ORM\OrderBy({"position" = "ASC"})
+     * @Assert\Count(min=1, minMessage="At least one picture is required.")
      */
     protected $images;
 
@@ -98,6 +105,7 @@ class Island
      * @JMS\Expose
      * @ORM\ManyToOne(targetEntity="App\Entity\Author", cascade={"persist"}, inversedBy="islands")
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id", nullable=false)
+     * @Assert\NotBlank()
      */
     protected $author;
 
@@ -139,7 +147,7 @@ class Island
     /**
      * @return string
      */
-    public function getName(): ?string
+    public function getName()
     {
         return $this->name;
     }
@@ -147,7 +155,7 @@ class Island
     /**
      * @param string $name
      */
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
         $this->setSlug($this->__toString());
@@ -156,7 +164,7 @@ class Island
     /**
      * @return string
      */
-    public function getNickname(): ?string
+    public function getNickname()
     {
         return $this->nickname;
     }
@@ -164,7 +172,7 @@ class Island
     /**
      * @param string $nickname
      */
-    public function setNickname(string $nickname): void
+    public function setNickname($nickname)
     {
         $this->nickname = $nickname;
         $this->setSlug($this->__toString());
@@ -189,7 +197,7 @@ class Island
     /**
      * @return float
      */
-    public function getLat(): ?float
+    public function getLat()
     {
         return $this->lat;
     }
@@ -197,7 +205,7 @@ class Island
     /**
      * @param float $lat
      */
-    public function setLat(float $lat): void
+    public function setLat($lat): void
     {
         $this->lat = $lat;
     }
@@ -205,7 +213,7 @@ class Island
     /**
      * @return float
      */
-    public function getLng(): ?float
+    public function getLng()
     {
         return $this->lng;
     }
@@ -213,7 +221,7 @@ class Island
     /**
      * @param float $lng
      */
-    public function setLng(float $lng): void
+    public function setLng($lng)
     {
         $this->lng = $lng;
     }

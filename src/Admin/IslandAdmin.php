@@ -87,10 +87,11 @@ class IslandAdmin extends AbstractAdmin
                 ->end()
             ->end()
             ->tab('Media')
-                ->with('Island image list', array('class' => 'col-md-12'))
+                ->with('Island image list', array('class' => 'col-md-12', 'help'=> 'The top image will be used as main image'))
                     ->add('images', CollectionType::class, array(
                         'label' => false,
-                        'by_reference' => false,
+                        'by_reference' => false
+
                     ), array(
                         'edit'              => 'inline',
                         'inline'            => 'table',

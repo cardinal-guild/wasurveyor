@@ -63,7 +63,7 @@ class IslandImageAdmin extends AbstractAdmin
                 'allow_delete' => false,
                 'download_uri' => false,
                 'image_uri' => true,
-                'imagine_pattern' => 'preview_thumb',
+                'imagine_pattern' => 'preview_large_thumb',
             ])
             ->add('position', HiddenType::class)
         ;
