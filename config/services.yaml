@@ -37,16 +37,23 @@ services:
         calls:
         - [ setAnnotationReader, [ '@annotation_reader' ] ]
 
+    admin.island:
+        class: App\Admin\IslandAdmin
+        arguments: [~, App\Entity\Island, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
+        public: true
+
     admin.treetype:
         class: App\Admin\TreeTypeAdmin
         arguments: [~, App\Entity\TreeType, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, label: Tree Types }
+        - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Trees", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
 
     admin.metaltype:
         class: App\Admin\MetalTypeAdmin
         arguments: [~, App\Entity\MetalType, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, label: Metal Types }
+        - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metals", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
