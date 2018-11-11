@@ -1,6 +1,6 @@
 sonata_admin:
     title: 'Cardinal Guild Surveyor'
-    title_logo: /logo_small.png
+    title_logo: /assets/logo_small.png
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: left }

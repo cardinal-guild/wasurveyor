@@ -2,6 +2,12 @@ index:
     path: /
     defaults: { _controller: 'App\Controller\HomeController::welcome' }
 
+connect_user:
+    path:   /connect
+    controller: "AzineHybridAuthBundle:AzineHybridAuthJson:connectUser"
+    defaults:
+        provider: 'steam'
+        callbackRoute: 'sonata_admin_dashboard'
 # Depends on sensio/framework-extra-bundle, doctrine/annotations, and doctrine/cache
 #   install with composer req sensio/framework-extra-bundle annot
 #controllers:
