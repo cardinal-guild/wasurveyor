@@ -9,7 +9,7 @@ use Sonata\UserBundle\Entity\BaseGroup;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="user_group")
+ * @ORM\Table(name="cg_user_group")
  */
 class Group extends BaseGroup
 {
