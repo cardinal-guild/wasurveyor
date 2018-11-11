@@ -9,7 +9,7 @@ use Sonata\UserBundle\Entity\BaseUser as BaseUser;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="cg_user",indexes={@ORM\Index(name="username_idx", columns={"username"})})
+ * @ORM\Table(name="user",indexes={@ORM\Index(name="username_idx", columns={"username"})})
  */
 class User extends BaseUser
 {
