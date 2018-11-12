@@ -66,9 +66,7 @@ Class LoginController extends Controller
 
         try {
             $authenticate = $steam->authenticate();
-        } catch (UnexpectedApiResponseException $exception) {
-            return new Response($exception->getTraceAsString());
-        }
+        } catch (UnexpectedApiResponseException $exception) { }
 
         if($steam->isConnected()) {
             $userProfile = $steam->getUserProfile();
