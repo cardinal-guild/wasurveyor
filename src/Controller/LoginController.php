@@ -72,46 +72,57 @@ Class LoginController extends Controller
     {
         $request = $requestStack->getCurrentRequest();
         $session = $request->getSession();
-        $slugify = new Slugify();
+        $session->start();
 
         $config = [
-            'callback' => getenv('STEAM_BASE_URL').$request->getRequestUri(),
-            'keys' => [ 'secret' => getenv('STEAM_API_KEY') ],
+            'callback' => getenv('STEAM_BASE_URL') . $this->generateUrl('steam_callback'),
+            'keys' => ['secret' => getenv('STEAM_API_KEY')],
         ];
 
-        /**
-         * Step 3: Instantiate Github Adapter
-         *
-         * This example instantiates a GitHub adapter using the array $config we just built.
-         */
-
         $steam = new SteamProvider($config);
-//        $steam->disconnect();
-//        exit();
         $authenticated = $steam->authenticate();
-
-
+        if($authenticated && $steam->getUserProfile() && !empty($steam->getUserProfile()->displayName)) {
+            return new RedirectResponse($this->generateUrl('steam_logout'));
+        }
+        return new RedirectResponse($this->generateUrl('steam_callback'));
+    }
+    /**
+     * @return Response
+     * @Route("/callback", name="steam_callback")
+     */
+    public function callback(RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
+    {
+        $config = [
+            'callback' => getenv('STEAM_BASE_URL') . $this->generateUrl('steam_callback'),
+            'keys' => ['secret' => getenv('STEAM_API_KEY')],
+        ];
+        $request = $requestStack->getCurrentRequest();
+        $session = $request->getSession();
+        $session->start();
+        $slugify = new Slugify();
+        $steam = new SteamProvider($config);
+        $authenticated = $steam->authenticate();
         if($authenticated && $steam->getUserProfile() && !empty($steam->getUserProfile()->displayName)) {
             $userProfile = $steam->getUserProfile();
 
-            $identifier = $userProfile->identifier;
-
-            $user = $userManager->findUserByConfirmationToken(base64_encode(md5($userProfile->identifier)));
+            $identifier = base64_encode(md5($userProfile->identifier));
+            $password = $slugify->slugify($userProfile->displayName);
+            $user = $userManager->findUserByConfirmationToken($identifier);
             if(!$user) {
                 $user = $userManager->createUser();
-                $user->setConfirmationToken($userProfile->identifier);
+                $user->setConfirmationToken($identifier);
                 $user->setUsername($userProfile->displayName);
                 $user->setFirstname($userProfile->firstName);
                 $user->setLastname($userProfile->lastName);
                 $user->setEmail($slugify->slugify($userProfile->displayName).'@cardinalguild.com');
-                $user->setPlainPassword($slugify->slugify($userProfile->displayName));
+                $user->setPlainPassword($password);
                 $user->setSteamData(serialize($userProfile));
-                $user->setRoles(['ROLE_USER']);
+                $user->addRole('ROLE_USER');
                 $user->setEnabled(true);
             }
             $userManager->updateUser($user);
 
-            $unauthToken = new UsernamePasswordToken($user, null, $this->providerKey, $user->getRoles());
+            $unauthToken = new UsernamePasswordToken($user, $password, $this->providerKey, $user->getRoles());
             $authToken = $authManager->authenticate($unauthToken);
             $tokenStorage->setToken($authToken);
 
