@@ -66,7 +66,10 @@ Class LoginController extends Controller
 
         try {
             $authenticate = $steam->authenticate();
-        } catch (UnexpectedApiResponseException $exception) { }
+        } catch (UnexpectedApiResponseException $exception) {
+            dump($exception);
+            exit();
+        }
 
         if($steam->isConnected()) {
             $userProfile = $steam->getUserProfile();
@@ -100,6 +103,6 @@ Class LoginController extends Controller
 //            $response->headers->setCookie(new Cookie('_security.'.$this->providerKey, serialize($authToken)));
             return $response;
         }
-        //return new RedirectResponse($this->generateUrl('steam_login'));
+        return new RedirectResponse($this->generateUrl('steam_login'));
     }
 }
