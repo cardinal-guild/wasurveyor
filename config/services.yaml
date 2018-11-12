@@ -30,7 +30,52 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    azine_hybrid_auth_service:
+        public: true
+        class:  Azine\HybridAuthBundle\Services\AzineHybridAuth
+        arguments:
+            $router:               "@router"
+            $tokenStorage:      "@security.token_storage"
+            $manager:        "@doctrine.orm.entity_manager"
+            $config:
+                endpoint_route:   "%azine_hybrid_auth_endpoint_route%"
+                providers:        "%azine_hybrid_auth_providers%"
+                debug_mode:       "%azine_hybrid_auth_debug%"
+                debug_file:       "%azine_hybrid_auth_debug_file%"
+            $storeForUser:   "%azine_hybrid_auth_store_for_user%"
+            $storeAsCookie:  "%azine_hybrid_auth_store_as_cookie%"
+            $expiresInDays:  "%azine_hybrid_auth_expires_in_days%"
+
+    azine_business_networks_provider_service:
+        public: true
+        class:  Azine\HybridAuthBundle\Services\AzineMergedBusinessNetworksProvider
+        arguments:
+            $hybridAuth:     "@azine_hybrid_auth_service"
+            $session:        "@session"
+            $sorter:         "@azine_hybrid_auth_contact_sorter"
+            $merger:         "@azine_hybrid_auth_contact_merger"
+            $genderGuesser:  "@azine_hybrid_auth_gender_guesser"
+            $contactFilter:  "@azine_hybrid_auth_contact_filter"
+            $providers:      "%azine_hybrid_auth_providers%"
+
+    azine_hybrid_auth_contact_filter_default:
+        public: true
+        class: Azine\HybridAuthBundle\Services\AzineContactFilter
+
+    azine_hybrid_auth_contact_merger_default:
+        public: true
+        class: Azine\HybridAuthBundle\Services\AzineContactMerger
+
+    azine_hybrid_auth_contact_sorter_default:
+        public: true
+        class: Azine\HybridAuthBundle\Services\AzineContactSorter
+
+    azine_hybrid_auth_gender_guesser_default:
+        public: true
+        class: Azine\HybridAuthBundle\Services\AzineGenderGuesser
+
     http.utils.class:
+        public: true
         class: Symfony\Component\Security\Http\HttpUtils
 
     hwi_oauth.resource_ownermap.admin:

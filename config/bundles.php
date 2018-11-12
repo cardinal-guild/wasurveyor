@@ -31,4 +31,5 @@ return [
     Http\HttplugBundle\HttplugBundle::class => ['all' => true],
     HWI\Bundle\OAuthBundle\HWIOAuthBundle::class => ['all' => true],
     Symfony\Bundle\AclBundle\AclBundle::class => ['all' => true],
+    Azine\HybridAuthBundle\AzineHybridAuthBundle::class => ['all' => true],
 ];

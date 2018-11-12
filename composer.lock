@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f71bdd64d8f70937326b4c8c1e6a1b1",
+    "content-hash": "f705de7b7c83359360fc45dbfc32b37d",
     "packages": [
+        {
+            "name": "azine/hybridauth-bundle",
+            "version": "dev-master",
+            "target-dir": "Azine/HybridAuthBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azine/AzineHybridAuthBundle.git",
+                "reference": "cb161d5cab6f40faac725620b1eb86f1fb110a53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azine/AzineHybridAuthBundle/zipball/cb161d5cab6f40faac725620b1eb86f1fb110a53",
+                "reference": "cb161d5cab6f40faac725620b1eb86f1fb110a53",
+                "shasum": ""
+            },
+            "require": {
+                "hybridauth/hybridauth": "~2.6,<=2.9",
+                "monolog/monolog": "~1.6",
+                "php": ">=5.6.0",
+                "symfony/console": ">2.7",
+                "symfony/finder": ">2.7",
+                "symfony/framework-bundle": ">2.7"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.2",
+                "phpunit/phpunit": "~5.3,<=5.4"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Azine\\HybridAuthBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Azine IT Services AG",
+                    "email": "github@azine-it.ch"
+                }
+            ],
+            "description": "Symfony2 bundle to access the profiles via Xing- and Linkedin-API, uses HybridAuth",
+            "homepage": "https://github.com/azine/AzineHybridAuthBundle",
+            "keywords": [
+                "oauth",
+                "xing",
+                "xing api"
+            ],
+            "time": "2018-07-10T14:43:25+00:00"
+        },
         {
             "name": "behat/transliterator",
             "version": "v1.2.0",
@@ -1296,6 +1348,64 @@
             "time": "2018-07-27T06:40:00+00:00"
         },
         {
+            "name": "facebook/graph-sdk",
+            "version": "5.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "90e92bd1816fe718e55184ab85910dfcf488432c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/90e92bd1816fe718e55184ab85910dfcf488432c",
+                "reference": "90e92bd1816fe718e55184ab85910dfcf488432c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2018-07-03T02:25:00+00:00"
+        },
+        {
             "name": "friendsofsymfony/ckeditor-bundle",
             "version": "1.2.0",
             "source": {
@@ -1975,39 +2085,35 @@
         },
         {
             "name": "hybridauth/hybridauth",
-            "version": "v3.0.0-rc.7",
+            "version": "v2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hybridauth/hybridauth.git",
-                "reference": "a635b61b65d798ff1557628cacce28cd992fcbb7"
+                "reference": "d959bc6e106ffe10a44820f4675cb5b9dfc8a945"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/a635b61b65d798ff1557628cacce28cd992fcbb7",
-                "reference": "a635b61b65d798ff1557628cacce28cd992fcbb7",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/d959bc6e106ffe10a44820f4675cb5b9dfc8a945",
+                "reference": "d959bc6e106ffe10a44820f4675cb5b9dfc8a945",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "~4.8.35"
+                "facebook/graph-sdk": "^5.4",
+                "php": ">=5.2.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
             "autoload": {
-                "psr-4": {
-                    "Hybridauth\\": "src/"
-                }
+                "psr-0": {
+                    "Hybrid": "hybridauth/"
+                },
+                "classmap": [
+                    "hybridauth/Hybrid"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "(MIT or GPL-3.0+)"
             ],
             "authors": [
                 {
@@ -2015,20 +2121,20 @@
                     "email": "hybridauth@gmail.com"
                 }
             ],
-            "description": "PHP Social Authentication Library",
-            "homepage": "https://hybridauth.github.io",
+            "description": "Open source social sign on PHP library.",
+            "homepage": "http://hybridauth.sourceforge.net",
             "keywords": [
-                "Authentication",
                 "OpenId",
-                "api",
-                "authorization",
                 "facebook",
                 "google",
+                "hybridauth",
+                "login",
                 "oauth",
                 "social",
-                "twitter"
+                "twitter",
+                "yahoo"
             ],
-            "time": "2018-08-15T05:54:25+00:00"
+            "time": "2017-03-24T17:45:49+00:00"
         },
         {
             "name": "imagine/imagine",
@@ -8533,7 +8639,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "azine/hybridauth-bundle": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

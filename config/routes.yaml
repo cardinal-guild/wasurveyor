@@ -2,7 +2,7 @@ index:
     path: /
     defaults: { _controller: 'App\Controller\HomeController::welcome' }
 
-connect_user:
+steam_connect:
     path:   /connect
     controller: "AzineHybridAuthBundle:AzineHybridAuthJson:connectUser"
     defaults:

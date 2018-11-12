@@ -1,0 +1,8 @@
+_azine_hybrid:
+  resource: "@AzineHybridAuthBundle/Resources/config/routing.yml"
+
+#connect_user:
+#  path:   /connect
+#  controller: "AzineHybridAuthBundle:AzineHybridAuthJson:connectUser"
+#  defaults:
+#    provider: 'steam'
