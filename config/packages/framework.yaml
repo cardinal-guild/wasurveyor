@@ -12,7 +12,6 @@ framework:
         handler_id: session.handler.native_file
         cookie_lifetime: 518400
         save_path: '%kernel.root_dir%/var/sessions'
-        name: CGSURVEYORSESS
     assets: ~
     templating:
         engines: ["twig"]
