@@ -4,7 +4,17 @@ sonata_admin:
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: left }
-
+    security:
+        handler: sonata.admin.security.handler.acl
+        role_admin: ROLE_ADMIN
+        role_super_admin: ROLE_SUPER_ADMIN
+        information:
+            READER:   [VIEW, LIST]
+            GUEST:    [CREATE, VIEW, LIST]
+            EDITOR:   [EDIT, VIEW, LIST, OPERATOR, EXPORT]
+            ADMIN:    [MASTER]
+        admin_permissions: [CREATE, EDIT, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER]
+        object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
 sonata_block:
     blocks:
         sonata.admin.block.admin_list:

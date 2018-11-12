@@ -1,10 +1,30 @@
 security:
     access_denied_url: /login
     role_hierarchy:
-        ROLE_SURVEYOR:          [ROLE_USER]
-        ROLE_ADMIN:             [ROLE_SURVEYOR, ROLE_SONATA_ADMIN]
+        ROLE_USER:
+            - ROLE_ADMIN_ISLAND_GUEST
+            - ROLE_ADMIN_AUTHOR_GUEST
+            - ROLE_ADMIN_ISLAND_IMAGE_GUEST
+            - ROLE_ADMIN_TREETYPE_READER
+            - ROLE_ADMIN_METALTYPE_READER
+        ROLE_SURVEYOR:
+            - ROLE_USER
+            - ROLE_ADMIN_ISLAND_EDITOR
+            - ROLE_ADMIN_AUTHOR_EDITOR
+            - ROLE_ADMIN_ISLAND_IMAGE_EDITOR
+            - ROLE_ADMIN_TREETYPE_EDITOR
+            - ROLE_ADMIN_METALTYPE_EDITOR
+        ROLE_ADMIN:
+            - ROLE_SURVEYOR
+            - ROLE_ADMIN_ISLAND_ADMIN
+            - ROLE_ADMIN_AUTHOR_ADMIN
+            - ROLE_ADMIN_ISLAND_IMAGE_ADMIN
+            - ROLE_ADMIN_TREETYPE_ADMIN
+            - ROLE_ADMIN_METALTYPE_ADMIN
         ROLE_SONATA_ADMIN:      [ROLE_ADMIN]
         ROLE_SUPER_ADMIN:       [ROLE_SONATA_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    access_decision_manager:
+        strategy: unanimous
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     encoders:
         FOS\UserBundle\Model\UserInterface: bcrypt
@@ -16,7 +36,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         api:
-            pattern:             ^/(api|media|images|uploads|connect).*
+            pattern:             ^/(api|media|images|uploads).*
             security: false
         admin:
             pattern:            .*
@@ -31,6 +51,7 @@ security:
                 path:           /logout
                 target:         /login
             anonymous:          true
+            security:          true
 
             # activate different ways to authenticate
 
@@ -43,14 +64,16 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-    # Admin login page needs to be accessed without credential
-    - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/login_check$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        # Admin login page needs to be accessed without credential
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login_check$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 
-    # Secured part of the site
-    # This config requires being logged for the whole site and having the admin role for the admin part.
-    # Change these rules to adapt them to your needs
-    - { path: ^/.*, roles: IS_AUTHENTICATED_FULLY }
+        # Secured part of the site
+        # This config requires being logged for the whole site and having the admin role for the admin part.
+        # Change these rules to adapt them to your needs
+        - { path: ^/.*, roles: IS_AUTHENTICATED_FULLY }
+acl:
+    connection: default

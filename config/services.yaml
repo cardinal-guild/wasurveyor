@@ -3,7 +3,7 @@
 parameters:
     locale: 'en'
     mailer_user: 'jan@creatiom.be'
-
+    sonata.admin.security.mask.builder.class: Sonata\AdminBundle\Security\Acl\Permission\MaskBuilder
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -43,6 +43,9 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    security.acl.permission.map:
+        class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
 
     admin.island:
         class: App\Admin\IslandAdmin

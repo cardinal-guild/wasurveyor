@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 use App\Entity\User;
-use App\Providers\SteamProvider;
 use phpDocumentor\Reflection\Types\This;
 use Cocur\Slugify\Slugify;
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -23,6 +22,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use \Hybridauth\Provider\Steam as SteamProvider;
 
 Class LoginController extends Controller
 {
@@ -45,16 +45,37 @@ Class LoginController extends Controller
     }
     /**
      * @return Response
-     * @Route("/connect", name="steam_connect")
+     * @Route("/logout", name="steam_logout")
      */
-    public function connect(Session $session, RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
+    public function logout(RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
     {
         $request = $requestStack->getCurrentRequest();
-        $session->start();
+        $session = $request->getSession();
+//        $steam->disconnect();
+
+        $config = [
+            'callback' => getenv('STEAM_BASE_URL').$request->getRequestUri(),
+            'keys' => [ 'secret' => getenv('STEAM_API_KEY') ],
+        ];
+        $steam = new SteamProvider($config);
+        $steam->disconnect();
+        $steam->storage->clear();
+        $session->clear();
+        return new RedirectResponse($this->generateUrl('steam_login'));
+    }
+
+    /**
+     * @return Response
+     * @Route("/connect", name="steam_connect")
+     */
+    public function connect(RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
+    {
+        $request = $requestStack->getCurrentRequest();
+        $session = $request->getSession();
         $slugify = new Slugify();
 
         $config = [
-            'callback' => getenv('STEAM_BASE_URL').$request->getBaseUrl(),
+            'callback' => getenv('STEAM_BASE_URL').$request->getRequestUri(),
             'keys' => [ 'secret' => getenv('STEAM_API_KEY') ],
         ];
 
@@ -64,44 +85,40 @@ Class LoginController extends Controller
          * This example instantiates a GitHub adapter using the array $config we just built.
          */
 
-        $steam = new \Hybridauth\Provider\Steam($config);
+        $steam = new SteamProvider($config);
+//        $steam->disconnect();
+//        exit();
+        $authenticated = $steam->authenticate();
 
-        try {
-            $authenticate = $steam->authenticate();
-        } catch (UnexpectedApiResponseException $exception) { }
 
-        if($steam->isConnected()) {
+        if($authenticated && $steam->getUserProfile() && !empty($steam->getUserProfile()->displayName)) {
             $userProfile = $steam->getUserProfile();
+
             $identifier = $userProfile->identifier;
 
-            $user = $userManager->findUserByConfirmationToken($userProfile->identifier);
+            $user = $userManager->findUserByConfirmationToken(base64_encode(md5($userProfile->identifier)));
             if(!$user) {
                 $user = $userManager->createUser();
                 $user->setConfirmationToken($userProfile->identifier);
                 $user->setUsername($userProfile->displayName);
+                $user->setFirstname($userProfile->firstName);
+                $user->setLastname($userProfile->lastName);
                 $user->setEmail($slugify->slugify($userProfile->displayName).'@cardinalguild.com');
                 $user->setPlainPassword($slugify->slugify($userProfile->displayName));
                 $user->setSteamData(serialize($userProfile));
-                $user->setRoles(['ROLE_USER','ROLE_SURVEYOR']);
+                $user->setRoles(['ROLE_USER']);
                 $user->setEnabled(true);
             }
             $userManager->updateUser($user);
 
-            $unauthToken = new UsernamePasswordToken($user, $user->getPassword(), $this->providerKey, $user->getRoles());
+            $unauthToken = new UsernamePasswordToken($user, null, $this->providerKey, $user->getRoles());
             $authToken = $authManager->authenticate($unauthToken);
             $tokenStorage->setToken($authToken);
 
-            $session->set('_security_'.$this->providerKey, serialize($authToken));
-            $session->save();
 
-            /** Fire the login event manually */
-            $event = new InteractiveLoginEvent($request, $unauthToken);
-            $eventDispatcher->dispatch('security.interactive_login', $event);
-
-            $response = new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
-//            $response->headers->setCookie(new Cookie('_security.'.$this->providerKey, serialize($authToken)));
-            return $response;
+            return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
         }
+        $session->getFlashBag()->add('error', 'Could not login due to an error');
         return new RedirectResponse($this->generateUrl('steam_login'));
     }
 }

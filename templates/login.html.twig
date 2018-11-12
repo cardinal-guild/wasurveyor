@@ -72,6 +72,11 @@
     <div id="particles-js">
         <div class="panel-container">
             <div class="panel">
+                {% for flashMessage in app.session.flashbag.get('error') %}
+
+                    <div style="color:red;font-weight: bold"> {{ flashMessage }}</div>
+
+                {% endfor %}
                <img src="/assets/logo_login.png">
                 <a href="{{ path('steam_connect') }}"><img src="/assets/login_steam.png"></a>
             </div>

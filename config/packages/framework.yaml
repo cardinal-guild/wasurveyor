@@ -11,7 +11,8 @@ framework:
     session:
         handler_id: session.handler.native_file
         cookie_lifetime: 518400
-        save_path: '%kernel.root_dir%/var/sessions'
+        save_path: '%kernel.project_dir%/var/sessions'
+        name: CGSESSID
     assets: ~
     templating:
         engines: ["twig"]
