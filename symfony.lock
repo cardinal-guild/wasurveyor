@@ -1,9 +1,9 @@
 {
-    "azine/hybridauth-bundle": {
-        "version": "dev-master"
-    },
     "behat/transliterator": {
         "version": "v1.2.0"
+    },
+    "clue/stream-filter": {
+        "version": "v1.4.0"
     },
     "cocur/slugify": {
         "version": "v3.1"
@@ -68,9 +68,6 @@
     "exsyst/swagger": {
         "version": "v0.4.1"
     },
-    "facebook/graph-sdk": {
-        "version": "5.6.3"
-    },
     "friendsofsymfony/ckeditor-bundle": {
         "version": "1.2.0"
     },
@@ -89,8 +86,23 @@
     "gedmo/doctrine-extensions": {
         "version": "v2.4.36"
     },
-    "hybridauth/hybridauth": {
-        "version": "v2.9.0"
+    "guzzlehttp/guzzle": {
+        "version": "6.3.3"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.4.2"
+    },
+    "hwi/oauth-bundle": {
+        "version": "0.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.6",
+            "ref": "20cacc9b2da49d96ea55c8a8dd31324c5be88bc9"
+        }
     },
     "imagine/imagine": {
         "version": "v0.7.1"
@@ -155,6 +167,45 @@
     "paragonie/random_compat": {
         "version": "v2.0.17"
     },
+    "php-http/cache-plugin": {
+        "version": "v1.5.0"
+    },
+    "php-http/client-common": {
+        "version": "1.8.1"
+    },
+    "php-http/discovery": {
+        "version": "1.4.0"
+    },
+    "php-http/guzzle6-adapter": {
+        "version": "v1.1.1"
+    },
+    "php-http/httplug": {
+        "version": "v1.1.0"
+    },
+    "php-http/httplug-bundle": {
+        "version": "1.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.6",
+            "ref": "4655962c64e2de96c418caf576c57215711c7877"
+        }
+    },
+    "php-http/logger-plugin": {
+        "version": "v1.0.0"
+    },
+    "php-http/message": {
+        "version": "1.7.2"
+    },
+    "php-http/message-factory": {
+        "version": "v1.0.2"
+    },
+    "php-http/promise": {
+        "version": "v1.0.0"
+    },
+    "php-http/stopwatch-plugin": {
+        "version": "1.1.0"
+    },
     "phpcollection/phpcollection": {
         "version": "0.5.0"
     },
@@ -175,6 +226,9 @@
     },
     "psr/container": {
         "version": "1.0.0"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
     },
     "psr/log": {
         "version": "1.0.2"
@@ -388,6 +442,9 @@
     },
     "symfony/serializer": {
         "version": "v3.4.18"
+    },
+    "symfony/stopwatch": {
+        "version": "v4.1.7"
     },
     "symfony/swiftmailer-bundle": {
         "version": "2.5",

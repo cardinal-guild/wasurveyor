@@ -50,15 +50,22 @@
             }
 
             .panel {
-                display: block;
+                display: -webkit-box;
+                display: -moz-box;
+                display: -ms-flexbox;
+                display: -webkit-flex;
+                display: flex;
+                flex-direction: column;
                 border-radius: 25px;
                 background-color: rgba(255,255,255,0.8);
-                padding: 20px;
-
+                padding: 10px;
                 font-weight: bold;
                 font-size: 2em;
                 text-align: center;
             }
+            .panel img {
+                 padding-bottom: 10px;
+             }
         </style>
     </head>
     <body>
@@ -66,7 +73,7 @@
         <div class="panel-container">
             <div class="panel">
                <img src="/assets/logo_login.png">
-                <a href="/connect"><img src="/assets/login_steam.png"></a>
+                <a href="{{ path('steam_connect') }}"><img src="/assets/login_steam.png"></a>
             </div>
         </div>
     </div>

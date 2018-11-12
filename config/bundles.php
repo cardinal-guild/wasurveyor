@@ -27,6 +27,6 @@ return [
     Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
-    Azine\HybridAuthBundle\AzineHybridAuthBundle::class => ['all' => true],
     Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
+    Http\HttplugBundle\HttplugBundle::class => ['all' => true],
 ];

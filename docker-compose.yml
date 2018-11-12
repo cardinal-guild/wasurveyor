@@ -1,18 +1,19 @@
 version: '3.2'
 
 services:
-#  traefik:
-#    container_name: traefik
-#    image: traefik
-#    command: -c /dev/null --web --docker --logLevel=INFO
-#    ports:
-#    - '80:80'
-#    volumes:
-#    - /var/run/docker.sock:/var/run/docker.sock
-#    labels:
-#    - 'traefik.backend=traefik'
-#    - 'traefik.port=8080'
-#    - 'traefik.frontend.rule=Host:traefik.lc'
+  traefik:
+    container_name: traefik
+    image: traefik
+    command: -c /dev/null --web --docker --logLevel=INFO
+    ports:
+      - '80:80'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - 'traefik.backend=traefik'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.rule=Host:traefik.lc'
+
   db:
     image: mariadb
     environment:
@@ -28,8 +29,6 @@ services:
       - 'traefik.backend=db'
       - 'traefik.port=3306'
       - 'traefik.frontend.rule=Host:db.surveyor.lc'
-    networks:
-      - dev
 
   mailhog:
     image: mailhog/mailhog
@@ -37,8 +36,6 @@ services:
       - 'traefik.backend=mailhog'
       - 'traefik.port=8025'
       - 'traefik.frontend.rule=Host:mailhog.surveyor.lc'
-    networks:
-      - dev
 
   pma:
     image: phpmyadmin/phpmyadmin
@@ -54,8 +51,6 @@ services:
       - 'traefik.backend=pma'
       - 'traefik.port=80'
       - 'traefik.frontend.rule=Host:pma.surveyor.lc'
-    networks:
-      - dev
 
   devops:
     image: webdevops/php-nginx
@@ -73,12 +68,21 @@ services:
     labels:
       - 'traefik.backend=devops'
       - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:surveyor.lc'
-    networks:
-      - dev
-networks:
-  dev:
-    external:
-      name: dev
+      - 'traefik.frontend.rule=Host:localhost,surveyor.lc'
+
+  ngrok:
+    image: wernight/ngrok
+    depends_on:
+      - devops
+    links:
+      - devops:http
+    environment:
+      NGROK_REGION: eu
+    labels:
+      - 'traefik.backend=ngrok'
+      - 'traefik.port=4040'
+      - 'traefik.frontend.rule=Host:ngrok.surveyor.lc'
+    command: "ngrok http http:80"
+
 volumes:
   db: {}
