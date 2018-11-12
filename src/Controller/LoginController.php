@@ -6,6 +6,7 @@ use App\Providers\SteamProvider;
 use phpDocumentor\Reflection\Types\This;
 use Cocur\Slugify\Slugify;
 use FOS\UserBundle\Model\UserManagerInterface;
+use Hybridauth\Exception\UnexpectedApiResponseException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -63,7 +64,11 @@ Class LoginController extends Controller
 
         $steam = new \Hybridauth\Provider\Steam($config);
 
-        $authenticate = $steam->authenticate();
+        try {
+            $authenticate = $steam->authenticate();
+        } catch (UnexpectedApiResponseException $exception) {
+            return new Response($exception->getTraceAsString());
+        }
 
         if($steam->isConnected()) {
             $userProfile = $steam->getUserProfile();
