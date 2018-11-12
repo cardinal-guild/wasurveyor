@@ -6,11 +6,16 @@
         "ext-imagick": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
+        "ext-bcmath": "*",
+        "ext-bz2": "*",
+        "ext-simplexml": "*",
+        "ext-sockets": "*",
         "friendsofsymfony/ckeditor-bundle": "^1.2",
         "friendsofsymfony/rest-bundle": "^2.4",
         "friendsofsymfony/user-bundle": "^2.1",
         "guzzlehttp/guzzle": "^6.3",
-        "hwi/oauth-bundle": "dev-master",
+        "hwi/oauth-bundle": "~0.6.3",
+        "hybridauth/hybridauth": "~3.0",
         "jms/serializer-bundle": "~2.0",
         "liip/imagine-bundle": "^2.1",
         "nelmio/api-doc-bundle": "^3.3",
@@ -25,6 +30,7 @@
         "symfony/debug-bundle": "^3.3",
         "symfony/dotenv": "^3.3",
         "symfony/flex": "^1.0",
+        "symfony/serializer": "^4.1.7",
         "symfony/framework-bundle": "^4.1.7",
         "symfony/monolog-bundle": "^3.1",
         "symfony/security-bundle": "^4.1.7",
@@ -35,12 +41,7 @@
         "symfony/yaml": "^3.3",
         "vich/uploader-bundle": "^1.8"
     },
-    "require-dev": {
-    },
     "config": {
-        "preferred-install": {
-            "*": "dist"
-        },
         "sort-packages": true
     },
     "autoload": {
@@ -78,5 +79,7 @@
             "id": "01BP7RMK8AZ70N4HQWRV810CQW",
             "allow-contrib": true
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

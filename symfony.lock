@@ -104,6 +104,9 @@
             "ref": "20cacc9b2da49d96ea55c8a8dd31324c5be88bc9"
         }
     },
+    "hybridauth/hybridauth": {
+        "version": "v2.12.0"
+    },
     "imagine/imagine": {
         "version": "v0.7.1"
     },
@@ -436,6 +439,9 @@
             "version": "3.3",
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
+    },
+    "symfony/serializer": {
+        "version": "v4.1.7"
     },
     "symfony/stopwatch": {
         "version": "v4.1.7"

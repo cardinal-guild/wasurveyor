@@ -18,6 +18,7 @@ class User extends BaseUser
         parent::__construct();
         // your code here
     }
+
     /**
      *
      * @var integer
@@ -28,32 +29,33 @@ class User extends BaseUser
     protected $id;
 
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $steamUid;
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $steamIdentifier;
+
+    /**
+     * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     protected $steamData;
 
     /**
      * @return string
      */
-    public function getSteamUid()
+    public function getSteamIdentifier()
     {
-        return $this->steamUid;
+        return $this->steamIdentifier;
     }
 
     /**
-     * @param string $steamUid
+     * @param string $steamIdentifier
      */
-    public function setSteamUid($steamUid)
+    public function setSteamIdentifier($steamIdentifier)
     {
-        $this->steamUid = $steamUid;
+        $this->steamIdentifier = $steamIdentifier;
     }
 
     /**

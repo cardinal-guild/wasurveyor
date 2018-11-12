@@ -1,5 +1,6 @@
 framework:
     secret: '%env(APP_SECRET)%'
+    csrf_protection: ~
     #default_locale: en
     #csrf_protection: null
     #http_method_override: true
@@ -7,8 +8,12 @@ framework:
     # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
     #esi: ~
     #fragments: ~
+    session:
+        handler_id: session.handler.native_file
+        cookie_lifetime: 518400
+        save_path: '%kernel.root_dir%/var/sessions'
+        name: CGSURVEYORSESS
     assets: ~
-    session: ~
     templating:
         engines: ["twig"]
     php_errors:
