@@ -54,7 +54,7 @@ Class LoginController extends Controller
         $slugify = new Slugify();
 
         $config = [
-            'callback' => getenv('STEAM_BASE_URL').$request->$this->getBaseUrl(),
+            'callback' => getenv('STEAM_BASE_URL').$request->getBaseUrl(),
             'keys' => [ 'secret' => getenv('STEAM_API_KEY') ],
         ];
 
