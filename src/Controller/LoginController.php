@@ -7,9 +7,11 @@ use phpDocumentor\Reflection\Types\This;
 use Cocur\Slugify\Slugify;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Hybridauth\Exception\UnexpectedApiResponseException;
+use Hybridauth\Hybridauth;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -45,9 +47,9 @@ Class LoginController extends Controller
      * @return Response
      * @Route("/connect", name="steam_connect")
      */
-    public function connect(Session $session, Request $request, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
+    public function connect(Session $session, RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
     {
-
+        $request = $requestStack->getCurrentRequest();
         $session->start();
         $slugify = new Slugify();
 
@@ -66,10 +68,7 @@ Class LoginController extends Controller
 
         try {
             $authenticate = $steam->authenticate();
-        } catch (UnexpectedApiResponseException $exception) {
-            dump($exception);
-            exit();
-        }
+        } catch (UnexpectedApiResponseException $exception) { }
 
         if($steam->isConnected()) {
             $userProfile = $steam->getUserProfile();
