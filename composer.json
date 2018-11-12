@@ -10,7 +10,7 @@
         "friendsofsymfony/rest-bundle": "^2.4",
         "friendsofsymfony/user-bundle": "^2.1",
         "guzzlehttp/guzzle": "^6.3",
-        "hwi/oauth-bundle": "^0.6.3",
+        "hwi/oauth-bundle": "dev-master",
         "jms/serializer-bundle": "~2.0",
         "liip/imagine-bundle": "^2.1",
         "nelmio/api-doc-bundle": "^3.3",
@@ -25,9 +25,9 @@
         "symfony/debug-bundle": "^3.3",
         "symfony/dotenv": "^3.3",
         "symfony/flex": "^1.0",
-        "symfony/framework-bundle": "^3.3",
+        "symfony/framework-bundle": "^4.1.7",
         "symfony/monolog-bundle": "^3.1",
-        "symfony/serializer": "^3.3",
+        "symfony/security-bundle": "^4.1.7",
         "symfony/swiftmailer-bundle": "^3.2",
         "symfony/templating": "^3.3",
         "symfony/web-profiler-bundle": "^3.3",
@@ -76,7 +76,7 @@
     "extra": {
         "symfony": {
             "id": "01BP7RMK8AZ70N4HQWRV810CQW",
-            "allow-contrib": false
+            "allow-contrib": true
         }
     }
 }

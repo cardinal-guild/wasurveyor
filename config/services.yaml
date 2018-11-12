@@ -21,7 +21,7 @@ services:
         resource: '../src/*'
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
-        exclude: '../src/{Entity,Repository,Tests}'
+        exclude: '../src/{Entity,Security,Migrations,Tests}'
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
@@ -30,44 +30,51 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    http.utils.class:
+        class: Symfony\Component\Security\Http\HttpUtils
+
+    hwi_oauth.resource_ownermap.admin:
+        class: HWI\Bundle\OAuthBundle\Security\Http\ResourceOwnerMap
+        arguments: [ '@security.http_utils', [], [] ]
+
     gedmo.listener.softdeleteable:
         class: Gedmo\SoftDeleteable\SoftDeleteableListener
         tags:
-        - { name: doctrine.event_subscriber, connection: default }
+            - { name: doctrine.event_subscriber, connection: default }
         calls:
-        - [ setAnnotationReader, [ '@annotation_reader' ] ]
+            - [ setAnnotationReader, [ '@annotation_reader' ] ]
 
     admin.island:
         class: App\Admin\IslandAdmin
         arguments: [~, App\Entity\Island, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
     admin.author:
         class: App\Admin\AuthorAdmin
         arguments: [~, App\Entity\Author, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Authors", icon: "<i class=\"fa fa-globe\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Authors", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
     admin.island_image:
         class: App\Admin\IslandImageAdmin
         arguments: [~, App\Entity\IslandImage, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, label: 'Island Image', show_in_dashboard: false }
+            - { name: sonata.admin, manager_type: orm, label: 'Island Image', show_in_dashboard: false }
         public: true
 
     admin.treetype:
         class: App\Admin\TreeTypeAdmin
         arguments: [~, App\Entity\TreeType, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Trees", icon: "<i class=\"fa fa-diamond\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Trees", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
 
     admin.metaltype:
         class: App\Admin\MetalTypeAdmin
         arguments: [~, App\Entity\MetalType, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metals", icon: "<i class=\"fa fa-diamond\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metals", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
