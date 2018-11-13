@@ -70,6 +70,7 @@ class ApiController extends FOSRestController
                 'nickName'=>$island->getNickname(),
                 'fullName'=>$island->__toString(),
                 'slug'=>$island->getSlug(),
+                'type'=>$island->getType()?'kioki':'saborian',
                 'databanks'=>(integer)$island->getDatabanks(),
                 'altitude'=>(integer)$island->getAltitude(),
                 'creator'=>$island->getCreator()->getName(),

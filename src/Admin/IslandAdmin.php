@@ -11,6 +11,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\CoreBundle\Form\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class IslandAdmin extends AbstractAdmin
@@ -51,6 +52,7 @@ class IslandAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->add('altitude', null, ['editable'=>true])
             ->add('databanks', null, ['editable'=>true])
+            ->add('type', 'choice', ['choices'=>[0=>'Saborian',1=>'Kioki'],'editable'=>true])
             ->add('respawners', null, ['editable'=>true])
             ->add('turrets', null, ['editable'=>true])
             ->add('surveyUpdatedBy', null, ['label'=>"Survey by"])
@@ -84,6 +86,7 @@ class IslandAdmin extends AbstractAdmin
                     ->add('nickname')
                     ->add('databanks')
                     ->add('altitude')
+                    ->add('type', ChoiceType::class, ['choices'=>['Saborian'=>0,'Kioki'=>1]])
                     ->add('workshopUrl')
                     ->add('creator', ModelListType::class, array(),array('sd'=>false))
                 ->end()

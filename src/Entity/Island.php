@@ -23,6 +23,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Island
 {
+    const SABORIAN = 0;
+    const KIOKI = 1;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -68,6 +71,13 @@ class Island
      * @Assert\NotEqualTo(value="0")
      */
     protected $lng;
+
+
+    /**
+     * @var integer
+     * @ORM\Column(type="smallint")
+     */
+    protected $type = self::SABORIAN;
 
     /**
      * @var boolean
@@ -558,8 +568,28 @@ class Island
         return $this;
     }
 
+
+
     public function getLeaflet(){}
     public function setLeaflet($data){}
+
+    /**
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param integer $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+
 
     public function __toString()
     {
