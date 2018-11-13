@@ -90,6 +90,24 @@ class Island
      * @var boolean
      * @ORM\Column(type="boolean")
      */
+    protected $turrets = false;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $spikes = false;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $nonGrappleWalls = false;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
     protected $published = true;
 
     /**
@@ -101,13 +119,58 @@ class Island
     protected $images;
 
     /**
-     * @var Author
+     * @var \Doctrine\Common\Collections\Collection|IslandMetal[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pveIslands")
+     * @ORM\JoinTable(name="pve_island_metals",
+     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
+     * )
+     * @JMS\Expose()
+     */
+    protected $pveMetals;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|IslandTree[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pveIslands")
+     * @ORM\JoinTable(name="pve_island_trees",
+     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
+     * )
+     * @JMS\Expose()
+     */
+    protected $pveTrees;
+
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|IslandMetal[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pvpIslands")
+     * @ORM\JoinTable(name="pvp_island_metals",
+     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
+     * )
+     * @JMS\Expose()
+     */
+    protected $pvpMetals;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|IslandTree[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pvpIslands")
+     * @ORM\JoinTable(name="pvp_island_trees",
+     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
+     * )
+     * @JMS\Expose()
+     */
+    protected $pvpTrees;
+
+    /**
+     * @var IslandCreator
      * @JMS\Expose
-     * @ORM\ManyToOne(targetEntity="App\Entity\Author", cascade={"persist"}, inversedBy="islands")
-     * @ORM\JoinColumn(name="author_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="IslandCreator", cascade={"persist"}, inversedBy="islands")
+     * @ORM\JoinColumn(name="creator_id", referencedColumnName="id", nullable=false)
      * @Assert\NotBlank()
      */
-    protected $author;
+    protected $creator;
 
     /**
      * @var User
@@ -138,6 +201,10 @@ class Island
     {
 
         $this->images = new ArrayCollection();
+        $this->pveTrees = new ArrayCollection();
+        $this->pveMetals = new ArrayCollection();
+        $this->pveTrees = new ArrayCollection();
+        $this->pvpMetals = new ArrayCollection();
         $this->lat = 0;
         $this->lng = 0;
         $this->createdAt = new \DateTime();
@@ -349,19 +416,196 @@ class Island
     }
 
     /**
-     * @return Author
+     * @return IslandTree[]|\Doctrine\Common\Collections\Collection
      */
-    public function getAuthor(): ?Author
+    public function getPveTrees()
     {
-        return $this->author;
+        return $this->pveTrees;
     }
 
     /**
-     * @param Author $author
+     * @param IslandTree[]|\Doctrine\Common\Collections\Collection $trees
      */
-    public function setAuthor(Author $author): void
+    public function setPveTrees($trees)
     {
-        $this->author = $author;
+        $this->pveTrees = new ArrayCollection();
+        foreach($trees as $tree) {
+            $this->addPveTree($tree);
+        }
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function addPveTree($tree)
+    {
+        $tree->addPveIsland($this);
+        if(!$this->pveTrees->contains($tree)) {
+            $this->pveTrees->add($tree);
+        }
+        return $this->pveTrees;
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function removePveTree($tree)
+    {
+        if($this->pveTrees->contains($tree)) {
+            $this->pveTrees->removeElement($tree);
+        }
+        return $this->pveTrees;
+    }
+
+    /**
+     * @return IslandMetal[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getPveMetals()
+    {
+        return $this->pveMetals;
+    }
+
+    /**
+     * @param IslandMetal[]|\Doctrine\Common\Collections\Collection $metals
+     */
+    public function setPveMetals($metals)
+    {
+        $this->pveMetals = new ArrayCollection();
+        foreach($metals as $metal) {
+            $this->addPveMetal($metal);
+        }
+    }
+
+    /**
+     * @param IslandMetal $metal
+     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
+     */
+    public function addPveMetal($metal)
+    {
+        $metal->addPveIsland($this);
+        if(!$this->pveMetals->contains($metal)) {
+            $this->pveMetals->add($metal);
+        }
+        return $this->pveMetals;
+    }
+
+    /**
+     * @param IslandMetal $metal
+     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
+     */
+    public function removePveMetal($metal)
+    {
+        if($this->pveMetals->contains($metal)) {
+            $this->pveMetals->removeElement($metal);
+        }
+        return $this->pveMetals;
+    }
+
+
+    /**
+     * @return IslandTree[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getPvpTrees()
+    {
+        return $this->pvpTrees;
+    }
+
+    /**
+     * @param IslandTree[]|\Doctrine\Common\Collections\Collection $trees
+     */
+    public function setPvpTrees($trees)
+    {
+        $this->pvpTrees = new ArrayCollection();
+        foreach($trees as $tree) {
+            $this->addPvpTree($tree);
+        }
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function addPvpTree($tree)
+    {
+        $tree->addPveIsland($this);
+        if(!$this->pvpTrees->contains($tree)) {
+            $this->pvpTrees->add($tree);
+        }
+        return $this->pvpTrees;
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function removePvpTree($tree)
+    {
+        if($this->pvpTrees->contains($tree)) {
+            $this->pvpTrees->removeElement($tree);
+        }
+        return $this->pvpTrees;
+    }
+
+    /**
+     * @return IslandMetal[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getPvpMetals()
+    {
+        return $this->pvpMetals;
+    }
+
+    /**
+     * @param IslandMetal[]|\Doctrine\Common\Collections\Collection $metals
+     */
+    public function setPvpMetals($metals)
+    {
+        $this->pvpMetals = new ArrayCollection();
+        foreach($metals as $metal) {
+            $this->addPvpMetal($metal);
+        }
+    }
+
+    /**
+     * @param IslandMetal $metal
+     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
+     */
+    public function addPvpMetal($metal)
+    {
+        $metal->addPveIsland($this);
+        if(!$this->pvpMetals->contains($metal)) {
+            $this->pvpMetals->add($metal);
+        }
+        return $this->pvpMetals;
+    }
+
+    /**
+     * @param IslandMetal $metal
+     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
+     */
+    public function removePvpMetal($metal)
+    {
+        if($this->pvpMetals->contains($metal)) {
+            $this->pvpMetals->removeElement($metal);
+        }
+        return $this->pvpMetals;
+    }
+
+    /**
+     * @return IslandCreator
+     */
+    public function getCreator(): ?IslandCreator
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param IslandCreator $creator
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
     }
 
     /**
@@ -410,6 +654,54 @@ class Island
     public function setSurveyUpdatedBy($surveyUpdatedBy)
     {
         $this->surveyUpdatedBy = $surveyUpdatedBy;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTurrets()
+    {
+        return $this->turrets;
+    }
+
+    /**
+     * @param bool $turrets
+     */
+    public function setTurrets($turrets)
+    {
+        $this->turrets = $turrets;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSpikes()
+    {
+        return $this->spikes;
+    }
+
+    /**
+     * @param bool $spikes
+     */
+    public function setSpikes($spikes)
+    {
+        $this->spikes = $spikes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNonGrappleWalls()
+    {
+        return $this->nonGrappleWalls;
+    }
+
+    /**
+     * @param bool $nonGrappleWalls
+     */
+    public function setNonGrappleWalls($nonGrappleWalls)
+    {
+        $this->nonGrappleWalls = $nonGrappleWalls;
     }
 
     public function getLeaflet(){}

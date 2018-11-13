@@ -99,11 +99,11 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
-    admin.author:
-        class: App\Admin\AuthorAdmin
-        arguments: [~, App\Entity\Author, ~]
+    admin.island_creator:
+        class: App\Admin\IslandCreatorAdmin
+        arguments: [~, App\Entity\IslandCreator, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Authors", icon: "<i class=\"fa fa-globe\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Island creators", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
     admin.island_image:
@@ -113,16 +113,30 @@ services:
             - { name: sonata.admin, manager_type: orm, label: 'Island Image', show_in_dashboard: false }
         public: true
 
+    admin.island_tree:
+        class: App\Admin\IslandTreeAdmin
+        arguments: [~, App\Entity\IslandTree, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island Tree', show_in_dashboard: false }
+        public: true
+
+    admin.island_metal:
+        class: App\Admin\IslandMetalAdmin
+        arguments: [~, App\Entity\IslandMetal, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island Metal', show_in_dashboard: false }
+        public: true
+
     admin.treetype:
         class: App\Admin\TreeTypeAdmin
         arguments: [~, App\Entity\TreeType, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Trees", icon: "<i class=\"fa fa-diamond\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Tree types", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
 
     admin.metaltype:
         class: App\Admin\MetalTypeAdmin
         arguments: [~, App\Entity\MetalType, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metals", icon: "<i class=\"fa fa-diamond\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metal types", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true

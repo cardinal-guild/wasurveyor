@@ -13,12 +13,12 @@ use Knp\DoctrineBehaviors\Model\Translatable\Translatable;
 
 /**
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="App\Repository\IslandRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\IslandCreatorRepository")
  * @ORM\Table()
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
-class Author
+class IslandCreator
 {
     /**
      * @ORM\Id
@@ -41,7 +41,7 @@ class Author
 
     /**
      * @var \Doctrine\Common\Collections\Collection|Island[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Island", mappedBy="author", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Island", mappedBy="creator", fetch="EXTRA_LAZY")
      */
     protected $islands;
 

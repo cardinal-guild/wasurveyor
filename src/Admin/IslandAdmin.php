@@ -45,13 +45,12 @@ class IslandAdmin extends AbstractAdmin
             ->addIdentifier('id')
             ->addIdentifier('mainImage', null , array('template' => 'admin/list_image.html.twig', 'label'=>'Image'))
             ->addIdentifier('name')
-            ->addIdentifier('nickname')
-            ->addIdentifier('slug')
-            ->add('lat', null, ['editable'=>true])
-            ->add('lng', null, ['editable'=>true])
             ->add('respawners', null, ['editable'=>true])
             ->add('cannons', null, ['editable'=>true])
             ->add('dangerous', null, ['editable'=>true])
+            ->add('turrets', null, ['editable'=>true])
+            ->add('surveyUpdatedBy', null, ['label'=>"Survey by"])
+            ->add('published')
             ->add('createdAt')
             ->add('updatedAt')
             ->add('_action', null, array(
@@ -80,12 +79,15 @@ class IslandAdmin extends AbstractAdmin
                     ->add('name')
                     ->add('nickname')
                     ->add('workshopUrl')
-                    ->add('author', ModelListType::class, array(),array('sd'=>false))
+                    ->add('creator', ModelListType::class, array(),array('sd'=>false))
                 ->end()
                 ->with('Options', ['class'=>'col-sm-12 col-md-4'])
                     ->add('respawners', null, ['help'=>'Does this island have respawners?'])
                     ->add('cannons', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
                     ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
+                    ->add('turrets', null, ['help'=>'Has this island turrets?'])
+                    ->add('spikes', null, ['help'=>'Are there spikes on this island?'])
+                    ->add('nonGrappleWalls', null, ['help'=>'Are there non grappling walls on this island?'])
                 ->end()
             ->end()
             ->tab('Media')
@@ -101,6 +103,31 @@ class IslandAdmin extends AbstractAdmin
                         'admin_code'        => 'admin.island_image',
                     ))
                 ->end()
+            ->end()
+            ->tab('PVE Materials')
+                ->with('PVE Tree list', array('class' => 'col-md-6', 'help'=> 'These are the PVE trees and quality that can be found on this island'))
+                    ->add('pveTrees', CollectionType::class, array(
+                        'label' => false,
+                        'by_reference' => false
+                    ), array(
+                        'edit'              => 'inline',
+                        'inline'            => 'table',
+                        'admin_code'        => 'admin.island_tree',
+                    ))
+                ->end()
+
+                ->with('PVE Metal list', array('class' => 'col-md-6', 'help'=> 'These are the PVE metals and quality that can be found on this island'))
+                    ->add('pveMetals', CollectionType::class, array(
+                        'label' => false,
+                        'by_reference' => false
+                    ), array(
+                        'edit'              => 'inline',
+                        'inline'            => 'table',
+                        'admin_code'        => 'admin.island_metal',
+                    ))
+                ->end()
+            ->end()
+            ->tab('PVP Materials')
             ->end()
         ;
     }

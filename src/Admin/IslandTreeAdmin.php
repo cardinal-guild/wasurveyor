@@ -6,14 +6,11 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class AuthorAdmin extends AbstractAdmin
+class IslandTreeAdmin extends AbstractAdmin
 {
-
-    protected $baseRouteName = 'cg_author_admin';
-    protected $baseRoutePattern = 'authors';
-
     /**
      * @param DatagridMapper $datagridMapper
      */
@@ -21,8 +18,10 @@ class AuthorAdmin extends AbstractAdmin
     {
         $datagridMapper
             ->add('id')
-            ->add('name')
-            ->add('workshopUrl')
+            ->add('type')
+            ->add('quality')
+            ->add('pveIslands')
+            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
         ;
@@ -35,8 +34,10 @@ class AuthorAdmin extends AbstractAdmin
     {
         $listMapper
             ->add('id')
-            ->add('name')
-            ->add('workshopUrl')
+            ->addIdentifier('type')
+            ->addIdentifier('quality')
+            ->add('pveIslands')
+            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
             ->add('_action', null, array(
@@ -55,8 +56,8 @@ class AuthorAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name')
-            ->add('workshopUrl')
+            ->add('type', ModelListType::class, array(),array('sd'=>false))
+            ->add('quality')
         ;
     }
 
@@ -67,8 +68,10 @@ class AuthorAdmin extends AbstractAdmin
     {
         $showMapper
             ->add('id')
-            ->add('name')
-            ->add('workshopUrl')
+            ->add('type')
+            ->add('quality')
+            ->add('pveIslands')
+            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
         ;
