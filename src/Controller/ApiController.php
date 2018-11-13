@@ -40,7 +40,7 @@ class ApiController extends FOSRestController
      *     description="Returns all marker data for islands"
      * )
      * @SWG\Tag(name="islands")
-     * @Cache(public=true, expires="-1 hours")
+     * @Cache(public=true, expires="2 hours")
      */
     public function getIslandMarkersAction(Request $request)
     {
@@ -74,6 +74,8 @@ class ApiController extends FOSRestController
                 'altitude'=>(integer)$island->getAltitude(),
                 'creator'=>$island->getCreator()->getName(),
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
+                'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
+                'surveyUpdatedBy'=>$island->getSurveyCreatedBy()->__toString(),
                 'respawners'=>(bool)$island->hasRespawners(),
                 'dangerous'=>(bool)$island->isDangerous(),
                 'turrets'=>(bool)$island->hasTurrets(),
@@ -81,6 +83,28 @@ class ApiController extends FOSRestController
                 'nonGrappleWalls'=>(bool)$island->hasNonGrappleWalls(),
                 'workshopUrl'=>$island->getWorkshopUrl()
             ];
+
+
+            $pveMetals = [];
+            foreach($island->getPveMetals() as $pveMetal) {
+                $pveMetals[] = $pveMetal->__toString();
+            }
+            $pveTrees = [];
+            foreach($island->getPveTrees() as $pveTree) {
+                $pveTrees[] = $pveTree->__toString();
+            }
+            $data['pveMaterials'] = array_merge($pveMetals, $pveTrees);
+
+            $pvpMetals = [];
+            foreach($island->getPvpMetals() as $pvpMetal) {
+                $pvpMetals[] = $pvpMetal->__toString();
+            }
+            $pvpTrees = [];
+            foreach($island->getPvpTrees() as $pvpTree) {
+                $pvpTrees[] = $pvpTree->__toString();
+            }
+
+            $data['pvpMaterials'] = array_merge($pvpMetals, $pvpTrees);
 
             /**
              * @var IslandImage $firstImage
