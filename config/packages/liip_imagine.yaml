@@ -4,7 +4,7 @@ liip_imagine:
     default:
       web_path:
         web_root: "%kernel.project_dir%/public"
-        cache_prefix: "media/cache/resolve"
+        cache_prefix: "media/cache"
   loaders:
     default:
       filesystem:

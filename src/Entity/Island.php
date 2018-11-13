@@ -110,6 +110,22 @@ class Island
     protected $author;
 
     /**
+     * @var User
+     * @JMS\Expose
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    protected $surveyCreatedBy;
+
+    /**
+     * @var User
+     * @JMS\Expose
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    protected $surveyUpdatedBy;
+
+    /**
      * @var string
      * @ORM\Column(nullable=true)
      */
@@ -362,6 +378,38 @@ class Island
     public function setWorkshopUrl(string $workshopUrl): void
     {
         $this->workshopUrl = $workshopUrl;
+    }
+
+    /**
+     * @return User
+     */
+    public function getSurveyCreatedBy()
+    {
+        return $this->surveyCreatedBy;
+    }
+
+    /**
+     * @param User $surveyCreatedBy
+     */
+    public function setSurveyCreatedBy($surveyCreatedBy)
+    {
+        $this->surveyCreatedBy = $surveyCreatedBy;
+    }
+
+    /**
+     * @return User
+     */
+    public function getSurveyUpdatedBy()
+    {
+        return $this->surveyUpdatedBy;
+    }
+
+    /**
+     * @param User $surveyUpdatedBy
+     */
+    public function setSurveyUpdatedBy($surveyUpdatedBy)
+    {
+        $this->surveyUpdatedBy = $surveyUpdatedBy;
     }
 
     public function getLeaflet(){}
