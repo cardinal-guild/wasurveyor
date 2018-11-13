@@ -27,7 +27,8 @@ class IslandRepository extends EntityRepository
             ->leftJoin('island.pvpMetals', 'ipvpm')
             ->where('island.published = 1')
             ->groupBy('island.id')
-            ->orderBy('island.id', 'DESC');
+            ->orderBy('island.id', 'DESC')
+            ->orderBy('ii.position', 'ASC');
         $qry = $qb->getQuery();
         return $qry->getResult();
     }

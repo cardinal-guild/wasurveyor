@@ -66,6 +66,11 @@ liip_imagine:
       filters:
         thumbnail: { size: [640, 360], mode: outbound, allow_upscale: true }
 
+    island_tile_small:
+      quality: 90
+      filters:
+        thumbnail: { size: [120, 120], mode: outbound, allow_upscale: true }
+
     island_tile_square_lq:
       quality: 20
       filters:

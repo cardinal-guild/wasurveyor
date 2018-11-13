@@ -5,11 +5,13 @@ namespace App\Controller;
 
 
 use App\Entity\Island;
+use App\Entity\IslandImage;
 use App\Repository\IslandRepository;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use function MongoDB\BSON\toJSON;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Log\LoggerInterface;
@@ -20,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
  * Class ApiController
@@ -39,17 +42,21 @@ class ApiController extends FOSRestController
      * @SWG\Tag(name="islands")
      * @Cache(public=true, expires="-1 hours")
      */
-    public function getIslandMarkersAction()
+    public function getIslandMarkersAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+
+        /** @var CacheManager */
+        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
+
+        /** @var UploaderHelper */
+        $uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
 
         /**
          * @var IslandRepository $islandRepo
          */
         $islandRepo = $em->getRepository('App:Island');
         $islands = $islandRepo->getPublishedIslands();
-        $crs = new \GeoJson\CoordinateReferenceSystem\Named('Simple');
-        $box = new \GeoJson\BoundingBox([-9500, 9500, 0, 0]);
 
         $markers = [];
         /**
@@ -58,9 +65,7 @@ class ApiController extends FOSRestController
         foreach($islands as $island) {
             $point = new \GeoJson\Geometry\Point([round($island->getLat(),2), round($island->getLng(),2)]);
 
-
-
-            $markers[] = new Feature($point, [
+            $data = [
                 'name'=>$island->getName(),
                 'nickName'=>$island->getNickname(),
                 'fullName'=>$island->__toString(),
@@ -76,11 +81,28 @@ class ApiController extends FOSRestController
                 'turrets'=>(bool)$island->isTurrets(),
                 'spikes'=>(bool)$island->isSpikes(),
                 'nonGrappleWalls'=>(bool)$island->isNonGrappleWalls(),
-                'workshopUrl'=>$island->getWorkshopUrl(),
-            ], $island->getId());
+                'workshopUrl'=>$island->getWorkshopUrl()
+            ];
+
+            /**
+             * @var IslandImage $firstImage
+             */
+            $firstImage = $island->getImages()->first();
+
+            if($firstImage) {
+                $imagePath = $uploadHelper->asset($firstImage, 'imageFile');
+
+                $data['imageIcon'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_small');
+                $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
+                $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
+            }
+
+
+            $markers[] = new Feature($point, $data, $island->getId());
 
         }
-        $collection = new FeatureCollection($markers, $crs, $box);
+        $collection = new FeatureCollection($markers);
         return $collection;
 
     }
