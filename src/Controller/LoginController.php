@@ -80,7 +80,11 @@ Class LoginController extends Controller
     {
         $request = $requestStack->getCurrentRequest();
         $cookieName = $this->getAzineHybridAuthService()->getCookieName('steam');
-        $providerAdapter = $this->getAzineHybridAuthService()->getProvider($request->cookies->get($cookieName), 'steam');
+        try {
+            $providerAdapter = $this->getAzineHybridAuthService()->getProvider($request->cookies->get($cookieName), 'steam');
+        } catch (\Exception $e) {
+            return new RedirectResponse($this->generateUrl('login'));
+        }
 
         $slugify = new Slugify();
 

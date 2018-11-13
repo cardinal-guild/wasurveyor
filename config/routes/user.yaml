@@ -1,0 +1,3 @@
+#admin_area:
+#  resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+#  prefix: /profile
