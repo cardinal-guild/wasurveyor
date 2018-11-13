@@ -74,13 +74,11 @@ class ApiController extends FOSRestController
                 'altitude'=>(integer)$island->getAltitude(),
                 'creator'=>$island->getCreator()->getName(),
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
-                'databanks'=>(integer)$island->getDatabanks(),
-                'respawners'=>(bool)$island->isRespawners(),
-                'cannons'=>(bool)$island->isCannons(),
+                'respawners'=>(bool)$island->hasRespawners(),
                 'dangerous'=>(bool)$island->isDangerous(),
-                'turrets'=>(bool)$island->isTurrets(),
-                'spikes'=>(bool)$island->isSpikes(),
-                'nonGrappleWalls'=>(bool)$island->isNonGrappleWalls(),
+                'turrets'=>(bool)$island->hasTurrets(),
+                'spikes'=>(bool)$island->hasSpikes(),
+                'nonGrappleWalls'=>(bool)$island->hasNonGrappleWalls(),
                 'workshopUrl'=>$island->getWorkshopUrl()
             ];
 

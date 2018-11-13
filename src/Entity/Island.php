@@ -79,12 +79,6 @@ class Island
      * @var boolean
      * @ORM\Column(type="boolean")
      */
-    protected $cannons = false;
-
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean")
-     */
     protected $dangerous = false;
 
     /**
@@ -121,9 +115,9 @@ class Island
     /**
      * @var integer
      * @ORM\Column(type="integer")
-     * @Assert\Range(min="0", max="2000")
+     * @Assert\Range(min="1000", max="2800")
      */
-    protected $altitude = 1500;
+    protected $altitude = 2000;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
@@ -345,7 +339,7 @@ class Island
     /**
      * @return bool
      */
-    public function isRespawners(): bool
+    public function hasRespawners(): bool
     {
         return $this->respawners;
     }
@@ -358,21 +352,7 @@ class Island
         $this->respawners = $respawners;
     }
 
-    /**
-     * @return bool
-     */
-    public function isCannons(): bool
-    {
-        return $this->cannons;
-    }
 
-    /**
-     * @param bool $cannons
-     */
-    public function setCannons(bool $cannons): void
-    {
-        $this->cannons = $cannons;
-    }
 
     /**
      * @return bool
@@ -515,7 +495,7 @@ class Island
     /**
      * @return bool
      */
-    public function isTurrets()
+    public function hasTurrets()
     {
         return $this->turrets;
     }
@@ -531,7 +511,7 @@ class Island
     /**
      * @return bool
      */
-    public function isSpikes()
+    public function hasSpikes()
     {
         return $this->spikes;
     }
@@ -547,7 +527,7 @@ class Island
     /**
      * @return bool
      */
-    public function isNonGrappleWalls()
+    public function hasNonGrappleWalls()
     {
         return $this->nonGrappleWalls;
     }
