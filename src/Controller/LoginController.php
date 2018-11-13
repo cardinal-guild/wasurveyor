@@ -55,6 +55,7 @@ Class LoginController extends Controller
 
     /**
      * @return Response
+     * @Route("/logout", name="sonata_user_admin_security_logout")
      * @Route("/logout", name="steam_logout")
      */
     public function logout(RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
