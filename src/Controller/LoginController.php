@@ -60,9 +60,13 @@ Class LoginController extends Controller
     public function logout(RequestStack $requestStack, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager, EventDispatcherInterface $eventDispatcher):Response
     {
         $request = $requestStack->getCurrentRequest();
-        $session = $request->getSession();
-        $this->steamProvider->disconnect();
-        $this->steamProvider->storage->clear();
+        $session = $request->getSession(); ;
+        try {
+            $cookieName = $this->getAzineHybridAuthService()->getCookieName('steam');
+            $providerAdapter = $this->getAzineHybridAuthService()->getProvider($request->cookies->get($cookieName), 'steam');
+            $providerAdapter->clearTokens();
+            $providerAdapter->setUserUnconnected();
+        } catch (\Exception $e) {}
         $session->clear();
         return new RedirectResponse($this->generateUrl('login'));
     }
