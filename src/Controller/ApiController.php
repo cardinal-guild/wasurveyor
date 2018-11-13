@@ -56,7 +56,7 @@ class ApiController extends FOSRestController
          * @var $island Island
          */
         foreach($islands as $island) {
-            $point = new \GeoJson\Geometry\Point([(float)$island->getLat(), (float)$island->getLng()]);
+            $point = new \GeoJson\Geometry\Point([round($island->getLat(),2), round($island->getLng(),2)]);
 
 
 

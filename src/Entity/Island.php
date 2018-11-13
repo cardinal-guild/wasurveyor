@@ -297,7 +297,7 @@ class Island
      */
     public function setLat($lat): void
     {
-        $this->lat = $lat;
+        $this->lat = round($lat,2);
     }
 
     /**
@@ -313,7 +313,7 @@ class Island
      */
     public function setLng($lng)
     {
-        $this->lng = $lng;
+        $this->lng = round($lng,2);
     }
 
     /**
