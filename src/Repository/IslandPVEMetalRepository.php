@@ -5,6 +5,6 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-class IslandMetalRepository extends EntityRepository
+class IslandPVEMetalRepository extends EntityRepository
 {
 }

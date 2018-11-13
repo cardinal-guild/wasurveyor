@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Repository\IslandPVETreeRepository;
+use App\Traits\IslandMaterialCollections;
 use Cocur\Slugify\Slugify;
 use Facebook\GraphNodes\Collection;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
@@ -9,7 +11,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Knp\DoctrineBehaviors\Model\Translatable\Translatable;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -119,9 +120,9 @@ class Island
     protected $images;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|IslandMetal[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pveIslands")
-     * @ORM\JoinTable(name="pve_island_metals",
+     * @var \Doctrine\Common\Collections\Collection|IslandPVEMetal[]
+     * @ORM\ManyToMany(targetEntity="IslandPVEMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\JoinTable(name="island_pve_metals",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
      * )
@@ -130,9 +131,9 @@ class Island
     protected $pveMetals;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|IslandTree[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pveIslands")
-     * @ORM\JoinTable(name="pve_island_trees",
+     * @var \Doctrine\Common\Collections\Collection|IslandPVETree[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandPVETree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\JoinTable(name="island_pve_trees",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
      * )
@@ -140,11 +141,10 @@ class Island
      */
     protected $pveTrees;
 
-
     /**
-     * @var \Doctrine\Common\Collections\Collection|IslandMetal[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pvpIslands")
-     * @ORM\JoinTable(name="pvp_island_metals",
+     * @var \Doctrine\Common\Collections\Collection|IslandPVPMetal[]
+     * @ORM\ManyToMany(targetEntity="IslandPVPMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\JoinTable(name="island_pvp_metals",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
      * )
@@ -153,9 +153,9 @@ class Island
     protected $pvpMetals;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|IslandTree[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="pvpIslands")
-     * @ORM\JoinTable(name="pvp_island_trees",
+     * @var \Doctrine\Common\Collections\Collection|IslandPVPTree[]
+     * @ORM\ManyToMany(targetEntity="App\Entity\IslandPVPTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\JoinTable(name="island_pvp_trees",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
      * )
@@ -196,15 +196,16 @@ class Island
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
+    use IslandMaterialCollections;
 
     public function __construct()
     {
 
         $this->images = new ArrayCollection();
-        $this->pveTrees = new ArrayCollection();
         $this->pveMetals = new ArrayCollection();
         $this->pveTrees = new ArrayCollection();
         $this->pvpMetals = new ArrayCollection();
+        $this->pvpTrees = new ArrayCollection();
         $this->lat = 0;
         $this->lng = 0;
         $this->createdAt = new \DateTime();
@@ -413,183 +414,6 @@ class Island
     {
         $this->images->removeElement($image);
         return $this->images;
-    }
-
-    /**
-     * @return IslandTree[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPveTrees()
-    {
-        return $this->pveTrees;
-    }
-
-    /**
-     * @param IslandTree[]|\Doctrine\Common\Collections\Collection $trees
-     */
-    public function setPveTrees($trees)
-    {
-        $this->pveTrees = new ArrayCollection();
-        foreach($trees as $tree) {
-            $this->addPveTree($tree);
-        }
-    }
-
-    /**
-     * @param IslandTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
-     */
-    public function addPveTree($tree)
-    {
-        $tree->addPveIsland($this);
-        if(!$this->pveTrees->contains($tree)) {
-            $this->pveTrees->add($tree);
-        }
-        return $this->pveTrees;
-    }
-
-    /**
-     * @param IslandTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
-     */
-    public function removePveTree($tree)
-    {
-        if($this->pveTrees->contains($tree)) {
-            $this->pveTrees->removeElement($tree);
-        }
-        return $this->pveTrees;
-    }
-
-    /**
-     * @return IslandMetal[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPveMetals()
-    {
-        return $this->pveMetals;
-    }
-
-    /**
-     * @param IslandMetal[]|\Doctrine\Common\Collections\Collection $metals
-     */
-    public function setPveMetals($metals)
-    {
-        $this->pveMetals = new ArrayCollection();
-        foreach($metals as $metal) {
-            $this->addPveMetal($metal);
-        }
-    }
-
-    /**
-     * @param IslandMetal $metal
-     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
-     */
-    public function addPveMetal($metal)
-    {
-        $metal->addPveIsland($this);
-        if(!$this->pveMetals->contains($metal)) {
-            $this->pveMetals->add($metal);
-        }
-        return $this->pveMetals;
-    }
-
-    /**
-     * @param IslandMetal $metal
-     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
-     */
-    public function removePveMetal($metal)
-    {
-        if($this->pveMetals->contains($metal)) {
-            $this->pveMetals->removeElement($metal);
-        }
-        return $this->pveMetals;
-    }
-
-
-    /**
-     * @return IslandTree[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPvpTrees()
-    {
-        return $this->pvpTrees;
-    }
-
-    /**
-     * @param IslandTree[]|\Doctrine\Common\Collections\Collection $trees
-     */
-    public function setPvpTrees($trees)
-    {
-        $this->pvpTrees = new ArrayCollection();
-        foreach($trees as $tree) {
-            $this->addPvpTree($tree);
-        }
-    }
-
-    /**
-     * @param IslandTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
-     */
-    public function addPvpTree($tree)
-    {
-        $tree->addPveIsland($this);
-        if(!$this->pvpTrees->contains($tree)) {
-            $this->pvpTrees->add($tree);
-        }
-        return $this->pvpTrees;
-    }
-
-    /**
-     * @param IslandTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
-     */
-    public function removePvpTree($tree)
-    {
-        if($this->pvpTrees->contains($tree)) {
-            $this->pvpTrees->removeElement($tree);
-        }
-        return $this->pvpTrees;
-    }
-
-    /**
-     * @return IslandMetal[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPvpMetals()
-    {
-        return $this->pvpMetals;
-    }
-
-    /**
-     * @param IslandMetal[]|\Doctrine\Common\Collections\Collection $metals
-     */
-    public function setPvpMetals($metals)
-    {
-        $this->pvpMetals = new ArrayCollection();
-        foreach($metals as $metal) {
-            $this->addPvpMetal($metal);
-        }
-    }
-
-    /**
-     * @param IslandMetal $metal
-     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
-     */
-    public function addPvpMetal($metal)
-    {
-        $metal->addPveIsland($this);
-        if(!$this->pvpMetals->contains($metal)) {
-            $this->pvpMetals->add($metal);
-        }
-        return $this->pvpMetals;
-    }
-
-    /**
-     * @param IslandMetal $metal
-     * @return \Doctrine\Common\Collections\Collection|IslandMetal[]
-     */
-    public function removePvpMetal($metal)
-    {
-        if($this->pvpMetals->contains($metal)) {
-            $this->pvpMetals->removeElement($metal);
-        }
-        return $this->pvpMetals;
     }
 
     /**

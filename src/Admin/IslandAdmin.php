@@ -112,10 +112,9 @@ class IslandAdmin extends AbstractAdmin
                     ), array(
                         'edit'              => 'inline',
                         'inline'            => 'table',
-                        'admin_code'        => 'admin.island_tree',
+                        'admin_code'        => 'admin.island_pve_trees',
                     ))
                 ->end()
-
                 ->with('PVE Metal list', array('class' => 'col-md-6', 'help'=> 'These are the PVE metals and quality that can be found on this island'))
                     ->add('pveMetals', CollectionType::class, array(
                         'label' => false,
@@ -123,11 +122,31 @@ class IslandAdmin extends AbstractAdmin
                     ), array(
                         'edit'              => 'inline',
                         'inline'            => 'table',
-                        'admin_code'        => 'admin.island_metal',
+                        'admin_code'        => 'admin.island_pve_metals',
                     ))
                 ->end()
             ->end()
             ->tab('PVP Materials')
+                ->with('PVP Tree list', array('class' => 'col-md-6', 'help'=> 'These are the PVP trees and quality that can be found on this island'))
+                    ->add('pvpTrees', CollectionType::class, array(
+                        'label' => false,
+                        'by_reference' => false
+                    ), array(
+                        'edit'              => 'inline',
+                        'inline'            => 'table',
+                        'admin_code'        => 'admin.island_pvp_trees',
+                    ))
+                ->end()
+                ->with('PVP Metal list', array('class' => 'col-md-6', 'help'=> 'These are the PVP metals and quality that can be found on this island'))
+                    ->add('pvpMetals', CollectionType::class, array(
+                        'label' => false,
+                        'by_reference' => false
+                    ), array(
+                        'edit'              => 'inline',
+                        'inline'            => 'table',
+                        'admin_code'        => 'admin.island_pvp_metals',
+                    ))
+                ->end()
             ->end()
         ;
     }

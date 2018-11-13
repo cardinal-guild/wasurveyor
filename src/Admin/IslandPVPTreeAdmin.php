@@ -8,8 +8,9 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
-class IslandMetalAdmin extends AbstractAdmin
+class IslandPVPTreeAdmin extends AbstractAdmin
 {
     /**
      * @param DatagridMapper $datagridMapper
@@ -20,8 +21,6 @@ class IslandMetalAdmin extends AbstractAdmin
             ->add('id')
             ->add('type')
             ->add('quality')
-            ->add('pveIslands')
-            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
         ;
@@ -36,8 +35,6 @@ class IslandMetalAdmin extends AbstractAdmin
             ->add('id')
             ->addIdentifier('type')
             ->addIdentifier('quality')
-            ->add('pveIslands')
-            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
             ->add('_action', null, array(
@@ -70,8 +67,6 @@ class IslandMetalAdmin extends AbstractAdmin
             ->add('id')
             ->add('type')
             ->add('quality')
-            ->add('pveIslands')
-            ->add('pvpIslands')
             ->add('createdAt')
             ->add('updatedAt')
         ;
