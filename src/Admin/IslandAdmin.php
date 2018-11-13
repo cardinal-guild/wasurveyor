@@ -153,8 +153,6 @@ class IslandAdmin extends AbstractAdmin
     public function preUpdate($object)
     {
         $user = $this->getUser();
-        dump($user);
-        exit();
         if($user) {
             if (!$object->getSurveyCreatedBy()) {
                 $object->setSurveyCreatedBy($user);
