@@ -7,7 +7,7 @@ steam_connect:
     controller: "AzineHybridAuthBundle:AzineHybridAuthJson:connectUser"
     defaults:
         provider: 'steam'
-        callbackRoute: 'sonata_admin_dashboard'
+        callbackRoute: 'steam_callback'
 # Depends on sensio/framework-extra-bundle, doctrine/annotations, and doctrine/cache
 #   install with composer req sensio/framework-extra-bundle annot
 #controllers:

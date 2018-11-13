@@ -69,6 +69,8 @@ security:
         - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/endpoint, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/endpoint/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/callback, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/callback/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/is/connected/to/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/steam/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }

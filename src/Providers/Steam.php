@@ -7,6 +7,11 @@ namespace App\Providers;
 * (c) 2009-2012, HybridAuth authors | http://hybridauth.sourceforge.net/licenses.html
 */
 
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+
 /**
  * Hybrid_Providers_Steam provider adapter based on OpenID protocol
  *
@@ -14,7 +19,7 @@ namespace App\Providers;
  *
  * This class has been entirely reworked for the new Steam API (http://steamcommunity.com/dev)
  */
-class Steam extends \Hybrid_Provider_Model_OpenID
+class Steam extends \Hybrid_Provider_Model_OpenID implements ContainerAwareInterface
 {
     var $openidIdentifier = "http://steamcommunity.com/openid";
 
@@ -22,6 +27,19 @@ class Steam extends \Hybrid_Provider_Model_OpenID
      * @var mixed
      */
     public $providerId = 'steam';
+
+    /**
+     * @var ContainerAwareInterface
+     */
+    private $container;
+
+
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
 
     function loginFinish()
     {
