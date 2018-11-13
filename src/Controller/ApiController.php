@@ -49,7 +49,7 @@ class ApiController extends FOSRestController
         $islandRepo = $em->getRepository('App:Island');
         $islands = $islandRepo->getPublishedIslands();
         $crs = new \GeoJson\CoordinateReferenceSystem\Named('Simple');
-        $box = new \GeoJson\BoundingBox([-9500, -9500, 0, 0]);
+        $box = new \GeoJson\BoundingBox([-9500, 9500, 0, 0]);
 
         $markers = [];
         /**
