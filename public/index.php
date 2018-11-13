@@ -26,10 +26,7 @@ $kernel = new Kernel(getenv('APP_ENV'), getenv('APP_DEBUG'));
 $request = Request::createFromGlobals();
 // tell Symfony about your reverse proxy
 Request::setTrustedProxies(
-// the IP address (or range) of your proxy
-    ['192.0.0.1', ' 172.17.0.0/8','172.17.0.6'],
-
-    // trust *all* "X-Forwarded-*" headers
+    ['127.0.0.1', ' 172.17.0.0/8', '172.17.0.6', $request->server->get('REMOTE_ADDR')],
     Request::HEADER_X_FORWARDED_ALL
 );
 $response = $kernel->handle($request);
