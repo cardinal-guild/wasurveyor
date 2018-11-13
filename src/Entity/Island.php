@@ -110,6 +110,12 @@ class Island
      * @ORM\Column(type="boolean")
      */
     protected $published = true;
+    /**
+     * @var integer
+     * @ORM\Column(type="integer")
+     * @Assert\Range(min="0", max="5")
+     */
+    protected $databanks = 0;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
@@ -309,6 +315,24 @@ class Island
     {
         $this->lng = $lng;
     }
+
+    /**
+     * @return integer
+     */
+    public function getDatabanks()
+    {
+        return $this->databanks;
+    }
+
+    /**
+     * @param integer $databanks
+     */
+    public function setDatabanks($databanks)
+    {
+        $this->databanks = $databanks;
+    }
+
+
 
     /**
      * @return bool
