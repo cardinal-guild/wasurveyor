@@ -20,7 +20,6 @@
         "jms/serializer-bundle": "~2.0",
         "liip/imagine-bundle": "^2.1",
         "nelmio/api-doc-bundle": "^3.3",
-        "nelmio/cors-bundle": "^1.5",
         "php-http/guzzle6-adapter": "^1.1",
         "php-http/httplug-bundle": "^1.12",
         "sensio/framework-extra-bundle": "^5.2",
