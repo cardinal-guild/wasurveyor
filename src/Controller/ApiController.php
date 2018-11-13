@@ -65,6 +65,8 @@ class ApiController extends FOSRestController
                 'nickName'=>$island->getNickname(),
                 'fullName'=>$island->__toString(),
                 'slug'=>$island->getSlug(),
+                'databanks'=>(integer)$island->getDatabanks(),
+                'altitude'=>(integer)$island->getAltitude(),
                 'creator'=>$island->getCreator()->getName(),
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
                 'databanks'=>(integer)$island->getDatabanks(),
@@ -74,7 +76,7 @@ class ApiController extends FOSRestController
                 'turrets'=>(bool)$island->isTurrets(),
                 'spikes'=>(bool)$island->isSpikes(),
                 'nonGrappleWalls'=>(bool)$island->isNonGrappleWalls(),
-                'workshopUrl'=>(bool)$island->getWorkshopUrl(),
+                'workshopUrl'=>$island->getWorkshopUrl(),
             ], $island->getId());
 
         }

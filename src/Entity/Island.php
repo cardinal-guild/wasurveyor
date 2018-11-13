@@ -110,12 +110,20 @@ class Island
      * @ORM\Column(type="boolean")
      */
     protected $published = true;
+
     /**
      * @var integer
      * @ORM\Column(type="integer")
      * @Assert\Range(min="0", max="5")
      */
     protected $databanks = 0;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer")
+     * @Assert\Range(min="0", max="2000")
+     */
+    protected $altitude = 1500;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
@@ -550,6 +558,24 @@ class Island
     public function setNonGrappleWalls($nonGrappleWalls)
     {
         $this->nonGrappleWalls = $nonGrappleWalls;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAltitude()
+    {
+        return $this->altitude;
+    }
+
+    /**
+     * @param int $altitude
+     * @return Island
+     */
+    public function setAltitude($altitude)
+    {
+        $this->altitude = $altitude;
+        return $this;
     }
 
     public function getLeaflet(){}

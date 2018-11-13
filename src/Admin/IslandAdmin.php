@@ -11,6 +11,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\CoreBundle\Form\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class IslandAdmin extends AbstractAdmin
 {
@@ -81,6 +82,7 @@ class IslandAdmin extends AbstractAdmin
                     ->add('name')
                     ->add('nickname')
                     ->add('databanks')
+                    ->add('altitude')
                     ->add('workshopUrl')
                     ->add('creator', ModelListType::class, array(),array('sd'=>false))
                 ->end()
