@@ -116,6 +116,7 @@ class ApiController extends FOSRestController
                 $imagePath = $uploadHelper->asset($firstImage, 'imageFile');
 
                 $data['imageIcon'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_small');
+                $data['imageIconBig'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_big');
                 $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
                 $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
                 $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;

@@ -113,7 +113,10 @@ class IslandAdmin extends AbstractAdmin
                 ->end()
             ->end()
             ->tab('PVE Materials')
-                ->with('PVE Tree list', array('class' => 'col-md-6', 'help'=> 'These are the PVE trees and quality that can be found on this island'))
+                ->with('PVE Tree list', array(
+                    'class' => 'col-md-6',
+                    'help'=> 'These are the PVE trees and quality that can be found on this island. NOTE: It has been reported that quality is spawned random, but bound to a quality range per region.  So tree Q can be seen redundant.  But feel free to fill in.'
+                ))
                     ->add('pveTrees', CollectionType::class, array(
                         'label' => false,
                         'by_reference' => false
@@ -135,7 +138,11 @@ class IslandAdmin extends AbstractAdmin
                 ->end()
             ->end()
             ->tab('PVP Materials')
-                ->with('PVP Tree list', array('class' => 'col-md-6', 'help'=> 'These are the PVP trees and quality that can be found on this island'))
+
+                ->with('PVP Tree list', array(
+                    'class' => 'col-md-6',
+                    'help'=> 'These are the PVP trees and quality that can be found on this island. NOTE: It has been reported that quality is spawned random, but bound to a quality range per region.  So tree Q can be seen redundant.  But feel free to fill in.'
+                ))
                     ->add('pvpTrees', CollectionType::class, array(
                         'label' => false,
                         'by_reference' => false
