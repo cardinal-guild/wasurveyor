@@ -88,21 +88,29 @@ class ApiController extends FOSRestController
 
             $pveMetals = [];
             foreach($island->getPveMetals() as $pveMetal) {
-                $pveMetals[] = $pveMetal->__toString();
+                if($pveMetal->__toString() !== "New Island Metal") {
+                    $pveMetals[] = $pveMetal->__toString();
+                }
             }
             $pveTrees = [];
             foreach($island->getPveTrees() as $pveTree) {
-                $pveTrees[] = $pveTree->__toString();
+                if($pveTree->__toString() !== "New Island Tree") {
+                    $pveTrees[] = $pveTree->__toString();
+                }
             }
             $data['pveMaterials'] = array_merge($pveMetals, $pveTrees);
 
             $pvpMetals = [];
             foreach($island->getPvpMetals() as $pvpMetal) {
-                $pvpMetals[] = $pvpMetal->__toString();
+                if($pvpMetal->__toString() !== "New Island Metal") {
+                    $pvpMetals[] = $pvpMetal->__toString();
+                }
             }
             $pvpTrees = [];
             foreach($island->getPvpTrees() as $pvpTree) {
-                $pvpTrees[] = $pvpTree->__toString();
+                if($pvpTree->__toString() !== "New Island Tree") {
+                    $pvpTrees[] = $pvpTree->__toString();
+                }
             }
 
             $data['pvpMaterials'] = array_merge($pvpMetals, $pvpTrees);
