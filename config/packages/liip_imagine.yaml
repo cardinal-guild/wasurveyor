@@ -51,11 +51,15 @@ liip_imagine:
       filters:
         thumbnail: { size: [120, 90], mode: outbound, allow_upscale: true }
 
+    island_popup_16by9:
+      quality: 90
+      filters:
+        thumbnail: { size: [300, 170], mode: outbound, allow_upscale: true }
 
     island_popup:
       quality: 90
       filters:
-        thumbnail: { size: [300, 225], mode: outbound, allow_upscale: true }
+        thumbnail: { size: [300, 225], mode: inset, allow_upscale: true }
 
     island_tile_4by3:
       quality: 90
