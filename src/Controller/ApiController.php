@@ -82,7 +82,9 @@ class ApiController extends FOSRestController
                 'turrets'=>(bool)$island->hasTurrets(),
                 'spikes'=>(bool)$island->hasSpikes(),
                 'nonGrappleWalls'=>(bool)$island->hasNonGrappleWalls(),
-                'workshopUrl'=>$island->getWorkshopUrl()
+                'workshopUrl'=>$island->getWorkshopUrl(),
+                'createdAt'=>$island->getCreatedAt()->format('Y-m-d H:i:s'),
+                'updatedAt'=>$island->getUpdatedAt()->format('Y-m-d H:i:s')
             ];
 
 
