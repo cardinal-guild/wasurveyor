@@ -66,6 +66,7 @@ class ApiController extends FOSRestController
             $point = new \GeoJson\Geometry\Point([round($island->getLat(),2), round($island->getLng(),2)]);
 
             $data = [
+                'id'=>$island->getId(),
                 'name'=>$island->getName(),
                 'nickName'=>$island->getNickname(),
                 'fullName'=>$island->__toString(),
