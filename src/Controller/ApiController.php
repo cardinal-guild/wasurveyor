@@ -76,7 +76,7 @@ class ApiController extends FOSRestController
                 'creator'=>$island->getCreator()->getName(),
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
                 'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
-                'surveyUpdatedBy'=>$island->setSurveyUpdatedBy()->__toString(),
+                'surveyUpdatedBy'=>$island->getSurveyUpdatedBy()->__toString(),
                 'respawners'=>(bool)$island->hasRespawners(),
                 'dangerous'=>(bool)$island->isDangerous(),
                 'turrets'=>(bool)$island->hasTurrets(),
