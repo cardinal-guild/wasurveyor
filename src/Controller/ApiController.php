@@ -40,7 +40,7 @@ class ApiController extends FOSRestController
      *     description="Returns all marker data for islands"
      * )
      * @SWG\Tag(name="islands")
-     * @Cache(public=true, expires="2 hours")
+     * @Cache(public=true, expires="now", expires="now", mustRevalidate=true)
      */
     public function getIslandMarkersAction(Request $request)
     {
