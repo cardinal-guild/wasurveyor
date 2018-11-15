@@ -221,6 +221,7 @@ class IslandAdmin extends AbstractAdmin
             if (!$object->getSurveyCreatedBy()) {
                 $object->setSurveyCreatedBy($user);
             }
+            $object->setUpdatedAt(new \DateTime());
             $object->setSurveyUpdatedBy($user);
         }
     }
