@@ -64,6 +64,7 @@ security:
                 target:         /login
             anonymous:          true
             security:          true
+            switch_user: true
 
             # activate different ways to authenticate
 
