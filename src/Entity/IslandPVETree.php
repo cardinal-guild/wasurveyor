@@ -36,8 +36,8 @@ class IslandPVETree
 
     public function __toString()
     {
-        if($this->getType() && $this->getQuality()) {
-            return $this->getType()->__toString().' Q'.$this->getQuality();
+        if($this->getType()) {
+            return $this->getType()->__toString();
         }
         // TODO: Implement __toString() method.
         return "New Island Tree";

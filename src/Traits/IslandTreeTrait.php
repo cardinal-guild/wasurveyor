@@ -31,14 +31,6 @@ trait IslandTreeTrait
     protected $type;
 
     /**
-     * @var integer
-     * @ORM\Column(type="integer")
-     * @Assert\Range(min="1", max="10")
-     */
-    protected $quality = 1;
-
-
-    /**
      * @return int
      */
     public function getId()
@@ -68,22 +60,6 @@ trait IslandTreeTrait
     public function setType($type)
     {
         $this->type = $type;
-    }
-
-    /**
-     * @return int
-     */
-    public function getQuality()
-    {
-        return $this->quality;
-    }
-
-    /**
-     * @param int $quality
-     */
-    public function setQuality($quality)
-    {
-        $this->quality = $quality;
     }
 
     /**

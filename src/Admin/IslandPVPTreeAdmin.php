@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -20,7 +21,6 @@ class IslandPVPTreeAdmin extends AbstractAdmin
         $datagridMapper
             ->add('id')
             ->add('type')
-            ->add('quality')
             ->add('createdAt')
             ->add('updatedAt')
         ;
@@ -34,7 +34,6 @@ class IslandPVPTreeAdmin extends AbstractAdmin
         $listMapper
             ->add('id')
             ->addIdentifier('type')
-            ->addIdentifier('quality')
             ->add('createdAt')
             ->add('updatedAt')
             ->add('_action', null, array(
@@ -53,8 +52,7 @@ class IslandPVPTreeAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('type', ModelListType::class, array(),array('sd'=>false))
-            ->add('quality')
+            ->add('type', ModelAutocompleteType::class, ['property'=>'name'])
         ;
     }
 
@@ -66,7 +64,6 @@ class IslandPVPTreeAdmin extends AbstractAdmin
         $showMapper
             ->add('id')
             ->add('type')
-            ->add('quality')
             ->add('createdAt')
             ->add('updatedAt')
         ;

@@ -3,6 +3,7 @@
 
 namespace App\Traits;
 
+use App\Entity\MetalType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;

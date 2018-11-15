@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\CoreBundle\Form\Type\CollectionType;
@@ -88,7 +89,7 @@ class IslandAdmin extends AbstractAdmin
                     ->add('altitude')
                     ->add('type', ChoiceType::class, ['choices'=>['Saborian'=>0,'Kioki'=>1]])
                     ->add('workshopUrl')
-                    ->add('creator', ModelListType::class, array(),array('sd'=>false))
+                    ->add('creator', ModelAutocompleteType::class, ['property'=>'name','btn_add'=>'Add new island creator', 'btn_catalogue'=>true,'help'=>'Please select a creator from the list or create a new one'])
                 ->end()
                 ->with('Options', ['class'=>'col-sm-12 col-md-4'])
                     ->add('respawners', null, ['help'=>'Does this island have respawners?'])
