@@ -58,6 +58,12 @@ class ApiController extends FOSRestController
         $islandRepo = $em->getRepository('App:Island');
         $islands = $islandRepo->getPublishedIslands();
 
+        $intlDateFormatter = new \IntlDateFormatter(
+            $request->getPreferredLanguage(),
+            \IntlDateFormatter::MEDIUM,
+            \IntlDateFormatter::MEDIUM
+        );
+
         $markers = [];
         /**
          * @var $island Island
@@ -84,8 +90,8 @@ class ApiController extends FOSRestController
                 'spikes'=>(bool)$island->hasSpikes(),
                 'nonGrappleWalls'=>(bool)$island->hasNonGrappleWalls(),
                 'workshopUrl'=>$island->getWorkshopUrl(),
-                'createdAt'=>$island->getCreatedAt()->format('Y-m-d H:i:s'),
-                'updatedAt'=>$island->getUpdatedAt()->format('Y-m-d H:i:s')
+                'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
+                'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
 
 
