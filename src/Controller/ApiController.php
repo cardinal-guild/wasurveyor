@@ -111,14 +111,25 @@ class ApiController extends FOSRestController
              * @var IslandImage $firstImage
              */
             $firstImage = $island->getImages()->first();
+            $secondImage = $island->getImages()->get(1);
+
 
             if($firstImage) {
                 $imagePath = $uploadHelper->asset($firstImage, 'imageFile');
 
                 $data['imageIcon'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_small');
                 $data['imageIconBig'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_big');
-                $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
-                $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                if($secondImage) {
+                    $secondImagePath = $uploadHelper->asset($secondImage, 'imageFile');
+                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
+                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
+                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
+                } else {
+
+                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
+                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
+                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                }
                 $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
             }
 
