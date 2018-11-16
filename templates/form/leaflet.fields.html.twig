@@ -10,7 +10,7 @@
                 {% set mapurl = (mapurl ~ '&lng=' ~ subject.lng) %}
             {% endif %}
         {% endif %}
-        <iframe id="{{ id }}" src="{{ mapurl }}" style="width: 100%;min-height: 240px; height: 40vh; border: none;" allow-scripts="true"></iframe>
+        <iframe id="{{ id }}" src="{{ mapurl }}" style="width: 100%;min-height: 240px; height: 80vh; border: none;" allow-scripts="true"></iframe>
         {% verbatim %}
         <script type="text/javascript">
             var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';
