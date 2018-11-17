@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -89,7 +90,7 @@ class ApiController extends FOSRestController
      *     description="Name of island that you are looking for",
      *     required=false
      * )
-     * @Cache(public=true, expires="now", expires="now", mustRevalidate=true)
+     * @Cache(public=true, expires="now", mustRevalidate=true)
      */
     public function getIslandMarkersAction(Request $request)
     {
@@ -131,6 +132,7 @@ class ApiController extends FOSRestController
                 'nickName'=>$island->getNickname(),
                 'fullName'=>$island->__toString(),
                 'slug'=>$island->getSlug(),
+                'key'=>$island->getId().'-'.$island->getSlug(),
                 'type'=>$island->getType()?'kioki':'saborian',
                 'databanks'=>(integer)$island->getDatabanks(),
                 'altitude'=>(integer)$island->getAltitude(),
@@ -214,9 +216,9 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * Returns all island ids, if query input given, gives islands by search
+     * Returns all island ids and lag/lng, name, if query input given, gives islands by search
      *
-     * @Route("/ids.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @Route("/search.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Returns all island ids, if query input given, gives islands by search"
@@ -271,9 +273,9 @@ class ApiController extends FOSRestController
      *     description="Name of island that you are looking for",
      *     required=false
      * )
-     * @Cache(public=true, expires="now", expires="now", mustRevalidate=true)
+     * @Cache(public=true, expires="now", mustRevalidate=true)
      */
-    public function getIslandIdsAction(Request $request)
+    public function getIslandSearchAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         /**
@@ -281,6 +283,20 @@ class ApiController extends FOSRestController
          */
         $islandRepo = $em->getRepository('App:Island');
 
-        return $islandRepo->getPublishedIslandsIds($request->query->all());
+        if(!$request->query->count()) {
+            throw new BadRequestHttpException('Paremeters are required');
+        }
+
+        $results = $islandRepo->getPublishedIslandsByQueryLatLngOnly($request->query->all());
+
+        return array_map(function($item) {
+            $item['latLng'] = [
+              'lat' => $item['lat'],
+              'lng' => $item['lng']
+            ];
+            unset($item['lat']);
+            unset($item['lng']);
+            return $item;
+        }, $results);
     }
 }

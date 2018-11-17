@@ -121,11 +121,11 @@ class IslandRepository extends EntityRepository
         return $qry->getResult();
     }
 
-    public function getPublishedIslandsIds(array $params)
+    public function getPublishedIslandsByQueryLatLngOnly(array $params)
     {
         $qb = $this->createQueryBuilder('island');
         $qb->select(
-            'island.id'
+            'partial island.{id,lat,lng,name,nickname}'
         )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
@@ -187,11 +187,10 @@ class IslandRepository extends EntityRepository
             ));
             $qb->setParameter('ISLANDNAME', '%'.$params['island'].'%');
         }
+
         $qb->groupBy('island.id');
         $qry = $qb->getQuery();
-        $results = $qry->getArrayResult();
-        return array_map(function($item) {
-            return intval($item['id']);
-        }, $results);
+
+        return $qry->getArrayResult();
     }
 }
