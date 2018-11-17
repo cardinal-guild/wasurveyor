@@ -32,12 +32,12 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class ApiController extends FOSRestController
 {
     /**
-     * Returns all marker data for islands, if query input given gives islands by search
+     * Returns all marker data for islands, if query input given, gives islands by search
      *
      * @Route("/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
-     *     description="Returns all marker data for islands"
+     *     description="Returns all marker data for islands, if query input given, gives islands by search"
      * )
      * @SWG\Tag(name="islands")
      * @SWG\Parameter(
@@ -111,10 +111,6 @@ class ApiController extends FOSRestController
         } else {
             $islands = $islandRepo->getPublishedIslands();
         }
-
-
-
-
 
         $intlDateFormatter = new \IntlDateFormatter(
             $request->getPreferredLanguage(),
@@ -215,5 +211,76 @@ class ApiController extends FOSRestController
         $collection = new FeatureCollection($markers);
         return $collection;
 
+    }
+
+    /**
+     * Returns all island ids, if query input given, gives islands by search
+     *
+     * @Route("/ids.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns all island ids, if query input given, gives islands by search"
+     * )
+     * @SWG\Tag(name="islands")
+     * @SWG\Parameter(
+     *     name="quality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="minquality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this minimum quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="maxquality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this maximum quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="metal",
+     *     in="query",
+     *     type="string",
+     *     description="Search for a particular metal type by name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="tree",
+     *     in="query",
+     *     type="string",
+     *     description="Search for a particular tree type by name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="creator",
+     *     in="query",
+     *     type="string",
+     *     description="Search by creator name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="island",
+     *     in="query",
+     *     type="string",
+     *     description="Name of island that you are looking for",
+     *     required=false
+     * )
+     * @Cache(public=true, expires="now", expires="now", mustRevalidate=true)
+     */
+    public function getIslandIdsAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /**
+         * @var IslandRepository $islandRepo
+         */
+        $islandRepo = $em->getRepository('App:Island');
+
+        return $islandRepo->getPublishedIslandsIds($request->query->all());
     }
 }
