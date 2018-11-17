@@ -11,17 +11,7 @@ class IslandRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('island');
         $qb->select(
-            'island',
-            'ic',
-            'ii',
-            'ipvet',
-            'ipvem',
-            'ipvpt',
-            'ipvpm',
-            'ipvemt',
-            'ipvpmt',
-            'ipvett',
-            'ipvptt'
+            'island'
        )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
@@ -44,17 +34,7 @@ class IslandRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('island');
         $qb->select(
-            'island',
-            'ic',
-            'ii',
-            'ipvet',
-            'ipvem',
-            'ipvpt',
-            'ipvpm',
-            'ipvemt',
-            'ipvpmt',
-            'ipvett',
-            'ipvptt'
+            'island'
         )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
@@ -116,7 +96,6 @@ class IslandRepository extends EntityRepository
             ));
             $qb->setParameter('ISLANDNAME', '%'.$params['island'].'%');
         }
-        $qb->groupBy('island.id');
         $qry = $qb->getQuery();
         return $qry->getResult();
     }
