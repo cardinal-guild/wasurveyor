@@ -32,7 +32,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class ApiController extends FOSRestController
 {
     /**
-     * Returns all marker data for islands
+     * Returns all marker data for islands, if query input given gives islands by search
      *
      * @Route("/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
@@ -40,6 +40,55 @@ class ApiController extends FOSRestController
      *     description="Returns all marker data for islands"
      * )
      * @SWG\Tag(name="islands")
+     * @SWG\Parameter(
+     *     name="quality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="minquality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this minimum quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="maxquality",
+     *     in="query",
+     *     type="integer",
+     *     description="Search for this maximum quality only in metals",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="metal",
+     *     in="query",
+     *     type="string",
+     *     description="Search for a particular metal type by name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="tree",
+     *     in="query",
+     *     type="string",
+     *     description="Search for a particular tree type by name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="creator",
+     *     in="query",
+     *     type="string",
+     *     description="Search by creator name",
+     *     required=false
+     * )
+     * @SWG\Parameter(
+     *     name="island",
+     *     in="query",
+     *     type="string",
+     *     description="Name of island that you are looking for",
+     *     required=false
+     * )
      * @Cache(public=true, expires="now", expires="now", mustRevalidate=true)
      */
     public function getIslandMarkersAction(Request $request)
@@ -56,7 +105,16 @@ class ApiController extends FOSRestController
          * @var IslandRepository $islandRepo
          */
         $islandRepo = $em->getRepository('App:Island');
-        $islands = $islandRepo->getPublishedIslands();
+
+        if($request->query->count()) {
+            $islands = $islandRepo->getPublishedIslandsByQuery($request->query->all());
+        } else {
+            $islands = $islandRepo->getPublishedIslands();
+        }
+
+
+
+
 
         $intlDateFormatter = new \IntlDateFormatter(
             $request->getPreferredLanguage(),
