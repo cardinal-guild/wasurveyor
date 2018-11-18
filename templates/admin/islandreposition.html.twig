@@ -1,0 +1,16 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+    {% set mapurl = '//localhost:8080?hideheader=true&admin=true&move=true' %}
+    <iframe src="{{ mapurl }}" style="width: 100%;min-height: 240px; height: 80vh; border: none;" allow-scripts="true"></iframe>
+    {% verbatim %}
+        <script type="text/javascript">
+            var locations = [];
+            window.addEventListener('message', function(e) {
+                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id == "location") {
+                   console.log(e);
+                }
+            });
+        </script>
+        {% endverbatim %}
+{% endblock %}

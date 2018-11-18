@@ -154,3 +154,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metal types", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
+    admin.island_reposition:
+        class: App\Admin\IslandRepositionAdmin
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Reposition islands", icon: "<i class=\"fa fa-globe\"></i>" }
+        arguments:
+        - null
+        - null
+        - App\Controller\IslandRepositionAdminController
+        public: true

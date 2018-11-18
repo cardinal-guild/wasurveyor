@@ -33,6 +33,23 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class ApiController extends FOSRestController
 {
     /**
+     * Post a
+     *
+     * @Route("/report.{_format}", methods={"PUT"}, defaults={ "_format": "json" })
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns all marker data for islands, if query input given, gives islands by search"
+     * )
+     * @SWG\Tag(name="reporting")
+     * @Cache(public=true, expires="now", mustRevalidate=true)
+     */
+    public function reportAction(Request $request)
+    {
+
+    }
+
+
+    /**
      * Returns all marker data for islands, if query input given, gives islands by search
      *
      * @Route("/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })

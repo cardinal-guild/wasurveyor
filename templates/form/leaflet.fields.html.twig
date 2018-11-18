@@ -15,7 +15,7 @@
         <script type="text/javascript">
             var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';
             window.addEventListener('message', function(e) {
-                if(e.data && e.data.lat && e.data.lng) {
+                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id == "mapclick") {
                     var lat = e.data.lat;
                     var lng = e.data.lng;
                     if(lat > 0) {
