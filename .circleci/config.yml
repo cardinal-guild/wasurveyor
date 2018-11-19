@@ -1,7 +1,21 @@
 version: 2
-deployment:
-  production:
-    branch: master
-    commands:
-    - git remote add dokku dokku@alloy.creatiom.be:surveyor
-    - git push dokku master
+jobs:
+  deploy:
+    docker:
+    - image: buildpack-deps:trusty
+    steps:
+    - checkout
+    - run:
+        name: Deploy Master to Heroku
+        command: |
+          git remote add dokku dokku@alloy.creatiom.be:surveyor
+          git push dokku master
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+    - deploy:
+        filters:
+          branches:
+            only: master
