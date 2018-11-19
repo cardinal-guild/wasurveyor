@@ -1,6 +1,6 @@
 {# templates/form/fields.html.twig #}
 {% block leaflet_widget %}
-        {% set mapurl = '//map.cardinalguild.com?hideheader=true&admin=true' %}
+        {% set mapurl = 'https://map.cardinalguild.com?hideheader=true&admin=true' %}
         {% if sonata_admin is not empty and sonata_admin.admin is not empty and sonata_admin.admin.subject is not empty %}
             {% set subject = sonata_admin.admin.subject %}
             {% if subject.lat is not empty %}
@@ -15,7 +15,7 @@
         <script type="text/javascript">
             var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';
             window.addEventListener('message', function(e) {
-                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id == "mapclick") {
+                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id === "mapclick") {
                     var lat = e.data.lat;
                     var lng = e.data.lng;
                     if(lat > 0) {

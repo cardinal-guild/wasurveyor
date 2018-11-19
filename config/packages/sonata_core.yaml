@@ -2,3 +2,10 @@ sonata_core:
     form:
         mapping:
             enabled: false
+    flashmessage:
+        success:
+            types:
+            - { type: reposition_islands_success, domain: App }
+        warning:
+            types:
+            - { type: reposition_islands_warning, domain: App }

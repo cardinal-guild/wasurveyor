@@ -96,70 +96,61 @@ services:
         class: App\Admin\IslandAdmin
         arguments: [~, App\Entity\Island, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "island.management", label: "Islands", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
     admin.island_creator:
         class: App\Admin\IslandCreatorAdmin
         arguments: [~, App\Entity\IslandCreator, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Island creators", icon: "<i class=\"fa fa-globe\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "island.management", label: "Island creators", icon: "<i class=\"fa fa-globe\"></i>" }
         public: true
 
     admin.island_image:
         class: App\Admin\IslandImageAdmin
         arguments: [~, App\Entity\IslandImage, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: 'Island Image', show_in_dashboard: false }
+            - { name: sonata.admin, manager_type: orm, label: 'images', show_in_dashboard: false }
         public: true
 
     admin.island_pve_metals:
         class: App\Admin\IslandPVEMetalAdmin
         arguments: [~, App\Entity\IslandPVEMetal, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island PVE Metals', show_in_dashboard: false }
+        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVE Metals', show_in_dashboard: false }
         public: true
 
     admin.island_pve_trees:
         class: App\Admin\IslandPVETreeAdmin
         arguments: [~, App\Entity\IslandPVETree, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island PVE Trees', show_in_dashboard: false }
+        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVE Trees', show_in_dashboard: false }
         public: true
 
     admin.island_pvp_metals:
         class: App\Admin\IslandPVPMetalAdmin
         arguments: [~, App\Entity\IslandPVPMetal, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island PVP Metals', show_in_dashboard: false }
+        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVP Metals', show_in_dashboard: false }
         public: true
 
     admin.island_pvp_trees:
         class: App\Admin\IslandPVPTreeAdmin
         arguments: [~, App\Entity\IslandPVPTree, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island Materials", label: 'Island PVP Trees', show_in_dashboard: false }
+        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVP Trees', show_in_dashboard: false }
         public: true
 
     admin.treetype:
         class: App\Admin\TreeTypeAdmin
         arguments: [~, App\Entity\TreeType, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Tree types", icon: "<i class=\"fa fa-diamond\"></i>" }
+            - { name: sonata.admin, manager_type: orm, group: "type.management", label: "Tree types", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true
 
     admin.metaltype:
         class: App\Admin\MetalTypeAdmin
         arguments: [~, App\Entity\MetalType, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Type management", label: "Metal types", icon: "<i class=\"fa fa-diamond\"></i>" }
-        public: true
-    admin.island_reposition:
-        class: App\Admin\IslandRepositionAdmin
-        tags:
-        - { name: sonata.admin, manager_type: orm, group: "Island management", label: "Reposition islands", icon: "<i class=\"fa fa-globe\"></i>" }
-        arguments:
-        - null
-        - null
-        - App\Controller\IslandRepositionAdminController
+            - { name: sonata.admin, manager_type: orm, group: "type.management", label: "Metal types", icon: "<i class=\"fa fa-diamond\"></i>" }
         public: true

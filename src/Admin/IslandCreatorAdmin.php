@@ -14,6 +14,18 @@ class IslandCreatorAdmin extends AbstractAdmin
     protected $baseRouteName = 'cg_creator_admin';
     protected $baseRoutePattern = 'creators';
 
+    protected $datagridValues = array(
+
+        // display the first page (default = 1)
+        '_page' => 1,
+
+        // reverse order (default = 'ASC')
+        '_sort_order' => 'DESC',
+
+        // name of the ordered field (default = the model's id field, if any)
+        '_sort_by' => 'id',
+    );
+
     /**
      * @param DatagridMapper $datagridMapper
      */

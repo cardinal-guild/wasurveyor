@@ -2,6 +2,31 @@ sonata_admin:
     title: 'Cardinal Guild Surveyor'
     title_logo: /assets/logo_small.png
     dashboard:
+        groups:
+            island.management:
+                label: Island Management
+                icon:  '<i class="fa fa-globe"></i>'
+                items:
+                - admin.island
+                - admin.island_creator
+                - route:        reposition_islands
+                  label:        "Reposition islands"
+                  roles:        [ ROLE_SURVEYOR ]
+
+            type.management:
+                label: Type Management
+                icon:  '<i class="fa fa-diamond"></i>'
+                items:
+                - admin.metaltype
+                - admin.treetype
+
+            sonata.admin.group.administration:
+                label:           "User management"
+                label_catalogue: SonataAdminBundle
+                icon:            '<i class="fa fa-user"></i>'
+                items:
+                - sonata.user.admin.user
+                - sonata.user.admin.group
         blocks:
             - { type: sonata.admin.block.admin_list, position: left }
     security:
@@ -17,5 +42,9 @@ sonata_admin:
         object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
 sonata_block:
     blocks:
+        sonata.admin.block.stats:
+            contexts:   [admin]
         sonata.admin.block.admin_list:
-            contexts: [admin]
+            contexts:   [admin]
+        sonata.admin.block.search_result:
+            contexts:   [admin]

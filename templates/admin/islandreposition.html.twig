@@ -1,15 +1,80 @@
 {% extends '@SonataAdmin/standard_layout.html.twig' %}
 
-{% block sonata_admin_content %}
-    {% set mapurl = '//localhost:8080?hideheader=true&admin=true&move=true' %}
-    <iframe src="{{ mapurl }}" style="width: 100%;min-height: 240px; height: 80vh; border: none;" allow-scripts="true"></iframe>
+{% block title %} - Reposition islands{% endblock %}
+
+  {% block stylesheets %}
+     {{ parent() }}
+      <style type="text/css">
+          .iframe-container {
+              overflow: hidden;
+              padding-top: 48%;
+              position: relative;
+              margin-bottom: 10px;
+          }
+
+          .iframe-container iframe {
+              border: 0;
+              height: 100%;
+              left: 0;
+              position: absolute;
+              top: 0;
+              width: 100%;
+          }
+
+      </style>
+  {% endblock %}
+{% block breadcrumb %}
+    <li>
+        <a href="/dashboard"><i class="fa fa-home"></i></a>
+    </li>
+    <li class="active"><span>Reposition islands</span></li>
+{% endblock %}
+{% block content %}
+<form id="reposform" action="{{ path('reposition_islands') }}" method="post" enctype="multipart/form-data">
+    {% set mapurl = 'https://map.cardinalguild.com?hideheader=true&admin=true&move=true' %}
+    <div class="iframe-container">
+        <iframe src="{{ mapurl }}" allow-scripts="true"></iframe>
+    </div>
+    <div id="hiddenFields"></div>
+    <button type="submit" class="btn btn-success" id="btn_update_positions" name="btn_update_positions" disabled><i class="fa fa-save"></i></i> Update island positions</button>
+</form>
     {% verbatim %}
         <script type="text/javascript">
-            var locations = [];
-            window.addEventListener('message', function(e) {
-                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id == "location") {
-                   console.log(e);
+            var locationUpdates = [];
+            var disableSubmit = true;
+            function updateLocations(data) {
+                var found = false;
+              for (var i = 0; i < locationUpdates.length; i++) {
+                if (locationUpdates[i].island_id === data.island_id) {
+                  locationUpdates[i].lat = data.lat;
+                  locationUpdates[i].lng = data.lat;
+                  found = true;
+                  break;
                 }
+              }
+              if(!found) {
+                  locationUpdates.push(data);
+              }
+            }
+            window.addEventListener('message', function(e) {
+                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id === "location" && e.data.island_id) {
+                    updateLocations(e.data);
+                    $('#btn_update_positions').attr('disabled', false);
+                }
+            });
+            $('#reposform').submit(function() {
+                if(locationUpdates.length > 0) {
+                    var count = 0;
+                    $('#hiddenFields').html('');
+                    $.each(locationUpdates, function( index, value ) {
+                        $('<input>').attr('type','hidden').attr('name',"positions["+count+"][id]").attr('value',value.island_id).appendTo('#hiddenFields');
+                        $('<input>').attr('type','hidden').attr('name',"positions["+count+"][lat]").attr('value',value.lat).appendTo('#hiddenFields');
+                        $('<input>').attr('type','hidden').attr('name',"positions["+count+"][lng]").attr('value',value.lng).appendTo('#hiddenFields');
+                        count++;
+                    });
+                    return true;
+                }
+                return false;
             });
         </script>
         {% endverbatim %}
