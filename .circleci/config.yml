@@ -6,10 +6,12 @@ jobs:
     steps:
     - checkout
     - run:
-        name: Deploy Master to Heroku
+        name: Deploy Master to surveyor.cardinalguild.com
         command: |
-          git remote add dokku dokku@alloy.creatiom.be:surveyor
-          git push dokku master
+          ssh-keyscan alloy.creatiom.be >> ~/.ssh/known_hosts
+          git config --global push.default simple
+          git remote add deploy dokku@alloy.creatiom.be:surveyor
+          git push deploy master
 
 workflows:
   version: 2
