@@ -78,21 +78,25 @@ liip_imagine:
 
     island_tile_small:
       quality: 90
+      format: jpg
       filters:
         thumbnail: { size: [120, 120], mode: outbound, allow_upscale: true }
 
     island_tile_square_lq:
       quality: 20
+      format: jpg
       filters:
         thumbnail: { size: [120, 120], mode: outbound, allow_upscale: true }
 
     island_tile_big:
       quality: 90
+      format: jpg
       filters:
         thumbnail: { size: [240, 240], mode: outbound, allow_upscale: true }
 
     island_tile_square:
       quality: 90
+      format: jpg
       filters:
         thumbnail: { size: [640, 640], mode: outbound, allow_upscale: true }
 
