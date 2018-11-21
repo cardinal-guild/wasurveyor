@@ -32,37 +32,6 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
  */
 class ApiController extends FOSRestController
 {
-    /**
-     * Post a PVE report of materials
-     *
-     * @Route("/pve/report.{_format}", methods={"POST"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all marker data for islands, if query input given, gives islands by search"
-     * )
-     * @SWG\Tag(name="reporting")
-     * @Cache(public=true, expires="now", mustRevalidate=true)
-     */
-    public function postPveReportAction(Request $request)
-    {
-
-    }
-
-    /**
-     * Post a PVE report of materials
-     *
-     * @Route("/pvp/report.{_format}", methods={"POST"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all marker data for islands, if query input given, gives islands by search"
-     * )
-     * @SWG\Tag(name="reporting")
-     * @Cache(public=true, expires="now", mustRevalidate=true)
-     */
-    public function postPvpReportAction(Request $request)
-    {
-
-    }
 
 
     /**
@@ -73,7 +42,7 @@ class ApiController extends FOSRestController
      *     response=200,
      *     description="Returns all marker data for islands, if query input given, gives islands by search"
      * )
-     * @SWG\Tag(name="islands")
+     * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
     public function getIslandMarkersAction(Request $request)
@@ -179,13 +148,13 @@ class ApiController extends FOSRestController
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$secondImagePath;
                 } else {
-
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
                 }
-                $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
             }
 
 
@@ -205,7 +174,7 @@ class ApiController extends FOSRestController
      *     response=200,
      *     description="Returns all island ids, if query input given, gives islands by search"
      * )
-     * @SWG\Tag(name="islands")
+     * @SWG\Tag(name="Islands")
      * @SWG\Parameter(
      *     name="quality",
      *     in="query",
@@ -290,7 +259,7 @@ class ApiController extends FOSRestController
      *     response=200,
      *     description="Returns all island for the PVE map"
      * )
-     * @SWG\Tag(name="islands")
+     * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
     public function getPveIslandsAction(Request $request)
@@ -378,12 +347,13 @@ class ApiController extends FOSRestController
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$secondImagePath;
                 } else {
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
                 }
-                $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
             }
             $markers[] = new Feature($point, $data, $island->getId());
         }
@@ -399,7 +369,7 @@ class ApiController extends FOSRestController
      *     response=200,
      *     description="Returns all island data for the PVP map"
      * )
-     * @SWG\Tag(name="islands")
+     * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
     public function getPvpIslandsAction(Request $request)
@@ -487,12 +457,13 @@ class ApiController extends FOSRestController
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$secondImagePath;
                 } else {
                     $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
                     $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
                     $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
+                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
                 }
-                $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
             }
             $markers[] = new Feature($point, $data, $island->getId());
         }

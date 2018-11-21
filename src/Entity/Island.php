@@ -195,6 +195,12 @@ class Island
     protected $surveyUpdatedBy;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection|IslandImage[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Report", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
+     */
+    protected $reports;
+
+    /**
      * @var string
      * @ORM\Column(nullable=true)
      */
@@ -424,6 +430,52 @@ class Island
     {
         $this->images->removeElement($image);
         return $this->images;
+    }
+
+    /**
+     * @return Report[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getReports()
+    {
+        return $this->reports;
+    }
+
+    /**
+     * @param Report[]|\Doctrine\Common\Collections\Collection $reports
+     * @return \Doctrine\Common\Collections\Collection|IslandImage[]
+     */
+    public function setReports($reports)
+    {
+        $this->reports = new ArrayCollection();
+        foreach($reports as $report) {
+            $this->addReport($report);
+        }
+        return $this->reports;
+    }
+
+    /**
+     * @param Report $report
+     * @return \Doctrine\Common\Collections\Collection|Report[]
+     */
+    public function addReport(Report $report)
+    {
+        if(!$this->reports->contains($report)) {
+            $report->setIsland($this);
+            $this->reports->add($report);
+        }
+        return $this->reports;
+    }
+
+    /**
+     * @param Report $report
+     * @return \Doctrine\Common\Collections\Collection|Report[]
+     */
+    public function removeReport(Report $report)
+    {
+        if($this->reports->contains($report)) {
+            $this->reports->removeElement($report);
+        }
+        return $this->reports;
     }
 
     /**
