@@ -101,18 +101,6 @@ class Island
      * @var boolean
      * @ORM\Column(type="boolean")
      */
-    protected $spikes = false;
-
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean")
-     */
-    protected $nonGrappleWalls = false;
-
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean")
-     */
     protected $published = true;
 
     /**

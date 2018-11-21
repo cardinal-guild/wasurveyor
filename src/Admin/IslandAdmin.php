@@ -108,8 +108,6 @@ class IslandAdmin extends AbstractAdmin
                     ->add('respawners', null, ['help'=>'Does this island have respawners?'])
                     ->add('turrets', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
                     ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
-                    ->add('spikes', null, ['help'=>'Are there spikes on this island?'])
-                    ->add('nonGrappleWalls', null, ['help'=>'Are there non grappling walls on this island?'])
                 ->end()
             ->end()
             ->tab('Media')

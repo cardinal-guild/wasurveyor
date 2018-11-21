@@ -53,7 +53,7 @@ class IslandPVPTreeAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('type', ModelType::class)
+            ->add('type', ModelType::class, ["btn_add" => false])
         ;
     }
 
