@@ -1,3 +1,4 @@
-WAIT=30
-ATTEMPTS=6
-/check.txt  simple_check
+WAIT=10
+TIMEOUT=60
+ATTEMPTS=10
+/
