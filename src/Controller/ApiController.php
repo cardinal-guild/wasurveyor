@@ -184,20 +184,6 @@ class ApiController extends FOSRestController
      *     required=false
      * )
      * @SWG\Parameter(
-     *     name="minquality",
-     *     in="query",
-     *     type="integer",
-     *     description="Search for this minimum quality only in metals",
-     *     required=false
-     * )
-     * @SWG\Parameter(
-     *     name="maxquality",
-     *     in="query",
-     *     type="integer",
-     *     description="Search for this maximum quality only in metals",
-     *     required=false
-     * )
-     * @SWG\Parameter(
      *     name="metal",
      *     in="query",
      *     type="string",

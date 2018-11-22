@@ -119,8 +119,39 @@ class IslandRepository extends EntityRepository
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
             ->orderBy('ii.position', 'ASC');
-
-
+        if(!empty($params['quality'])) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->gte('ipvem.quality', ":MINQUALITY"),
+                $qb->expr()->gte('ipvpm.quality', ":MINQUALITY")
+            ));
+            $qb->setParameter('MINQUALITY', intval($params['quality']));
+        }
+        if(!empty($params['metal'])) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('ipvemt.name', ":METAL"),
+                $qb->expr()->like('ipvpmt.name', ":METAL")
+            ));
+            $qb->setParameter('METAL', '%'.$params['metal'].'%');
+        }
+        if(!empty($params['tree'])) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('ipvett.name', ":TREE"),
+                $qb->expr()->like('ipvptt.name', ":TREE")
+            ));
+            $qb->setParameter('TREE', '%'.$params['tree'].'%');
+        }
+        if(!empty($params['creator'])) {
+            $qb->andWhere($qb->expr()->like('ic.name', ":CREATOR"));
+            $qb->setParameter('CREATOR', '%'.$params['creator'].'%');
+        }
+        if(!empty($params['island'])) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('island.name', ":ISLANDNAME"),
+                $qb->expr()->like('island.nickname', ":ISLANDNAME"),
+                $qb->expr()->like('island.slug', ":ISLANDNAME")
+            ));
+            $qb->setParameter('ISLANDNAME', '%'.$params['island'].'%');
+        }
         $qb->groupBy('island.id');
         $qry = $qb->getQuery();
 
