@@ -126,6 +126,12 @@ class Island
     protected $images;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection|IslandTree[]
+     * @ORM\OneToMany(targetEntity="App\Entity\IslandTree", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
+     */
+    protected $trees;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection|IslandPVEMetal[]
      * @ORM\ManyToMany(targetEntity="IslandPVEMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
      * @ORM\JoinTable(name="island_pve_metals",
@@ -431,6 +437,54 @@ class Island
         $this->images->removeElement($image);
         return $this->images;
     }
+
+
+    /**
+     * @return IslandTree[]|\Doctrine\Common\Collections\Collection
+     */
+    public function getTrees()
+    {
+        return $this->trees;
+    }
+
+    /**
+     * @param IslandTree[]|\Doctrine\Common\Collections\Collection $trees
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function setTrees($trees)
+    {
+        $this->trees = new ArrayCollection();
+        foreach($trees as $tree) {
+            $this->addTree($tree);
+        }
+        return $this->trees;
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function addTree(IslandTree $tree)
+    {
+        if(!$this->trees->contains($tree)) {
+            $tree->setIsland($this);
+            $this->trees->add($tree);
+        }
+        return $this->trees;
+    }
+
+    /**
+     * @param IslandTree $tree
+     * @return \Doctrine\Common\Collections\Collection|IslandTree[]
+     */
+    public function removeTree(IslandTree $tree)
+    {
+        if($this->trees->contains($tree)) {
+            $this->trees->removeElement($tree);
+        }
+        return $this->trees;
+    }
+
 
     /**
      * @return Report[]|\Doctrine\Common\Collections\Collection
