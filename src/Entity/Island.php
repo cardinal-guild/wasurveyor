@@ -83,7 +83,7 @@ class Island
      * @var boolean
      * @ORM\Column(type="boolean")
      */
-    protected $respawners = false;
+    protected $revivalChambers = false;
 
     /**
      * @var boolean
@@ -343,17 +343,17 @@ class Island
     /**
      * @return bool
      */
-    public function hasRespawners(): bool
+    public function hasRevivalChambers(): bool
     {
-        return $this->respawners;
+        return $this->revivalChambers;
     }
 
     /**
-     * @param bool $respawners
+     * @param bool $revivalChambers
      */
-    public function setRespawners(bool $respawners): void
+    public function setRevialChamebrs(bool $revivalChambers): void
     {
-        $this->respawners = $respawners;
+        $this->revivalChambers = $revivalChambers;
     }
 
 

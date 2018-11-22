@@ -93,7 +93,7 @@ class ApiController extends FOSRestController
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
                 'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
                 'surveyUpdatedBy'=>$island->getSurveyUpdatedBy()->__toString(),
-                'respawners'=>(bool)$island->hasRespawners(),
+                'respawners'=>(bool)$island->hasRevivalChambers(),
                 'dangerous'=>(bool)$island->isDangerous(),
                 'turrets'=>(bool)$island->hasTurrets(),
                 'workshopUrl'=>$island->getWorkshopUrl(),
