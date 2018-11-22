@@ -2,15 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\IslandPVETreeRepository;
-use App\Traits\IslandMaterialCollections;
+use App\Traits\IslandMetalCollections;
 use Cocur\Slugify\Slugify;
-use Facebook\GraphNodes\Collection;
+use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
-use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -143,17 +141,6 @@ class Island
     protected $pveMetals;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|IslandPVETree[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandPVETree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
-     * @ORM\JoinTable(name="island_pve_trees",
-     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
-     * )
-     * @JMS\Expose()
-     */
-    protected $pveTrees;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection|IslandPVPMetal[]
      * @ORM\ManyToMany(targetEntity="IslandPVPMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
      * @ORM\JoinTable(name="island_pvp_metals",
@@ -163,17 +150,6 @@ class Island
      * @JMS\Expose()
      */
     protected $pvpMetals;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection|IslandPVPTree[]
-     * @ORM\ManyToMany(targetEntity="App\Entity\IslandPVPTree", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
-     * @ORM\JoinTable(name="island_pvp_trees",
-     *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="tree_id", referencedColumnName="id")}
-     * )
-     * @JMS\Expose()
-     */
-    protected $pvpTrees;
 
     /**
      * @var IslandCreator
@@ -214,16 +190,14 @@ class Island
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
-    use IslandMaterialCollections;
+    use IslandMetalCollections;
 
     public function __construct()
     {
-
         $this->images = new ArrayCollection();
+        $this->trees = new ArrayCollection();
         $this->pveMetals = new ArrayCollection();
-        $this->pveTrees = new ArrayCollection();
         $this->pvpMetals = new ArrayCollection();
-        $this->pvpTrees = new ArrayCollection();
         $this->lat = 0;
         $this->lng = 0;
         $this->createdAt = new \DateTime();

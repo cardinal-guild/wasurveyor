@@ -120,11 +120,11 @@ services:
         - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVE Metals', show_in_dashboard: false }
         public: true
 
-    admin.island_pve_trees:
-        class: App\Admin\IslandPVETreeAdmin
-        arguments: [~, App\Entity\IslandPVETree, ~]
+    admin.island_trees:
+        class: App\Admin\IslandTreeAdmin
+        arguments: [~, App\Entity\IslandTree, ~]
         tags:
-        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVE Trees', show_in_dashboard: false }
+        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island Trees', show_in_dashboard: false }
         public: true
 
     admin.island_pvp_metals:
@@ -132,13 +132,6 @@ services:
         arguments: [~, App\Entity\IslandPVPMetal, ~]
         tags:
         - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVP Metals', show_in_dashboard: false }
-        public: true
-
-    admin.island_pvp_trees:
-        class: App\Admin\IslandPVPTreeAdmin
-        arguments: [~, App\Entity\IslandPVPTree, ~]
-        tags:
-        - { name: sonata.admin, manager_type: orm, group: "materials", label: 'Island PVP Trees', show_in_dashboard: false }
         public: true
 
     admin.treetype:

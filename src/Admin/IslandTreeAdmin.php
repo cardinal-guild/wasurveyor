@@ -12,7 +12,7 @@ use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
-class IslandPVPTreeAdmin extends AbstractAdmin
+class IslandTreeAdmin extends AbstractAdmin
 {
     /**
      * @param DatagridMapper $datagridMapper

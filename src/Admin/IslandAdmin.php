@@ -124,20 +124,21 @@ class IslandAdmin extends AbstractAdmin
                     ))
                 ->end()
             ->end()
-            ->tab('PVE Materials')
-                ->with('PVE Tree list', array(
-                    'class' => 'col-md-6',
-                    'help'=> 'These are the PVE trees and quality that can be found on this island. NOTE: It has been reported that quality is spawned random, but bound to a quality range per region.  So tree Q can be seen redundant.  But feel free to fill in.'
-                ))
-                    ->add('pveTrees', CollectionType::class, array(
+            ->tab('Trees')
+                ->with('Tree list', array('class' => 'col-md-12'))
+                    ->add('trees', CollectionType::class, array(
                         'label' => false,
-                        'by_reference' => false
+                        'by_reference' => false,
+                        'help'=> 'Tree types that can be found on the island'
                     ), array(
                         'edit'              => 'inline',
                         'inline'            => 'table',
-                        'admin_code'        => 'admin.island_pve_trees',
+                        'admin_code'        => 'admin.island_trees',
                     ))
                 ->end()
+
+            ->end()
+            ->tab('Metals (PVE and PVP)')
                 ->with('PVE Metal list', array('class' => 'col-md-6', 'help'=> 'These are the PVE metals and quality that can be found on this island'))
                     ->add('pveMetals', CollectionType::class, array(
                         'label' => false,
@@ -146,22 +147,6 @@ class IslandAdmin extends AbstractAdmin
                         'edit'              => 'inline',
                         'inline'            => 'table',
                         'admin_code'        => 'admin.island_pve_metals',
-                    ))
-                ->end()
-            ->end()
-            ->tab('PVP Materials')
-
-                ->with('PVP Tree list', array(
-                    'class' => 'col-md-6',
-                    'help'=> 'These are the PVP trees and quality that can be found on this island. NOTE: It has been reported that quality is spawned random, but bound to a quality range per region.  So tree Q can be seen redundant.  But feel free to fill in.'
-                ))
-                    ->add('pvpTrees', CollectionType::class, array(
-                        'label' => false,
-                        'by_reference' => false
-                    ), array(
-                        'edit'              => 'inline',
-                        'inline'            => 'table',
-                        'admin_code'        => 'admin.island_pvp_trees',
                     ))
                 ->end()
                 ->with('PVP Metal list', array('class' => 'col-md-6', 'help'=> 'These are the PVP metals and quality that can be found on this island'))

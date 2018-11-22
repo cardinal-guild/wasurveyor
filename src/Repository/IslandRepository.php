@@ -15,12 +15,10 @@ class IslandRepository extends EntityRepository
            )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
-            ->leftJoin('island.pveTrees', 'ipvet')
+            ->leftJoin('island.trees', 'it')
             ->leftJoin('island.pveMetals', 'ipvem')
-            ->leftJoin('island.pvpTrees ', 'ipvpt')
             ->leftJoin('island.pvpMetals', 'ipvpm')
-            ->leftJoin('ipvet.type', 'ipvett')
-            ->leftJoin('ipvpt.type', 'ipvptt')
+            ->leftJoin('it.type', 'itt')
             ->leftJoin('ipvem.type', 'ipvemt')
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
@@ -38,12 +36,10 @@ class IslandRepository extends EntityRepository
         )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
-            ->leftJoin('island.pveTrees', 'ipvet')
+            ->leftJoin('island.trees', 'it')
             ->leftJoin('island.pveMetals', 'ipvem')
-            ->leftJoin('island.pvpTrees ', 'ipvpt')
             ->leftJoin('island.pvpMetals', 'ipvpm')
-            ->leftJoin('ipvet.type', 'ipvett')
-            ->leftJoin('ipvpt.type', 'ipvptt')
+            ->leftJoin('it.type', 'itt')
             ->leftJoin('ipvem.type', 'ipvemt')
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
@@ -78,10 +74,7 @@ class IslandRepository extends EntityRepository
             $qb->setParameter('METAL', '%'.$params['metal'].'%');
         }
         if(!empty($params['tree'])) {
-            $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->like('ipvett.name', ":TREE"),
-                $qb->expr()->like('ipvptt.name', ":TREE")
-            ));
+            $qb->andWhere($qb->expr()->like('itt.name', ":TREE"));
             $qb->setParameter('TREE', '%'.$params['tree'].'%');
         }
         if(!empty($params['creator'])) {
@@ -108,12 +101,10 @@ class IslandRepository extends EntityRepository
         )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
-            ->leftJoin('island.pveTrees', 'ipvet')
+            ->leftJoin('island.trees', 'it')
             ->leftJoin('island.pveMetals', 'ipvem')
-            ->leftJoin('island.pvpTrees ', 'ipvpt')
             ->leftJoin('island.pvpMetals', 'ipvpm')
-            ->leftJoin('ipvet.type', 'ipvett')
-            ->leftJoin('ipvpt.type', 'ipvptt')
+            ->leftJoin('it.type', 'itt')
             ->leftJoin('ipvem.type', 'ipvemt')
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
@@ -134,10 +125,7 @@ class IslandRepository extends EntityRepository
             $qb->setParameter('METAL', '%'.$params['metal'].'%');
         }
         if(!empty($params['tree'])) {
-            $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->like('ipvett.name', ":TREE"),
-                $qb->expr()->like('ipvptt.name', ":TREE")
-            ));
+            $qb->andWhere($qb->expr()->like('itt.name', ":TREE"));
             $qb->setParameter('TREE', '%'.$params['tree'].'%');
         }
         if(!empty($params['creator'])) {
@@ -166,9 +154,9 @@ class IslandRepository extends EntityRepository
         )
         ->leftJoin('island.creator', 'ic')
         ->leftJoin('island.images', 'ii')
-        ->leftJoin('island.pveTrees', 'ipvet')
+        ->leftJoin('island.trees', 'it')
         ->leftJoin('island.pveMetals', 'ipvem')
-        ->leftJoin('ipvet.type', 'ipvett')
+        ->leftJoin('it.type', 'itt')
         ->leftJoin('ipvem.type', 'ipvemt')
         ->where('island.published = 1')
         ->orderBy('island.id', 'DESC')
@@ -186,9 +174,9 @@ class IslandRepository extends EntityRepository
         )
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
-            ->leftJoin('island.pvpTrees ', 'ipvpt')
+            ->leftJoin('island.trees', 'it')
             ->leftJoin('island.pvpMetals', 'ipvpm')
-            ->leftJoin('ipvpt.type', 'ipvptt')
+            ->leftJoin('it.type', 'itt')
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')

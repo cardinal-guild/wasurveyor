@@ -102,35 +102,26 @@ class ApiController extends FOSRestController
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
 
+            $data['trees'] = [];
+            foreach($island->getTrees() as $tree) {
+                if($tree->__toString() !== "New Island Tree") {
+                    $data['trees'][] = $tree->__toString();
+                }
+            }
 
-            $pveMetals = [];
+            $data['pveMetals'] = [];
             foreach($island->getPveMetals() as $pveMetal) {
                 if($pveMetal->__toString() !== "New Island Metal") {
-                    $pveMetals[] = $pveMetal->__toString();
+                    $data['pveMetals'][] = $pveMetal->__toString();
                 }
             }
-            $pveTrees = [];
-            foreach($island->getPveTrees() as $pveTree) {
-                if($pveTree->__toString() !== "New Island Tree") {
-                    $pveTrees[] = $pveTree->__toString();
-                }
-            }
-            $data['pveMaterials'] = array_merge($pveMetals, $pveTrees);
 
-            $pvpMetals = [];
+            $data['pvpMetals'] = [];
             foreach($island->getPvpMetals() as $pvpMetal) {
                 if($pvpMetal->__toString() !== "New Island Metal") {
-                    $pvpMetals[] = $pvpMetal->__toString();
+                    $data['pvpMetals'][] = $pvpMetal->__toString();
                 }
             }
-            $pvpTrees = [];
-            foreach($island->getPvpTrees() as $pvpTree) {
-                if($pvpTree->__toString() !== "New Island Tree") {
-                    $pvpTrees[] = $pvpTree->__toString();
-                }
-            }
-
-            $data['pvpMaterials'] = array_merge($pvpMetals, $pvpTrees);
 
             /**
              * @var IslandImage $firstImage
@@ -311,12 +302,13 @@ class ApiController extends FOSRestController
                 $metal['quality'] = $pveMetal->getQuality();
                 $data['metals'][] = $metal;
             }
+
             $data['trees'] = [];
-            foreach($island->getPveTrees() as $pveTree) {
-                $tree = [];
-                $tree['type_id'] = $pveTree->getType()->getId();
-                $tree['name'] = $pveTree->getType()->__toString();
-                $data['trees'][] = $tree;
+            foreach($island->getTrees() as $tree) {
+                $item = [];
+                $item['type_id'] = $tree->getType()->getId();
+                $item['name'] = $tree->getType()->__toString();
+                $data['trees'][] = $item;
             }
 
             /**
@@ -423,11 +415,11 @@ class ApiController extends FOSRestController
                 $data['metals'][] = $metal;
             }
             $data['trees'] = [];
-            foreach($island->getPvpTrees() as $pvpTree) {
-                $tree = [];
-                $tree['type_id'] = $pvpTree->getType()->getId();
-                $tree['name'] = $pvpTree->getType()->__toString();
-                $data['trees'][] = $tree;
+            foreach($island->getTrees() as $tree) {
+                $item = [];
+                $item['type_id'] = $tree->getType()->getId();
+                $item['name'] = $tree->getType()->__toString();
+                $data['trees'][] = $item;
             }
 
             /**

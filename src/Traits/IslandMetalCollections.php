@@ -5,12 +5,10 @@ namespace App\Traits;
 
 
 use App\Entity\IslandPVEMetal;
-use App\Entity\IslandPVETree;
 use App\Entity\IslandPVPMetal;
-use App\Entity\IslandPVPTree;
 use Doctrine\Common\Collections\ArrayCollection;
 
-trait IslandMaterialCollections
+trait IslandMetalCollections
 {
     /**
      * @return IslandPVEMetal[]|\Doctrine\Common\Collections\Collection
@@ -56,50 +54,6 @@ trait IslandMaterialCollections
     }
 
     /**
-     * @return IslandPVETree[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPveTrees()
-    {
-        return $this->pveTrees;
-    }
-
-    /**
-     * @param IslandPVETree[]|\Doctrine\Common\Collections\Collection $trees
-     */
-    public function setPveTrees($trees)
-    {
-        $this->pveTrees = new ArrayCollection();
-        foreach($trees as $tree) {
-            $this->addPveTree($tree);
-        }
-    }
-
-    /**
-     * @param IslandPVETree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandPVETree[]
-     */
-    public function addPveTree($tree)
-    {
-        if(!$this->pveTrees->contains($tree)) {
-            $this->pveTrees->add($tree);
-        }
-        return $this->pveTrees;
-    }
-
-    /**
-     * @param IslandPVETree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandPVETree[]
-     */
-    public function removePveTree($tree)
-    {
-        if($this->pveTrees->contains($tree)) {
-            $this->pveTrees->removeElement($tree);
-        }
-        return $this->pveTrees;
-    }
-
-
-    /**
      * @return IslandPVPMetal[]|\Doctrine\Common\Collections\Collection
      */
     public function getPvpMetals()
@@ -140,48 +94,5 @@ trait IslandMaterialCollections
             $this->pvpMetals->removeElement($metal);
         }
         return $this->pvpMetals;
-    }
-
-    /**
-     * @return IslandPVPTree[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getPvpTrees()
-    {
-        return $this->pvpTrees;
-    }
-
-    /**
-     * @param IslandPVPTree[]|\Doctrine\Common\Collections\Collection $trees
-     */
-    public function setPvpTrees($trees)
-    {
-        $this->pvpTrees = new ArrayCollection();
-        foreach($trees as $tree) {
-            $this->addPvpTree($tree);
-        }
-    }
-
-    /**
-     * @param IslandPVPTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandPVPTree[]
-     */
-    public function addPvpTree($tree)
-    {
-        if(!$this->pvpTrees->contains($tree)) {
-            $this->pvpTrees->add($tree);
-        }
-        return $this->pvpTrees;
-    }
-
-    /**
-     * @param IslandPVPTree $tree
-     * @return \Doctrine\Common\Collections\Collection|IslandPVPTree[]
-     */
-    public function removePvpTree($tree)
-    {
-        if($this->pvpTrees->contains($tree)) {
-            $this->pvpTrees->removeElement($tree);
-        }
-        return $this->pvpTrees;
     }
 }
