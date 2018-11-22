@@ -44,6 +44,7 @@ class ApiController extends FOSRestController
      * )
      * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
+     * @View()
      */
     public function getIslandMarkersAction(Request $request)
     {
@@ -225,6 +226,7 @@ class ApiController extends FOSRestController
      *     required=false
      * )
      * @Cache(public=true, expires="now", mustRevalidate=true)
+     * @View()
      */
     public function getIslandSearchAction(Request $request)
     {
@@ -261,6 +263,7 @@ class ApiController extends FOSRestController
      * )
      * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
+     * @View()
      */
     public function getPveIslandsAction(Request $request)
     {
@@ -371,6 +374,7 @@ class ApiController extends FOSRestController
      * )
      * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
+     * @View()
      */
     public function getPvpIslandsAction(Request $request)
     {
