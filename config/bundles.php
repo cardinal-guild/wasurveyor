@@ -32,4 +32,5 @@ return [
     Symfony\Bundle\AclBundle\AclBundle::class => ['all' => true],
     Azine\HybridAuthBundle\AzineHybridAuthBundle::class => ['all' => true],
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
+    Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
 ];
