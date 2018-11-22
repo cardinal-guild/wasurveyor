@@ -351,7 +351,7 @@ class Island
     /**
      * @param bool $revivalChambers
      */
-    public function setRevialChamebrs(bool $revivalChambers): void
+    public function setRevivalChambers(bool $revivalChambers): void
     {
         $this->revivalChambers = $revivalChambers;
     }
