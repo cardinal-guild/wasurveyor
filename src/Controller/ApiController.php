@@ -94,7 +94,7 @@ class ApiController extends FOSRestController
                 'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
                 'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
                 'surveyUpdatedBy'=>$island->getSurveyUpdatedBy()->__toString(),
-                'respawners'=>(bool)$island->hasRevivalChambers(),
+                'revivalChambers'=>(bool)$island->hasRevivalChambers(),
                 'dangerous'=>(bool)$island->isDangerous(),
                 'turrets'=>(bool)$island->hasTurrets(),
                 'workshopUrl'=>$island->getWorkshopUrl(),
@@ -111,16 +111,20 @@ class ApiController extends FOSRestController
 
             $data['pveMetals'] = [];
             foreach($island->getPveMetals() as $pveMetal) {
-                if($pveMetal->__toString() !== "New Island Metal") {
-                    $data['pveMetals'][] = $pveMetal->__toString();
-                }
+                $metal = [];
+                $metal['type_id'] = $pveMetal->getType()->getId();
+                $metal['name'] = $pveMetal->getType()->__toString();
+                $metal['quality'] = $pveMetal->getQuality();
+                $data['pveMetals'][] = $metal;
             }
 
             $data['pvpMetals'] = [];
             foreach($island->getPvpMetals() as $pvpMetal) {
-                if($pvpMetal->__toString() !== "New Island Metal") {
-                    $data['pvpMetals'][] = $pvpMetal->__toString();
-                }
+                $metal = [];
+                $metal['type_id'] = $pvpMetal->getType()->getId();
+                $metal['name'] = $pvpMetal->getType()->__toString();
+                $metal['quality'] = $pvpMetal->getQuality();
+                $data['pvpMetals'][] = $metal;
             }
 
             /**
@@ -230,227 +234,5 @@ class ApiController extends FOSRestController
         }, $results);
     }
 
-    /**
-     * Returns all island for the PVE map
-     *
-     * @Route("/pve/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all island for the PVE map"
-     * )
-     * @SWG\Tag(name="Islands")
-     * @Cache(public=true, expires="now", mustRevalidate=true)
-     * @View()
-     */
-    public function getPveIslandsAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var CacheManager */
-        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
-
-        /** @var UploaderHelper */
-        $uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
-
-        /**
-         * @var IslandRepository $islandRepo
-         */
-        $islandRepo = $em->getRepository('App:Island');
-        $islands = $islandRepo->getPublishedPveIslands();
-
-        $intlDateFormatter = new \IntlDateFormatter(
-            $request->getPreferredLanguage(),
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM
-        );
-
-        $markers = [];
-        /**
-         * @var $island Island
-         */
-        foreach($islands as $island) {
-            $point = new \GeoJson\Geometry\Point([round($island->getLat(),2), round($island->getLng(),2)]);
-
-            $data = [
-                'id'=>$island->getId(),
-                'name'=>$island->getName(),
-                'nickName'=>$island->getNickname(),
-                'fullName'=>$island->__toString(),
-                'slug'=>$island->getSlug(),
-                'key'=>$island->getId().'-'.$island->getSlug(),
-                'type'=>$island->getType()?'kioki':'saborian',
-                'databanks'=>(integer)$island->getDatabanks(),
-                'altitude'=>(integer)$island->getAltitude(),
-                'creator'=>$island->getCreator()->getName(),
-                'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
-                'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
-                'surveyUpdatedBy'=>$island->getSurveyUpdatedBy()->__toString(),
-                'respawners'=>(bool)$island->hasRevivalChambers(),
-                'dangerous'=>(bool)$island->isDangerous(),
-                'turrets'=>(bool)$island->hasTurrets(),
-                'workshopUrl'=>$island->getWorkshopUrl(),
-                'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
-                'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
-            ];
-
-
-            $data['metals'] = [];
-            foreach($island->getPveMetals() as $pveMetal) {
-                $metal = [];
-                $metal['type_id'] = $pveMetal->getType()->getId();
-                $metal['name'] = $pveMetal->getType()->__toString();
-                $metal['quality'] = $pveMetal->getQuality();
-                $data['metals'][] = $metal;
-            }
-
-            $data['trees'] = [];
-            foreach($island->getTrees() as $tree) {
-                $item = [];
-                $item['type_id'] = $tree->getType()->getId();
-                $item['name'] = $tree->getType()->__toString();
-                $data['trees'][] = $item;
-            }
-
-            /**
-             * @var IslandImage $firstImage
-             */
-            $firstImage = $island->getImages()->first();
-            $secondImage = $island->getImages()->get(1);
-
-
-            if($firstImage) {
-                $imagePath = $uploadHelper->asset($firstImage, 'imageFile');
-
-                $data['imageIcon'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_small');
-                $data['imageIconBig'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_big');
-                if($secondImage) {
-                    $secondImagePath = $uploadHelper->asset($secondImage, 'imageFile');
-                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
-                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
-                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
-                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$secondImagePath;
-                } else {
-                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
-                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
-                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
-                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
-                }
-            }
-            $markers[] = new Feature($point, $data, $island->getId());
-        }
-        $collection = new FeatureCollection($markers);
-        return $collection;
-    }
-
-    /**
-     * Returns all island for the PVP map
-     *
-     * @Route("/pvp/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all island data for the PVP map"
-     * )
-     * @SWG\Tag(name="Islands")
-     * @Cache(public=true, expires="now", mustRevalidate=true)
-     * @View()
-     */
-    public function getPvpIslandsAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var CacheManager */
-        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
-
-        /** @var UploaderHelper */
-        $uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
-
-        /**
-         * @var IslandRepository $islandRepo
-         */
-        $islandRepo = $em->getRepository('App:Island');
-        $islands = $islandRepo->getPublishedPvpIslands();
-
-        $intlDateFormatter = new \IntlDateFormatter(
-            $request->getPreferredLanguage(),
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM
-        );
-
-        $markers = [];
-        /**
-         * @var $island Island
-         */
-        foreach($islands as $island) {
-            $point = new \GeoJson\Geometry\Point([round($island->getLat(),2), round($island->getLng(),2)]);
-
-            $data = [
-                'id'=>$island->getId(),
-                'name'=>$island->getName(),
-                'nickName'=>$island->getNickname(),
-                'fullName'=>$island->__toString(),
-                'slug'=>$island->getSlug(),
-                'key'=>$island->getId().'-'.$island->getSlug(),
-                'type'=>$island->getType()?'kioki':'saborian',
-                'databanks'=>(integer)$island->getDatabanks(),
-                'altitude'=>(integer)$island->getAltitude(),
-                'creator'=>$island->getCreator()->getName(),
-                'creatorWorkshopUrl'=>$island->getCreator()->getWorkshopUrl(),
-                'surveyCreatedBy'=>$island->getSurveyCreatedBy()->__toString(),
-                'surveyUpdatedBy'=>$island->getSurveyUpdatedBy()->__toString(),
-                'respawners'=>(bool)$island->hasRevivalChambers(),
-                'dangerous'=>(bool)$island->isDangerous(),
-                'turrets'=>(bool)$island->hasTurrets(),
-                'workshopUrl'=>$island->getWorkshopUrl(),
-                'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
-                'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
-            ];
-
-
-            $data['metals'] = [];
-            foreach($island->getPvpMetals() as $pvpMetal) {
-                $metal = [];
-                $metal['type_id'] = $pvpMetal->getType()->getId();
-                $metal['name'] = $pvpMetal->getType()->__toString();
-                $metal['quality'] = $pvpMetal->getQuality();
-                $data['metals'][] = $metal;
-            }
-            $data['trees'] = [];
-            foreach($island->getTrees() as $tree) {
-                $item = [];
-                $item['type_id'] = $tree->getType()->getId();
-                $item['name'] = $tree->getType()->__toString();
-                $data['trees'][] = $item;
-            }
-
-            /**
-             * @var IslandImage $firstImage
-             */
-            $firstImage = $island->getImages()->first();
-            $secondImage = $island->getImages()->get(1);
-
-
-            if($firstImage) {
-                $imagePath = $uploadHelper->asset($firstImage, 'imageFile');
-
-                $data['imageIcon'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_small');
-                $data['imageIconBig'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_big');
-                if($secondImage) {
-                    $secondImagePath = $uploadHelper->asset($secondImage, 'imageFile');
-                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_popup');
-                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_4by3');
-                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($secondImagePath, 'island_tile_16by9');
-                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$secondImagePath;
-                } else {
-                    $data['imagePopup'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_popup');
-                    $data['imageMedium'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_4by3');
-                    $data['imageLarge'] = $imagineCacheManager->getBrowserPath($imagePath, 'island_tile_16by9');
-                    $data['imageOriginal'] = $request->getSchemeAndHttpHost().$imagePath;
-                }
-            }
-            $markers[] = new Feature($point, $data, $island->getId());
-        }
-        $collection = new FeatureCollection($markers);
-        return $collection;
-    }
 
 }
