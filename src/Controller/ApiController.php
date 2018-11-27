@@ -235,4 +235,20 @@ class ApiController extends FOSRestController
     }
 
 
+    /**
+     * Returns all metaltypes
+     *
+     * @Route("/metaltypes.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns all metaltypes"
+     * )
+     * @SWG\Tag(name="Types")
+     * @View()
+     */
+    public function getAllMetalTypes(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        return $em->getRepository('App:MetalType')->findAll();
+    }
 }
