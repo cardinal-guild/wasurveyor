@@ -13,7 +13,7 @@ nelmio_cors:
             allow_origin: ['*']
             allow_headers: ['*']
             allow_methods: ['POST', 'PUT', 'GET']
-            max_age: 3600
+            max_age: 0
         '^/media':
             allow_origin: ['*']
             allow_headers: ['*']
