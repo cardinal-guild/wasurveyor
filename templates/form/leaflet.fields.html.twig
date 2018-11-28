@@ -10,7 +10,7 @@
                 {% set mapurl = (mapurl ~ '&lng=' ~ subject.lng) %}
             {% endif %}
         {% endif %}
-        <div id="island-placer-{{ sonata_admin.admin.uniqid }}" style="min-height: 300px; height: 70vh;"></div>
+        <div id="island-placer-{{ sonata_admin.admin.uniqid }}" class="island-placer"></div>
         {% verbatim %}
         <script type="text/javascript">
             var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';

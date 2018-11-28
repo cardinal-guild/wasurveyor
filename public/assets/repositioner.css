@@ -3,6 +3,9 @@
     height: 70vh;
     display: block;
     margin-bottom: 20px;
+    overflow: hidden;
+    z-index: 0;
+
 }
 .dragged {
     -webkit-filter: invert(1);

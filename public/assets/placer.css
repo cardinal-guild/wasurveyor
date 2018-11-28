@@ -1,0 +1,7 @@
+.island-placer {
+    min-height: 300px;
+    height: 70vh;
+    display: block;
+    overflow: hidden;
+    z-index: 0;
+}
