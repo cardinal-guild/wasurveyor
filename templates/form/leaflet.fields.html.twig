@@ -10,29 +10,14 @@
                 {% set mapurl = (mapurl ~ '&lng=' ~ subject.lng) %}
             {% endif %}
         {% endif %}
-        <iframe id="{{ id }}" src="{{ mapurl }}" style="width: 100%;min-height: 240px; height: 80vh; border: none;" allow-scripts="true"></iframe>
+        <div id="island-placer-{{ sonata_admin.admin.uniqid }}" style="min-height: 300px; height: 70vh;"></div>
         {% verbatim %}
         <script type="text/javascript">
             var uniqid = '{% endverbatim %}{{ sonata_admin.admin.uniqid }}{% verbatim %}';
-            window.addEventListener('message', function(e) {
-                if(e.data && e.data.id && e.data.lat && e.data.lng && e.data.id === "mapclick") {
-                    var lat = e.data.lat;
-                    var lng = e.data.lng;
-                    if(lat > 0) {
-                        lat = 0;
-                    }
-                    if(lat < -9500) {
-                        lat =-9500;
-                    }
-                    if(lng < 0) {
-                        lng = 0;
-                    }
-                    if(lng > 9500) {
-                        lng = 9500;
-                    }
-                    document.getElementById(uniqid+'_lat').value = lat;
-                    document.getElementById(uniqid+'_lng').value = lng;
-                }
+            var lat = '{% endverbatim %}{{ subject.lat }}{% verbatim %}';
+            var lng = '{% endverbatim %}{{ subject.lng }}{% verbatim %}';
+            $(document).ready(function() {
+                 WAPlacer.init('island-placer-'+uniqid, uniqid, lat, lng);
             });
         </script>
         {% endverbatim %}

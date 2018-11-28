@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Sonata\UserBundle\Entity\BaseUser as BaseUser;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="user",indexes={@ORM\Index(name="username_idx", columns={"username"})})
  */
 class User extends BaseUser

@@ -32,7 +32,9 @@ class IslandAdmin extends AbstractAdmin
         // name of the ordered field (default = the model's id field, if any)
         '_sort_by' => 'id',
     );
-
+    public function configure() {
+        $this->setTemplate('edit', 'admin/CRUD/edit_island.html.twig');
+    }
     /**
      * @param DatagridMapper $datagridMapper
      */

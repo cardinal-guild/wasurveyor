@@ -1,0 +1,10 @@
+.repositioner-map{
+    min-height: 300px;
+    height: 70vh;
+    display: block;
+    margin-bottom: 20px;
+}
+.dragged {
+    -webkit-filter: invert(1);
+    filter: invert(1);
+}
