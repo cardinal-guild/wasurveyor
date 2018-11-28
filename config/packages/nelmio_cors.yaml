@@ -12,15 +12,15 @@ nelmio_cors:
         '^/api':
             allow_origin: ['*']
             allow_headers: ['*']
-            allow_methods: ['POST', 'PUT', 'GET']
+            allow_methods: ['POST', 'PUT', 'GET','PATCH','OPTIONS']
             max_age: 0
         '^/media':
             allow_origin: ['*']
             allow_headers: ['*']
-            allow_methods: ['POST', 'PUT', 'GET']
+            allow_methods: ['POST', 'PUT', 'GET','PATCH','OPTIONS']
             max_age: 3600
         '^/images':
             allow_origin: ['*']
             allow_headers: ['*']
-            allow_methods: ['POST', 'PUT', 'GET']
+            allow_methods: ['POST', 'PUT', 'GET','PATCH','OPTIONS']
             max_age: 3600

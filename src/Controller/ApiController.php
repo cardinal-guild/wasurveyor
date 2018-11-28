@@ -37,7 +37,7 @@ class ApiController extends FOSRestController
     /**
      * Returns all marker data for islands, if query input given, gives islands by search
      *
-     * @Route("/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @Route("/islands.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Returns all marker data for islands, if query input given, gives islands by search"
@@ -165,7 +165,7 @@ class ApiController extends FOSRestController
     /**
      * Returns all island ids and lag/lng, name, if query input given, gives islands by search
      *
-     * @Route("/search.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @Route("/search.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Returns all island ids, if query input given, gives islands by search"
@@ -238,7 +238,7 @@ class ApiController extends FOSRestController
     /**
      * Returns all metaltypes
      *
-     * @Route("/metaltypes.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @Route("/metaltypes.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Returns all metaltypes"
