@@ -103,7 +103,7 @@ class Island
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="smallint")
      * @Assert\Range(min="0", max="5")
      */
     protected $databanks = 0;
@@ -114,6 +114,13 @@ class Island
      * @Assert\Range(min="1000", max="2800")
      */
     protected $altitude = 2000;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="smallint", options={"default" : 1})
+     * @Assert\Range(min="1", max="4")
+     */
+    protected $tier = 1;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandImage[]
@@ -657,6 +664,21 @@ class Island
         $this->type = $type;
     }
 
+    /**
+     * @return int
+     */
+    public function getTier()
+    {
+        return $this->tier;
+    }
+
+    /**
+     * @param int $tier
+     */
+    public function setTier(int $tier)
+    {
+        $this->tier = $tier;
+    }
 
 
     public function __toString()

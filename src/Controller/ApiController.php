@@ -88,6 +88,7 @@ class ApiController extends FOSRestController
                 'slug'=>$island->getSlug(),
                 'key'=>$island->getId().'-'.$island->getSlug(),
                 'type'=>$island->getType()?'kioki':'saborian',
+                'tier'=>(integer)$island->getTier(),
                 'databanks'=>(integer)$island->getDatabanks(),
                 'altitude'=>(integer)$island->getAltitude(),
                 'creator'=>$island->getCreator()->getName(),

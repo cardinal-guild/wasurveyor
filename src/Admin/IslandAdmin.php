@@ -12,9 +12,12 @@ use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\CoreBundle\Form\Type\BooleanType;
 use Sonata\CoreBundle\Form\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 
 class IslandAdmin extends AbstractAdmin
 {
@@ -71,8 +74,9 @@ class IslandAdmin extends AbstractAdmin
             ->add('type', 'choice', ['choices'=>[0=>'Saborian',1=>'Kioki'],'editable'=>true])
             ->add('revivalChambers', null, ['editable'=>true])
             ->add('turrets', null, ['editable'=>true])
+            ->add('tier', null, ['editable'=>true])
             ->add('surveyUpdatedBy', null, ['label'=>"Survey by"])
-            ->add('published')
+            ->add('published', null, ['editable'=>true])
             ->add('createdAt')
             ->add('updatedAt')
             ->add('_action', null, array(
@@ -100,8 +104,9 @@ class IslandAdmin extends AbstractAdmin
                 ->with('Island details', ['class'=>'col-sm-12 col-md-4'])
                     ->add('name')
                     ->add('nickname')
-                    ->add('databanks')
+                    ->add('databanks', IntegerType::class, ['attr' => ['min' => 0,'max' => 5]])
                     ->add('altitude')
+                    ->add('tier', IntegerType::class, ['attr' => ['min' => 1,'max' => 4]])
                     ->add('type', ChoiceType::class, ['choices'=>['Saborian'=>0,'Kioki'=>1]])
                     ->add('workshopUrl')
                     ->add('creator', ModelType::class, ['property'=>'name','btn_add'=>'Add new island creator', 'btn_catalogue'=>true,'help'=>'Please select a creator from the list or create a new one'])
@@ -110,6 +115,7 @@ class IslandAdmin extends AbstractAdmin
                     ->add('revivalChambers', null, ['help'=>'Does this island have revival chambers?'])
                     ->add('turrets', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
                     ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
+                    ->add('published', BooleanType::class)
                 ->end()
             ->end()
             ->tab('Media')
