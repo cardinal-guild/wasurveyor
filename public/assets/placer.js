@@ -28,7 +28,6 @@ var WAPlacer = {
         });
         // Set the renderer to render beyond the viewport to prevent weird half rendered polygons
         this.map.getRenderer(this.map).options.padding = 100;
-        this.map.setMaxBounds([[0, 0], [-9500, 9500]]);
         this.map.setView([-4750, 4750], -4.2);
         this.map.createPane('map-boundaries');
         this.map.createPane('island-dots');
@@ -39,14 +38,35 @@ var WAPlacer = {
         this.loadMapBoundaries();
     },
     mapClick: function(e) {
-        $("input[name='"+this.uniqId+"[lat]']").val(e.latlng.lat.toFixed(2));
-        $("input[name='"+this.uniqId+"[lng]']").val(e.latlng.lng.toFixed(2));
+
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        var correct = false;
+        if (lat > 0 ) {
+            lat = 0;
+            correct = true;
+        }
+        if (lat < -9500 ) {
+            lat = -9500;
+            correct = true;
+        }
+        if (lng > 9500 ) {
+            lng = 9500;
+            correct = true;
+        }
+        if (lng < 0) {
+            lng = 0;
+            correct = true;
+        }
+
+        $("input[name='"+this.uniqId+"[lat]']").val(lat.toFixed(2));
+        $("input[name='"+this.uniqId+"[lng]']").val(lng.toFixed(2));
         if(!this.targetMarker) {
-            this.targetMarker = L.marker(e.latlng, {
+            this.targetMarker = L.marker([lat, lng], {
                 icon: this.targetIcon
             }).addTo(this.map);
         }
-        this.targetMarker.setLatLng(e.latlng);
+        this.targetMarker.setLatLng([lat, lng]);
     },
     loadMapBoundaries: function () {
         var self = this;

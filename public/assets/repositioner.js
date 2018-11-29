@@ -2,6 +2,7 @@ var WARepositioner = {
     map: null,
     dragIcon: null,
     locationUpdates: [],
+    bounds: [[0, 0], [-9500, 9500]],
     init: function(formDiv) {
         // Create the map container
         var self = this;
@@ -30,12 +31,15 @@ var WARepositioner = {
             zoomSnap: 0.2,
             zoomDelta: 0.2,
             wheelPxPerZoomLevel: 200,
+            bounds: self.bounds,
             attributionControl: false
         });
         // Set the renderer to render beyond the viewport to prevent weird half rendered polygons
         this.map.getRenderer(this.map).options.padding = 100;
-        this.map.setMaxBounds([[0, 0], [-9500, 9500]]);
-        this.map.setView([-4750, 4750], -4.2);
+        // this.map.setBounds([[0, 0], [-9500, 9500]]);
+        // this.map.setMaxBounds([[19000, -19000], [-19000, 19000]]);
+        // this.map.setView([-4750, 4750], -4.2);
+        this.map.fitBounds(self.bounds);
         this.map.createPane('map-boundaries');
         this.map.createPane('island-dots');
         this.loadMapBoundaries();
@@ -52,6 +56,7 @@ var WARepositioner = {
                     style: function(feature) {
                         return feature.properties;
                     },
+                    maxBounds: self.bounds,
                     interactive: false
                 }).addTo(self.map);
                 self.loadIslands();
@@ -79,6 +84,7 @@ var WARepositioner = {
                             pane: 'island-dots',
                             icon: self.dragIcon,
                             draggable: true,
+                            maxBounds: self.bounds,
                             id: island.properties.id
                         })
                         .addTo(self.map).addEventListener('dragend', function(e) {
@@ -93,13 +99,37 @@ var WARepositioner = {
         });
     },
     dragEnd: function(e) {
+        var latLng = e.target.getLatLng();
+        var lat = latLng.lat;
+        var lng = latLng.lng;
+        var correct = false;
+        if (lat > 0 ) {
+            lat = 0;
+            correct = true;
+        }
+        if (lat < -9500 ) {
+            lat = -9500;
+            correct = true;
+        }
+        if (lng > 9500 ) {
+            lng = 9500;
+            correct = true;
+        }
+        if (lng < 0) {
+            lng = 0;
+            correct = true;
+        }
+        if(correct) {
+            e.target.setLatLng([lat, lng]);
+        }
+
         var found = false;
         $(e.target._icon).addClass('dragged');
-        var latLng = e.target.getLatLng();
+
         var data = {
             island_id: e.target.options.id,
-            lat: latLng.lat.toFixed(2),
-            lng: latLng.lng.toFixed(2)
+            lat: lat.toFixed(2),
+            lng: lng.toFixed(2)
         };
         for (var i = 0; i < this.locationUpdates.length; i++) {
             if (this.locationUpdates[i].island_id === data.island_id) {
