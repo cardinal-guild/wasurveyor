@@ -87,26 +87,6 @@ class Report
     protected $ipAddress;
 
     /**
-     * @var boolean
-     * @ORM\Column(type="boolean")
-     */
-    protected $override = false;
-
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean")
-     */
-    protected $approved = false;
-
-    /**
-     * @var User
-     * @JMS\Expose
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
-     */
-    protected $approvedBy;
-
-    /**
      * @var integer
      * @ORM\Column(type="smallint")
      */
@@ -348,42 +328,6 @@ class Report
     }
 
     /**
-     * @return bool
-     */
-    public function isOverride(): ?bool
-    {
-        return $this->override;
-    }
-
-    /**
-     * @param bool $override
-     * @return Report
-     */
-    public function setOverride(bool $override): ?Report
-    {
-        $this->override = $override;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isApproved(): ?bool
-    {
-        return $this->approved;
-    }
-
-    /**
-     * @param bool $approved
-     * @return Report
-     */
-    public function setApproved(bool $approved): ?Report
-    {
-        $this->approved = $approved;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getMode(): ?int
@@ -397,22 +341,6 @@ class Report
     public function setMode(int $mode)
     {
         $this->mode = $mode;
-    }
-
-    /**
-     * @return User
-     */
-    public function getApprovedBy(): ?User
-    {
-        return $this->approvedBy;
-    }
-
-    /**
-     * @param User $approvedBy
-     */
-    public function setApprovedBy(User $approvedBy)
-    {
-        $this->approvedBy = $approvedBy;
     }
 
     public function __toString()
