@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Island;
 use App\Entity\IslandImage;
+use App\Entity\Report;
 use App\Repository\IslandRepository;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -116,6 +117,7 @@ class ApiController extends FOSRestController
                 $metal['type_id'] = $pveMetal->getType()->getId();
                 $metal['name'] = $pveMetal->getType()->__toString();
                 $metal['quality'] = $pveMetal->getQuality();
+                $metal['reported'] = false;
                 $data['pveMetals'][] = $metal;
             }
 
@@ -125,7 +127,39 @@ class ApiController extends FOSRestController
                 $metal['type_id'] = $pvpMetal->getType()->getId();
                 $metal['name'] = $pvpMetal->getType()->__toString();
                 $metal['quality'] = $pvpMetal->getQuality();
+                $metal['reported'] = false;
                 $data['pvpMetals'][] = $metal;
+            }
+
+            foreach($island->getReports() as $report) {
+                if($report->isApproved()) {
+                    foreach($report->getMetals() as $reportMetal) {
+                        $metalArrName = 'pveMetals';
+                        if($report->getMode() === Report::PVP) {
+                            $metalArrName = 'pvpMetals';
+                        }
+                        $exists = false;
+                        foreach ($data[$metalArrName] as $key => $existingMetal) {
+                            $exists = (boolean)($existingMetal['type_id'] === $reportMetal->getType()->getId());
+                            if($exists && $report->isOverride()) {
+                                $existingMetal['quality'] = $reportMetal->getQuality();
+                                $existingMetal['reported'] = true;
+                                $data[$metalArrName][$key] = $existingMetal;
+                            }
+                            if($exists) {
+                                break;
+                            }
+                        }
+                        if(!$exists) {
+                            $metal = [];
+                            $metal['type_id'] = $reportMetal->getType()->getId();
+                            $metal['name'] = $reportMetal->getType()->__toString();
+                            $metal['quality'] = $reportMetal->getQuality();
+                            $metal['reported'] = true;
+                            $data[$metalArrName][] = $metal;
+                        }
+                    }
+                }
             }
 
             /**

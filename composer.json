@@ -43,7 +43,8 @@
         "symfony/web-profiler-bundle": "^3.3",
         "symfony/web-server-bundle": "^4.1.7",
         "symfony/yaml": "^3.3",
-        "vich/uploader-bundle": "^1.8"
+        "vich/uploader-bundle": "^1.8",
+        "willdurand/faker-bundle": "^1.4"
     },
     "config": {
         "sort-packages": true

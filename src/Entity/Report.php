@@ -20,6 +20,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Report
 {
+    const PVE = 0;
+    const PVP = 1;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -36,28 +39,28 @@ class Report
     protected $island;
     /**
      * @var boolean
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     protected $revivalChambers = false;
 
     /**
      * @var boolean
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     protected $dangerous = false;
 
     /**
      * @var boolean
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     protected $turrets = false;
 
     /**
      * @var integer
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", nullable=true)
      * @Assert\Range(min="0", max="5")
      */
-    protected $databanks = 0;
+    protected $databanks;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|ReportMetal[]
@@ -71,12 +74,52 @@ class Report
      */
     protected $trees;
 
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $name;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $ipAddress;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $override = false;
+
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean")
+     */
+    protected $approved = false;
+
+    /**
+     * @var User
+     * @JMS\Expose
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    protected $approvedBy;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="smallint")
+     */
+    protected $mode = self::PVE;
+
     use TimestampableEntity;
 
     public function __construct()
     {
         $this->metals = new ArrayCollection();
         $this->trees = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     /**
@@ -151,7 +194,7 @@ class Report
      */
     public function removeMetal(ReportMetal $metal)
     {
-        if(!$this->metals->contains($metal)) {
+        if($this->metals->contains($metal)) {
             $this->metals->removeElement($metal);
         }
         return $this->metals;
@@ -197,7 +240,7 @@ class Report
      */
     public function removeTree(ReportTree $tree)
     {
-        if(!$this->trees->contains($tree)) {
+        if($this->trees->contains($tree)) {
             $this->trees->removeElement($tree);
         }
         return $this->trees;
@@ -268,7 +311,109 @@ class Report
         $this->databanks = $databanks;
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
+    /**
+     * @param string $name
+     * @return Report
+     */
+    public function setName(string $name): ?Report
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIpAddress(): ?string
+    {
+        return $this->ipAddress;
+    }
+
+    /**
+     * @param string $ipAddress
+     * @return Report
+     */
+    public function setIpAddress(string $ipAddress): ?Report
+    {
+        $this->ipAddress = $ipAddress;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOverride(): ?bool
+    {
+        return $this->override;
+    }
+
+    /**
+     * @param bool $override
+     * @return Report
+     */
+    public function setOverride(bool $override): ?Report
+    {
+        $this->override = $override;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApproved(): ?bool
+    {
+        return $this->approved;
+    }
+
+    /**
+     * @param bool $approved
+     * @return Report
+     */
+    public function setApproved(bool $approved): ?Report
+    {
+        $this->approved = $approved;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMode(): ?int
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param int $mode
+     */
+    public function setMode(int $mode)
+    {
+        $this->mode = $mode;
+    }
+
+    /**
+     * @return User
+     */
+    public function getApprovedBy(): ?User
+    {
+        return $this->approvedBy;
+    }
+
+    /**
+     * @param User $approvedBy
+     */
+    public function setApprovedBy(User $approvedBy)
+    {
+        $this->approvedBy = $approvedBy;
+    }
 
     public function __toString()
     {

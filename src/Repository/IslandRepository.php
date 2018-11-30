@@ -3,10 +3,54 @@
 
 namespace App\Repository;
 
+use App\Entity\Island;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Query\ResultSetMapping;
+
 
 class IslandRepository extends EntityRepository
 {
+
+    /**
+     * @param int $amount
+     * @return Island[]
+     */
+    public function getRandomIslands($amount = 7)
+    {
+        return $this->getRandomIslandsNativeQuery($amount)->getResult();
+    }
+
+    /**
+     * @param int $amount
+     * @return NativeQuery
+     */
+    public function getRandomIslandsNativeQuery($amount = 7)
+    {
+        # set entity name
+        $table = $this->getClassMetadata()
+            ->getTableName();
+
+        # create rsm object
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult($this->getEntityName(), 'i');
+        $rsm->addFieldResult('i', 'id', 'id');
+
+        # sql query
+        $sql = "
+            SELECT * FROM {$table}
+            WHERE id >= FLOOR(1 + RAND()*(
+                SELECT MAX(id) FROM {$table})
+            ) 
+            LIMIT ?
+        ";
+
+        # make query
+        return $this->getEntityManager()
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter(1, $amount);
+    }
+
     public function getPublishedIslands()
     {
         $qb = $this->createQueryBuilder('island');
@@ -16,6 +60,11 @@ class IslandRepository extends EntityRepository
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
             ->leftJoin('island.trees', 'it')
+            ->leftJoin('island.reports','ir')
+            ->leftJoin('island.surveyCreatedBy','iscb')
+            ->leftJoin('island.surveyUpdatedBy','isub')
+            ->leftJoin('ir.metals','irm')
+            ->leftJoin('ir.trees','irt')
             ->leftJoin('island.pveMetals', 'ipvem')
             ->leftJoin('island.pvpMetals', 'ipvpm')
             ->leftJoin('it.type', 'itt')
@@ -37,6 +86,9 @@ class IslandRepository extends EntityRepository
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
             ->leftJoin('island.trees', 'it')
+            ->leftJoin('island.reports','ir')
+            ->leftJoin('ir.metals','irm')
+            ->leftJoin('ir.trees','irt')
             ->leftJoin('island.pveMetals', 'ipvem')
             ->leftJoin('island.pvpMetals', 'ipvpm')
             ->leftJoin('it.type', 'itt')
@@ -102,6 +154,9 @@ class IslandRepository extends EntityRepository
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
             ->leftJoin('island.trees', 'it')
+            ->leftJoin('island.reports','ir')
+            ->leftJoin('ir.metals','irm')
+            ->leftJoin('ir.trees','irt')
             ->leftJoin('island.pveMetals', 'ipvem')
             ->leftJoin('island.pvpMetals', 'ipvpm')
             ->leftJoin('it.type', 'itt')
@@ -155,6 +210,9 @@ class IslandRepository extends EntityRepository
         ->leftJoin('island.creator', 'ic')
         ->leftJoin('island.images', 'ii')
         ->leftJoin('island.trees', 'it')
+        ->leftJoin('island.reports','ir')
+        ->leftJoin('ir.metals','irm')
+        ->leftJoin('ir.trees','irt')
         ->leftJoin('island.pveMetals', 'ipvem')
         ->leftJoin('it.type', 'itt')
         ->leftJoin('ipvem.type', 'ipvemt')
@@ -175,6 +233,9 @@ class IslandRepository extends EntityRepository
             ->leftJoin('island.creator', 'ic')
             ->leftJoin('island.images', 'ii')
             ->leftJoin('island.trees', 'it')
+            ->leftJoin('island.reports','ir')
+            ->leftJoin('ir.metals','irm')
+            ->leftJoin('ir.trees','irt')
             ->leftJoin('island.pvpMetals', 'ipvpm')
             ->leftJoin('it.type', 'itt')
             ->leftJoin('ipvpm.type', 'ipvpmt')
