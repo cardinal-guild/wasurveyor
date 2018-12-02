@@ -77,9 +77,9 @@ class ReportController extends FOSRestController
 //                return new JsonResponse(['message'=>'Report is not valid'], 400);
 //            }
             $report = $form->getNormData();
-//            $entityManager->persist($report);
-//            $entityManager->flush();
-            return new JsonResponse(['message'=>'Report successfull received'], 200);
+            $entityManager->persist($report);
+            $entityManager->flush();
+            return new JsonResponse(['message'=>'Report successfull received, thank you for helping the Cardinal Guild.  We need to manually approve your report before it shows on the map.'], 200);
         }
 
     }
