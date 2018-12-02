@@ -6,7 +6,11 @@ namespace App\Controller;
 
 use App\Entity\Island;
 use App\Entity\IslandImage;
+use App\Entity\Report;
+use App\Form\Type\ReportType;
 use App\Repository\IslandRepository;
+use App\Repository\ReportRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
 use GeoJson\Feature\Feature;
@@ -21,6 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -35,33 +40,47 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class ReportController extends FOSRestController
 {
     /**
-     * Post a PVE report of materials
+     * Post a report of materials of an island
      *
-     * @Route("/pve/report.{_format}", methods={"POST"}, defaults={ "_format": "json" })
+     * @Route("/report.{_format}", methods={"OPTIONS","POST"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
-     *     description="Returns all marker data for islands, if query input given, gives islands by search"
+     *     description="Reporting is send correctly"
+     * )*
+     * @SWG\Response(
+     *     response=400,
+     *     description="Reporting is not accepted"
      * )
      * @SWG\Tag(name="Reporting")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
-    public function postPveReportAction(Request $request)
+    public function postReportAction(Request $request, EntityManagerInterface $entityManager)
     {
 
-    }
+        /**
+         * @var ReportRepository $reportRepo
+         */
+        $reportRepo = $entityManager->getRepository(Report::class);
 
-    /**
-     * Create a new PVP Report
-     *
-     * @Route("/pvp/report.{_format}", methods={"POST"}, defaults={ "_format": "json" })
-     * @SWG\Tag(name="Reporting")
-     * @SWG\Response(
-     *     response=200,
-     *     description="When report is successfull submitted"
-     * )
-     */
-    public function postPvpReportAction()
-    {
+        $data = json_decode($request->getContent(), true);
+        $data['ipAddress'] = $request->getClientIp();
+
+        if($reportRepo->hasSpamReported((integer)$data['island'], $data['ipAddress'])) {
+            return new JsonResponse(['message'=>'Too much reports for this island from this ip, within last 8 hours'], 400);
+        }
+
+        $report = new Report();
+        $form = $this->createForm(ReportType::class, $report);
+        $form->submit($data);
+        if ($form->isSubmitted()) {
+//            if (!$form->isValid()) {
+//                return new JsonResponse(['message'=>'Report is not valid'], 400);
+//            }
+            $report = $form->getNormData();
+//            $entityManager->persist($report);
+//            $entityManager->flush();
+            return new JsonResponse(['message'=>'Report successfull received'], 200);
+        }
 
     }
 

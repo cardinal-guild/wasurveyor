@@ -33,61 +33,30 @@ class Report
 
     /**
      * @var Island
+     * @Assert\NotBlank()
      * @ORM\ManyToOne(targetEntity="App\Entity\Island", inversedBy="reports")
      * @ORM\JoinColumn(name="island_id", referencedColumnName="id")
      */
     protected $island;
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $revivalChambers = false;
+
 
     /**
-     * @var boolean
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $dangerous = false;
-
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $turrets = false;
-
-    /**
-     * @var integer
-     * @ORM\Column(type="smallint", nullable=true)
-     * @Assert\Range(min="0", max="5")
-     */
-    protected $databanks;
-
-    /**
+     * @Assert\Count(min="1",minMessage="At least one metal is required for the report")
      * @var \Doctrine\Common\Collections\Collection|ReportMetal[]
      * @ORM\OneToMany(targetEntity="App\Entity\ReportMetal", mappedBy="report", cascade={"persist","remove"}, orphanRemoval=true)
      */
     protected $metals;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|ReportTree[]
-     * @ORM\OneToMany(targetEntity="App\Entity\ReportTree", mappedBy="report", cascade={"persist","remove"}, orphanRemoval=true)
-     */
-    protected $trees;
-
-    /**
      * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $name;
-
-    /**
-     * @var string
+     * @Assert\Ip()
      * @ORM\Column(type="string")
      */
     protected $ipAddress;
 
     /**
      * @var integer
+     * @Assert\NotBlank()
      * @ORM\Column(type="smallint")
      */
     protected $mode = self::PVE;
@@ -97,7 +66,6 @@ class Report
     public function __construct()
     {
         $this->metals = new ArrayCollection();
-        $this->trees = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
@@ -181,135 +149,6 @@ class Report
     }
 
     /**
-     * @return ReportTree[]|\Doctrine\Common\Collections\Collection
-     */
-    public function getTrees()
-    {
-        return $this->trees;
-    }
-
-    /**
-     * @param ReportTree[]|\Doctrine\Common\Collections\Collection $trees
-     * @return \Doctrine\Common\Collections\Collection|ReportTree[]
-     */
-    public function setTrees($trees)
-    {
-        $this->trees = new ArrayCollection();
-        foreach($trees as $tree) {
-            $this->addTree($tree);
-        }
-        return $this->trees;
-    }
-
-    /**
-     * @param ReportTree $tree
-     * @return \Doctrine\Common\Collections\Collection|ReportTree[]
-     */
-    public function addTree(ReportTree $tree)
-    {
-        $tree->setReport($this);
-        if(!$this->trees->contains($tree)) {
-            $this->trees->add($tree);
-        }
-        return $this->trees;
-    }
-
-    /**
-     * @param ReportTree $tree
-     * @return \Doctrine\Common\Collections\Collection|ReportTree[]
-     */
-    public function removeTree(ReportTree $tree)
-    {
-        if($this->trees->contains($tree)) {
-            $this->trees->removeElement($tree);
-        }
-        return $this->trees;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRevivalChambers(): ?bool
-    {
-        return $this->revivalChambers;
-    }
-
-    /**
-     * @param bool $revivalChambers
-     */
-    public function setRevivalChambers(bool $revivalChambers)
-    {
-        $this->revivalChambers = $revivalChambers;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDangerous(): ?bool
-    {
-        return $this->dangerous;
-    }
-
-    /**
-     * @param bool $dangerous
-     */
-    public function setDangerous(bool $dangerous)
-    {
-        $this->dangerous = $dangerous;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasTurrets(): ?bool
-    {
-        return $this->turrets;
-    }
-
-    /**
-     * @param bool $turrets
-     */
-    public function setTurrets(bool $turrets)
-    {
-        $this->turrets = $turrets;
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getDatabanks(): ?int
-    {
-        return $this->databanks;
-    }
-
-    /**
-     * @param int $databanks
-     */
-    public function setDatabanks(int $databanks)
-    {
-        $this->databanks = $databanks;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return Report
-     */
-    public function setName(string $name): ?Report
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getIpAddress(): ?string
@@ -338,8 +177,15 @@ class Report
     /**
      * @param int $mode
      */
-    public function setMode(int $mode)
+    public function setMode($mode)
     {
+        if(is_string($mode)) {
+            if($mode === 'pve') {
+                $mode = self::PVE;
+            } else {
+                $mode = self::PVP;
+            }
+        }
         $this->mode = $mode;
     }
 
