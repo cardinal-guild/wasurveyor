@@ -1,0 +1,18 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+    <div>
+{% if object is defined and object.metals is not empty  %}
+    <table style="width: 100%;border: 0;">
+        {% for metal in object.metals %}
+        <tr>
+            <td style="width: 50%">{{ metal.type }}</td>
+            <td style="width: 50%"><strong>Q{{ metal.quality }}</strong></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    No reported metals
+{% endif %}
+    </div>
+{% endblock %}

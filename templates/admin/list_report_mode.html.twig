@@ -1,0 +1,9 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+    <div style="text-align: center">
+{% if object is defined and object.mode is not empty  %}
+   <strong>{{ object.mode ? "PVP" : "PVE" }}</strong>
+{% endif %}
+    </div>
+{% endblock %}

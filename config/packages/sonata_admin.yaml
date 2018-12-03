@@ -13,6 +13,13 @@ sonata_admin:
                   label:        "Reposition islands"
                   roles:        [ ROLE_SURVEYOR ]
 
+            reporting:
+                label: Reporting
+                icon:  '<i class="fa fa-bug"></i>'
+                items:
+                - admin.report
+                roles:        [ ROLE_SURVEYOR ]
+
             type.management:
                 label: Type Management
                 icon:  '<i class="fa fa-diamond"></i>'

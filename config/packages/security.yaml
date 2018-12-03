@@ -2,8 +2,8 @@ security:
     access_denied_url: /login
     role_hierarchy:
         ROLE_USER:
-            - ROLE_ADMIN_ISLAND_GUEST
-            - ROLE_ADMIN_ISLAND_CREATOR_GUEST
+            - ROLE_ADMIN_ISLAND_READER
+            - ROLE_ADMIN_ISLAND_CREATOR_READER
             - ROLE_ADMIN_ISLAND_IMAGE_GUEST
             - ROLE_ADMIN_ISLAND_IMAGE_EDITOR
             - ROLE_ADMIN_ISLAND_IMAGE_ADMIN
@@ -23,7 +23,12 @@ security:
             - ROLE_ADMIN_METALTYPE_READER
         ROLE_SURVEYOR:
             - ROLE_USER
+            - ROLE_ADMIN_ISLAND_GUEST
+            - ROLE_ADMIN_ISLAND_CREATOR_GUEST
             - ROLE_ADMIN_ISLAND_CREATOR_EDITOR
+            - ROLE_ADMIN_REPORT_GUEST
+            - ROLE_ADMIN_REPORT_EDITOR
+            - ROLE_ADMIN_REPORT_ADMIN
             - ROLE_ADMIN_ISLAND_EDITOR
             - ROLE_ADMIN_TREETYPE_EDITOR
             - ROLE_ADMIN_METALTYPE_EDITOR

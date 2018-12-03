@@ -1,0 +1,32 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+    <div>
+        {% if object is defined and object.mode is not empty %}
+
+            {% if object.mode == 0 %}
+                {% if object is defined and object.island is not empty and object.island.pveMetals is not empty %}
+                    <table style="width: 100%;border: 0;">
+                        {% for metal in object.island.pveMetals %}
+                            <tr>
+                                <td style="width: 50%">{{ metal.type }}</td>
+                                <td style="width: 50%"><strong>Q{{ metal.quality }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            {% else %}
+                {% if object is defined and object.island is not empty and object.island.pvpMetals is not empty %}
+                    <table style="width: 100%;border: 0;">
+                        {% for metal in object.island.pvpMetals %}
+                            <tr>
+                                <td style="width: 50%">{{ metal.type }}</td>
+                                <td style="width: 50%"><strong>Q{{ metal.quality }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
