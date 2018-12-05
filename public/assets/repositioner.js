@@ -47,7 +47,7 @@ var WARepositioner = {
     loadMapBoundaries: function () {
         var self = this;
         $.ajax({
-            url: 'https://data.cardinalguild.com/wamap.geojson',
+            url: 'https://map.cardinalguild.com/data/wamap.geojson',
             type: 'GET',
             dataType: "json",
             cache: false,
