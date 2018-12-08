@@ -84,6 +84,7 @@ security:
     access_control:
         # Admin login page needs to be accessed without credential
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login/map$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/endpoint, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/endpoint/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }

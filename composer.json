@@ -24,6 +24,7 @@
         "nelmio/cors-bundle": "^1.5",
         "php-http/guzzle6-adapter": "^1.1",
         "php-http/httplug-bundle": "^1.12",
+        "ramsey/uuid": "^3.8",
         "sensio/framework-extra-bundle": "^5.2",
         "sonata-project/admin-bundle": "^3.40",
         "sonata-project/doctrine-orm-admin-bundle": "^3.6",

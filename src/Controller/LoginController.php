@@ -75,6 +75,20 @@ Class LoginController extends Controller
 
     /**
      * @return Response
+     * @Route("/login/map", name="map_login")
+     */
+    public function mapLogin(Session $session, Request $request, AuthenticationManagerInterface $authManager, TokenStorageInterface $tokenStorage, UserManagerInterface $userManager): Response
+    {
+        if($request->query->has('redirect')) {
+            $session->set("redirect_map", $request->query->get('redirect'));
+        } else {
+            $session->set("redirect_map", true);
+        }
+        return new RedirectResponse($this->generateUrl('steam_connect'));
+    }
+
+    /**
+     * @return Response
      * @Route("/logout", name="sonata_user_admin_security_logout")
      * @Route("/logout", name="steam_logout")
      */
@@ -104,6 +118,7 @@ Class LoginController extends Controller
     ):Response
     {
         $request = $requestStack->getCurrentRequest();
+        $session = $request->getSession();
 
         $cookieName = $this->getAzineHybridAuthService()->getCookieName('steam');
 
@@ -140,6 +155,15 @@ Class LoginController extends Controller
         $unauthToken = new UsernamePasswordToken($user, $password, $this->providerKey, $user->getRoles());
         $authToken = $authManager->authenticate($unauthToken);
         $tokenStorage->setToken($authToken);
+        if($session->has("redirect_map")) {
+           $redirectMap = $session->get('redirect_map');
+           if(is_bool($redirectMap)) {
+               return new RedirectResponse('https://map.cardinalguild.com?charkey='.$user->getCharacterKey());
+           } else {
+
+               return new RedirectResponse($redirectMap.'?charkey='.$user->getCharacterKey());
+           }
+        }
         return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
     }
 

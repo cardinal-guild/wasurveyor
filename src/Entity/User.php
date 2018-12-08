@@ -6,6 +6,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
 use Sonata\UserBundle\Entity\BaseUser as BaseUser;
+// Include Library Namespaces
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -13,11 +16,6 @@ use Sonata\UserBundle\Entity\BaseUser as BaseUser;
  */
 class User extends BaseUser
 {
-    public function __construct()
-    {
-        parent::__construct();
-        // your code here
-    }
 
     /**
      *
@@ -41,6 +39,19 @@ class User extends BaseUser
      * @ORM\Column(type="text", nullable=true)
      */
     protected $steamData;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $characterKey;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->characterKey = Uuid::uuid4();
+        // your code here
+    }
 
     /**
      * @return string
@@ -74,5 +85,20 @@ class User extends BaseUser
         $this->steamData = $steamData;
     }
 
+    /**
+     * @return string
+     */
+    public function getCharacterKey()
+    {
+        return $this->characterKey;
+    }
+
+    /**
+     * @param string $characterKey
+     */
+    public function setCharacterKey($characterKey)
+    {
+        $this->characterKey = $characterKey;
+    }
 
 }
