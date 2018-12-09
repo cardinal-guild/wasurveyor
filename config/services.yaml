@@ -30,6 +30,10 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    token_authenticator:
+        public: true
+        class: App\Security\TokenAuthenticator
+
     azine_hybrid_auth_service:
         public: true
         class:  Azine\HybridAuthBundle\Services\AzineHybridAuth

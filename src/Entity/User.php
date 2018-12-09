@@ -6,6 +6,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
 use Sonata\UserBundle\Entity\BaseUser as BaseUser;
+use Symfony\Component\Validator\Constraints as Assert;
 // Include Library Namespaces
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
@@ -43,14 +44,20 @@ class User extends BaseUser
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Assert\Length(min=36, minMessage="UUID must have at least 36 characters")
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *    pattern= "/[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}/",
+     *    match=   false,
+     *    message= "Not a valid UUID"
+     * )
      */
-    protected $characterKey;
+    protected $apiToken;
 
     public function __construct()
     {
         parent::__construct();
-        $this->characterKey = Uuid::uuid4();
-        // your code here
+        $this->apiToken = Uuid::uuid4()->toString();
     }
 
     /**
@@ -88,17 +95,19 @@ class User extends BaseUser
     /**
      * @return string
      */
-    public function getCharacterKey()
+    public function getApiToken()
     {
-        return $this->characterKey;
+        return $this->apiToken;
     }
 
     /**
-     * @param string $characterKey
+     * @param string $apiToken
      */
-    public function setCharacterKey($characterKey)
+    public function setApiToken($apiToken)
     {
-        $this->characterKey = $characterKey;
+        $this->apiToken = $apiToken;
     }
+
+
 
 }

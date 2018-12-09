@@ -52,6 +52,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_account:
+            pattern:             ^/api/account.*
+            anonymous: ~
+            logout: ~
+            guard:
+                authenticators:
+                    - token_authenticator
+            stateless: true
         api:
             pattern:             ^/(api|media|images|uploads).*
             security: false
@@ -96,6 +104,7 @@ security:
         - { path: ^/login_check$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 
+        - { path: ^/api/account.*, roles: IS_AUTHENTICATED_FULLY }
         # Secured part of the site
         # This config requires being logged for the whole site and having the admin role for the admin part.
         # Change these rules to adapt them to your needs

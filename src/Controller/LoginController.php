@@ -9,6 +9,7 @@ use Cocur\Slugify\Slugify;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Hybridauth\Exception\UnexpectedApiResponseException;
 use Hybridauth\Hybridauth;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -137,6 +138,9 @@ Class LoginController extends Controller
 
         $identifier = base64_encode(md5($userProfile->identifier));
         $password = $slugify->slugify($userProfile->displayName);
+        /**
+         * @var $user User
+         */
         $user = $userManager->findUserByConfirmationToken($identifier);
         if (!$user) {
             $user = $userManager->createUser();
@@ -156,12 +160,14 @@ Class LoginController extends Controller
         $authToken = $authManager->authenticate($unauthToken);
         $tokenStorage->setToken($authToken);
         if($session->has("redirect_map")) {
+           $user->setApiToken(Uuid::uuid4()->toString());
+           $userManager->updateUser($user);
            $redirectMap = $session->get('redirect_map');
            if(is_bool($redirectMap)) {
-               return new RedirectResponse('https://map.cardinalguild.com?charkey='.$user->getCharacterKey());
+               return new RedirectResponse('https://map.cardinalguild.com?api_token='.$user->getApiToken());
            } else {
 
-               return new RedirectResponse($redirectMap.'?charkey='.$user->getCharacterKey());
+               return new RedirectResponse($redirectMap.'?api_token='.$user->getApiToken());
            }
         }
         return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
