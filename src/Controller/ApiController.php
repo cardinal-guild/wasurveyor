@@ -18,6 +18,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Log\LoggerInterface;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,7 +46,6 @@ class ApiController extends FOSRestController
      * )
      * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
-     * @View()
      */
     public function getIslandMarkersAction(Request $request)
     {
@@ -160,7 +160,7 @@ class ApiController extends FOSRestController
 
         }
         $collection = new FeatureCollection($markers);
-        return $collection;
+        return new JsonResponse($collection);
 
     }
 
