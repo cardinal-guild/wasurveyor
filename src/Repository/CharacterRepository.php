@@ -18,4 +18,9 @@ class CharacterRepository extends EntityRepository
         $qry = $qb->getQuery();
         return $qry->getResult();
     }
+
+    public function getCharacterCountByOwner(User $owner)
+    {
+        return $this->getAllCharactersForOwner($owner)->count();
+    }
 }

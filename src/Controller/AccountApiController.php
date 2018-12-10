@@ -94,6 +94,15 @@ class AccountApiController extends FOSRestController
         if(!$request->request->get('name')) {
             throw new BadRequestHttpException("No character name given");
         }
+
+        /**
+         * @var $characterRepo CharacterRepository
+         */
+        $characterRepo = $this->getDoctrine()->getRepository('App:Character');
+        $characterCount = $characterRepo->getCharacterCountByOwner($user);
+        if($characterCount >= 10) {
+            throw new BadRequestHttpException("You cannot have more then 10 characters per account");
+        }
         $character = new Character();
         $character->setOwner($user);
         $character->setName($request->request->get('name'));
