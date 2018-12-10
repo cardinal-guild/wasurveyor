@@ -42,6 +42,12 @@ class User extends BaseUser
     protected $steamData;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection|Character[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Character", mappedBy="owner", fetch="EXTRA_LAZY")
+     */
+    protected $characters;
+
+    /**
      * @var string
      * @ORM\Column(type="string")
      * @Assert\Length(min=36, minMessage="UUID must have at least 36 characters")

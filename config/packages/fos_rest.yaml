@@ -2,10 +2,11 @@ fos_rest:
   serializer:
     serialize_null: true
   param_fetcher_listener: force
-  body_listener:          true
+  body_listener:
+    array_normalizer: fos_rest.normalizer.camel_keys
   routing_loader:
     default_format: json
-    include_format: true
+    include_format: false
   view:
     formats:
       xml: true

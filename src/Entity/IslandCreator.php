@@ -114,7 +114,7 @@ class IslandCreator
      * @param \Doctrine\Common\Collections\Collection $islands
      * @return \Doctrine\Common\Collections\Collection|Island[]
      */
-    public function setProjects(\Doctrine\Common\Collections\Collection $islands)
+    public function setIslands(\Doctrine\Common\Collections\Collection $islands)
     {
         $this->islands = new ArrayCollection();
         foreach($islands as $island) {

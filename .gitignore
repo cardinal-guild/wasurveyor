@@ -18,7 +18,8 @@ Icon
 .vscode
 .vagrant
 node_modules
-.env
+/.env.local
+/.env.*.local
 /public/bundles/
 /public/images/
 /public/media/

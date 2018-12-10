@@ -1,3 +1,7 @@
+parameters:
+    locale: en
+    jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
+
 framework:
     secret: '%env(APP_SECRET)%'
     csrf_protection: ~
