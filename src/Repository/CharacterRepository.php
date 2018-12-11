@@ -21,6 +21,6 @@ class CharacterRepository extends EntityRepository
 
     public function getCharacterCountByOwner(User $owner)
     {
-        return $this->getAllCharactersForOwner($owner)->count();
+        return count($this->getAllCharactersForOwner($owner));
     }
 }
