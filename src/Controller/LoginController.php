@@ -160,8 +160,6 @@ Class LoginController extends Controller
         $authToken = $authManager->authenticate($unauthToken);
         $tokenStorage->setToken($authToken);
         if($session->has("redirect_map")) {
-           $user->setApiToken(Uuid::uuid4()->toString());
-           $userManager->updateUser($user);
            $redirectMap = $session->get('redirect_map');
            if(is_bool($redirectMap)) {
                return new RedirectResponse('https://map.cardinalguild.com?api_token='.$user->getApiToken());
