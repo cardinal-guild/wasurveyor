@@ -14,6 +14,11 @@ nelmio_cors:
             allow_headers: ['*']
             allow_methods: ['POST', 'PUT', 'GET','PATCH','OPTIONS']
             max_age: 0
+        '^/api/account':
+            allow_origin: ['*']
+            allow_headers: ['*']
+            allow_methods: ['POST', 'PUT', 'GET','PATCH', 'OPTIONS', 'DELETE']
+            max_age: 0
         '^/media':
             allow_origin: ['*']
             allow_headers: ['*']
