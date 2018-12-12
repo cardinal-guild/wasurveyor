@@ -68,6 +68,7 @@ class AccountApiController extends FOSRestController
             if ($user) {
                 $user->setApiToken(Uuid::uuid4()->toString());
                 $this->em->persist($user);
+                $this->em->flush();
             }
         }
         return true;
