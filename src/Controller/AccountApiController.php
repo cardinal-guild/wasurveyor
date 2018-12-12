@@ -64,9 +64,11 @@ class AccountApiController extends FOSRestController
     public function logout(Request $request)
     {
         $user = $this->getUser();
-        if($user) {
-            $user->setApiToken(Uuid::uuid4()->toString());
-            $this->em->persist($user);
+        if($request->request->has('all')) {
+            if ($user) {
+                $user->setApiToken(Uuid::uuid4()->toString());
+                $this->em->persist($user);
+            }
         }
         return true;
     }
