@@ -20,6 +20,12 @@ doctrine:
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
+        metadata_cache_driver: redis
+        query_cache_driver: redis
+        result_cache_driver: redis
+        second_level_cache:
+            enabled: true
+            log_enabled: false
         auto_mapping: true
         filters:
             softdeleteable:

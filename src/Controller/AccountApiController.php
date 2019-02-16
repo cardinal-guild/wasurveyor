@@ -84,7 +84,7 @@ class AccountApiController extends FOSRestController
      * )
      * @SWG\Parameter(
      *     name="name",
-     *     in="request",
+     *     in="formData",
      *     type="string",
      *     required=true
      * )
@@ -124,7 +124,7 @@ class AccountApiController extends FOSRestController
      * )
      * @SWG\Parameter(
      *     name="guid",
-     *     in="",
+     *     in="query",
      *     type="string",
      *     required=true
      * )

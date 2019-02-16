@@ -1,0 +1,65 @@
+parameters:
+    project.name: 'surveyor'
+
+snc_redis:
+    doctrine:
+        metadata_cache:
+            client: cache
+            entity_manager: default          # the name of your entity_manager connection
+        result_cache:
+            client: cache
+            entity_manager: default  # you may specify multiple entity_managers
+        query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default
+    session:
+        client: session
+        locking: false
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: '%env(resolve:REDIS_URL)%'
+            logging: '%kernel.debug%'
+            options:
+                prefix: '%kernel.environment%_%project.name%'
+        cache:
+            type: predis
+            alias: cache
+            dsn: '%env(resolve:REDIS_URL)%'
+            logging: '%kernel.debug%'
+            options:
+                prefix: 'cache_%kernel.environment%_%project.name%'
+        profiler_storage:
+            type: predis
+            alias: profiler_storage
+            dsn: '%env(resolve:REDIS_URL)%'
+            logging: '%kernel.debug%'
+            options:
+                prefix: 'profiler_%kernel.environment%_%project.name%'
+        session:
+            type: predis
+            alias: session
+            dsn: '%env(resolve:REDIS_URL)%'
+            logging: '%kernel.debug%'
+            options:
+                prefix: 'session_%kernel.environment%_%project.name%'
+    swiftmailer:
+        client: default
+        key: 'swiftmailer_%kernel.environment%'
+
+    profiler_storage:
+        client: profiler_storage
+        ttl: 3600
+# Define your clients here. The example below connects to database 0 of the default Redis server.
+#
+# See https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md for instructions on
+# how to configure the bundle.
+#
+#        default:
+#            type: predis
+#            alias: default
+#            dsn: "%env(REDIS_URL)%"

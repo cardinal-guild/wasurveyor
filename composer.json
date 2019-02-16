@@ -24,8 +24,10 @@
         "nelmio/cors-bundle": "^1.5",
         "php-http/guzzle6-adapter": "^1.1",
         "php-http/httplug-bundle": "^1.12",
+        "predis/predis": "^1.1",
         "ramsey/uuid": "^3.8",
         "sensio/framework-extra-bundle": "^5.2",
+        "snc/redis-bundle": "^2.1",
         "sonata-project/admin-bundle": "^3.40",
         "sonata-project/doctrine-orm-admin-bundle": "^3.6",
         "sonata-project/user-bundle": "^4.2.3",
@@ -64,10 +66,9 @@
     },
     "scripts": {
         "auto-scripts": {
-            "make cache-warmup": "script",
-            "assets:install --symlink %PUBLIC_DIR%": "symfony-cmd",
+            "redis:flushall": "symfony-cmd",
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "assets:install --symlink %PUBLIC_DIR%": "symfony-cmd",
             "doctrine:schema:update --force": "symfony-cmd",
             "acl:init --quiet || true": "symfony-cmd",
             "sonata:admin:setup-acl --quiet || true": "symfony-cmd"

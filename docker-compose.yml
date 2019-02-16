@@ -57,6 +57,7 @@ services:
     links:
       - db:db.surveyor.lc
       - mailhog:mailhog.surveyor.lc
+      - redis:redis.surveyor.lc
     depends_on:
       - db
     environment:
@@ -84,5 +85,13 @@ services:
       - 'traefik.frontend.rule=Host:ngrok.surveyor.lc'
     command: "ngrok http http:80"
 
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    labels:
+      - 'traefik.backend=redis'
+      - 'traefik.port=6379'
+      - 'traefik.frontend.rule=Host:redis.surveyor.lc'
 volumes:
   db: {}
