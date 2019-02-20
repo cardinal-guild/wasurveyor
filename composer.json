@@ -20,6 +20,7 @@
         "jmikola/geojson": "^1.0",
         "jms/serializer-bundle": "^2.4.2",
         "liip/imagine-bundle": "^2.1",
+        "minishlink/web-push-bundle": "^3.0",
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
         "php-http/guzzle6-adapter": "^1.1",
@@ -68,7 +69,7 @@
         "auto-scripts": {
             "redis:flushall": "symfony-cmd",
             "cache:clear": "symfony-cmd",
-            "assets:install --symlink %PUBLIC_DIR%": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "doctrine:schema:update --force": "symfony-cmd",
             "acl:init --quiet || true": "symfony-cmd",
             "sonata:admin:setup-acl --quiet || true": "symfony-cmd"

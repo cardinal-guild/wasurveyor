@@ -36,4 +36,5 @@ return [
     Bazinga\Bundle\FakerBundle\BazingaFakerBundle::class => ['all' => true],
     FOS\RestBundle\FOSRestBundle::class => ['all' => true],
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
+    Minishlink\Bundle\WebPushBundle\MinishlinkWebPushBundle::class => ['all' => true],
 ];
