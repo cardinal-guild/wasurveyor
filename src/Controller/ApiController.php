@@ -47,26 +47,27 @@ class ApiController extends FOSRestController
      * @SWG\Tag(name="Creators")
      * @View()
      */
-    public function getIslandCreatorsAction(Request $request)
+    public function getAllIslandCreators(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        return $em->getRepository('App:IslandCreator')->findAll();
 
-        /**
-         * @var CreatorRepository $creatorRepo
-         */
-        $creatorRepo = $em->getRepository('App:IslandCreator');
+        // /**
+        //  * @var CreatorRepository $creatorRepo
+        //  */
+        // $creatorRepo = $em->getRepository('App:IslandCreator');
 
-        $creators = $creatorRepo->findAll();
+        // $creators = $creatorRepo->findAll();
 
-        foreach($creators as $creator) {
-            $data = [
-                'id'=>$island->getId(),
-                'name'=>$island->getName(),
-                'workshopUrl'=>$island->getWorkshopUrl()
-            ];
-        }
+        // foreach($creators as $creator) {
+        //     $data = [
+        //         'id'=>$island->getId(),
+        //         'name'=>$island->getName(),
+        //         'workshopUrl'=>$island->getWorkshopUrl()
+        //     ];
+        // }
 
-        return new JsonResponse($data);
+        // return new JsonResponse($data);
 
     }
 
