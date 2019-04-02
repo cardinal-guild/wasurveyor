@@ -37,6 +37,40 @@ class ApiController extends FOSRestController
 
 
     /**
+     * Returns all island creators
+     * 
+     * @Route("/creators.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
+     * @SWG\Response(
+     *      response=200,
+     *      description="Returns all island creators"
+     * )
+     * @SWG\Tag(name="Creators")
+     * @View()
+     */
+    public function getIslandCreatorsAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /**
+         * @var CreatorRepository $creatorRepo
+         */
+        $creatorRepo = $em->getRepository('App:IslandCreator');
+
+        $creators = $creatorRepo->findAll();
+
+        foreach($creators as $creator) {
+            $data = [
+                'id'=>$island->getId(),
+                'name'=>$island->getName(),
+                'workshopUrl'=>$island->getWorkshopUrl()
+            ]
+        }
+
+        return new JsonResponse($data)
+
+    }
+
+    /**
      * Returns all marker data for islands, if query input given, gives islands by search
      *
      * @Route("/islands.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
