@@ -60,7 +60,7 @@ class ApiController extends FOSRestController
                 'workshopUrl'=>$creator->getWorkshopUrl()
             ];
         }
-        return JsonResponse($data)
+        return new JsonResponse($data);
 
         // /**
         //  * @var CreatorRepository $creatorRepo
