@@ -63,10 +63,10 @@ class ApiController extends FOSRestController
                 'id'=>$island->getId(),
                 'name'=>$island->getName(),
                 'workshopUrl'=>$island->getWorkshopUrl()
-            ]
+            ];
         }
 
-        return new JsonResponse($data)
+        return new JsonResponse($data);
 
     }
 
