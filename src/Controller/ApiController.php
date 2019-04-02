@@ -54,13 +54,13 @@ class ApiController extends FOSRestController
         $creators = $em->getRepository('App:IslandCreator')->findAll();
 
         foreach($creators as $creator) {
-            $data = [
+            $data[] = [
                 'id'=>$creator->getId(),
                 'name'=>$creator->getName(),
                 'workshopUrl'=>$creator->getWorkshopUrl()
             ];
         }
-        return new JsonResponse($data);
+        return $data;
 
         // /**
         //  * @var CreatorRepository $creatorRepo
