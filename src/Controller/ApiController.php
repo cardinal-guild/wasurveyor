@@ -34,7 +34,35 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
  */
 class ApiController extends FOSRestController
 {
+    /**
+     * Returns oEmbed json for an island
+     * 
+     * @Route("/islands/{id}/oEmbed.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
+     * @SWG\Response(
+     *      response=200,
+     *      description="Returns oEmbed.json for an island"
+     * )
+     * @SWG\Tag(name="Island oEmbed")
+     * @View()
+     */
+    public function getIslandOEmbed($id)
+    {
+        $em = $this->getDoctrine()->getManager();
 
+        /**
+         * @var $island Island
+         */
+        $island = $em->getRepository('App:Island')->findOneBy(array('id' => $id));
+        if(!isset($island)) {
+            throw new BadRequestHttpException('Island not found!');
+        }
+        $data = [
+            'author_name'=>$island->getCreator()->getName(),
+            'author_url'=>$island->getCreator()->getWorkshopUrl(),
+            'type'=>'photo'
+        ];
+        return $data;
+    }
 
     /**
      * Returns all island creators
@@ -47,7 +75,7 @@ class ApiController extends FOSRestController
      * @SWG\Tag(name="Creators")
      * @View()
      */
-    public function getAllIslandCreators(Request $request)
+    public function getAllIslandCreators()
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -61,24 +89,6 @@ class ApiController extends FOSRestController
             ];
         }
         return $data;
-
-        // /**
-        //  * @var CreatorRepository $creatorRepo
-        //  */
-        // $creatorRepo = $em->getRepository('App:IslandCreator');
-
-        // $creators = $creatorRepo->findAll();
-
-        // foreach($creators as $creator) {
-        //     $data = [
-        //         'id'=>$island->getId(),
-        //         'name'=>$island->getName(),
-        //         'workshopUrl'=>$island->getWorkshopUrl()
-        //     ];
-        // }
-
-        // return new JsonResponse($data);
-
     }
 
     /**

@@ -67,7 +67,7 @@
     },
     "scripts": {
         "auto-scripts": {
-            "redis:flushall": "symfony-cmd",
+            "redis:flushall --quiet": "symfony-cmd",
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "doctrine:schema:update --force": "symfony-cmd",
