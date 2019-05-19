@@ -55,28 +55,57 @@ class ApiController extends FOSRestController
         if (count(array_diff($request->request->keys(), $defs))) {
             throw new BadRequestHttpException('Incorrect body format!');
         }
-        if (file_put_contents($logfile, json_encode($request->request->all())."\n", FILE_APPEND) !== FALSE) {
+        if (file_exists($logfile)) {
             $file_lines = file($logfile);
-            // $post = json_encode([
-            //     "content" => "test embed"
-            // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-            // $ch = curl_init();
-
-            // curl_setopt_array($ch, [
-            //     CURLOPT_URL => $webhookUrl,
-            //     CURLOPT_POST => true,
-            //     CURLOPT_POSTFIELDS => $post,
-            //     CURLOPT_HTTPHEADER => [
-            //         "Length" => strlen($post),
-            //         "Content-Type" => "application/json"
-            //     ]
-            // ]);
-            // $response = curl_exec($ch);
-            // curl_close($ch);
-            // return $response;
-            return new Response(end($file_lines));
+            $reverse = array_reverse($file_lines);
+            $last_entry = null;
+            foreach($reverse as $d) {
+                if(json_decode($d)->island_id === $request->request->get('island_id')) {
+                    $last_entry = json_decode($d);
+                    break;
+                }
+            }
+            if ($last_entry) {
+                if ($last_entry->alliance_name === $request->request->get('alliance_name') &&
+                    $last_entry->server === $request->request->get('server') &&
+                    $last_entry->island_name === $request->request->get('island_name')) {
+                        return new Response('Duplicate');
+                    }
+            }
         }
+        $request->request->set('timestamp', time());
+        $new_post = json_encode($request->request->all())."\n";
+        
+        if (file_put_contents($logfile, $new_post, FILE_APPEND) !== FALSE) {
+            return new Response("Added new entry");
+        //     $file_lines = file($logfile);
+        //     $data[] = json_decode($file_lines);
+        //     foreach($data as $d) {
+        //         if($d->island_id == $request->request->get('island_id')) {
+        //             return $d;
+        //         }
+        //     }
+        //     // $post = json_encode([
+        //     //     "content" => "test embed"
+        //     // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        //     // $ch = curl_init();
+
+        //     // curl_setopt_array($ch, [
+        //     //     CURLOPT_URL => $webhookUrl,
+        //     //     CURLOPT_POST => true,
+        //     //     CURLOPT_POSTFIELDS => $post,
+        //     //     CURLOPT_HTTPHEADER => [
+        //     //         "Length" => strlen($post),
+        //     //         "Content-Type" => "application/json"
+        //     //     ]
+        //     // ]);
+        //     // $response = curl_exec($ch);
+        //     // curl_close($ch);
+        //     // return $response;
+        //     return new Response(end($file_lines));
+        }
+        return new Response('Failed to add new entry');
     }
     /**
      * Returns oEmbed json for an island
