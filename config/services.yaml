@@ -29,7 +29,17 @@ services:
         resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
-
+        
+    App\Repository\AllianceRepository:
+        arguments: ['@doctrine', 'App\Entity\Alliance']
+        tags:
+            - { name: doctrine.repository_service }
+            
+    App\Repository\TerritoryControlTowerRepository:
+        arguments: ['@doctrine', 'App\Entity\TerritoryControlTower']
+        tags:
+            - { name: doctrine.repository_service }
+            
     token_authenticator:
         public: true
         class: App\Security\TokenAuthenticator
@@ -157,4 +167,18 @@ services:
         arguments: [~, App\Entity\MetalType, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: "type.management", label: "Metal types", icon: "<i class=\"fa fa-diamond\"></i>" }
+        public: true
+        
+    admin.alliance:
+        class:  App\Admin\AllianceAdmin
+        arguments: [~, App\Entity\Alliance, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "territory.management", label: "Alliances", icon: "<i class=\"fa fa-users\"></i>" }
+        public: true
+        
+    admin.tower:
+        class:  App\Admin\TerritoryControlTowerAdmin
+        arguments: [~, App\Entity\TerritoryControlTower, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "territory.management", label: "Territory Control Towers", icon: "<i class=\"fa fa-flag\"></i>" }
         public: true

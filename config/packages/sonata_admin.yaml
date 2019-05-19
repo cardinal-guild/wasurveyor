@@ -26,7 +26,12 @@ sonata_admin:
                 items:
                 - admin.metaltype
                 - admin.treetype
-
+            territory.management:
+                label: Territory Management
+                icon:  '<i class="fa fa-compass"></i>'
+                items:
+                    - admin.alliance
+                    - admin.tower
             sonata.admin.group.administration:
                 label:           "User management"
                 label_catalogue: SonataAdminBundle

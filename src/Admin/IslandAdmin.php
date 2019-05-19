@@ -8,12 +8,14 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\AdminType;
 use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\CoreBundle\Form\Type\BooleanType;
 use Sonata\CoreBundle\Form\Type\CollectionType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -45,6 +47,7 @@ class IslandAdmin extends AbstractAdmin
     {
         $datagridMapper
             ->add('id')
+            ->add('guid')
             ->add('name')
             ->add('nickname')
             ->add('lat')
@@ -113,8 +116,11 @@ class IslandAdmin extends AbstractAdmin
                     ->add('type', ChoiceType::class, ['choices'=>['Saborian'=>0,'Kioki'=>1]])
                     ->add('workshopUrl')
                     ->add('creator', ModelType::class, ['property'=>'name','btn_add'=>'Add new island creator', 'btn_catalogue'=>true,'help'=>'Please select a creator from the list or create a new one'])
+			        ->add('pveTower', ModelListType::class, ['label'=>'PVE Territory Control Tower','required'=>false, 'btn_list'=>false])
+			        ->add('pvpTower', ModelListType::class, ['label'=>'PVP Territory Control Tower','required'=>false, 'btn_list'=>false])
                 ->end()
                 ->with('Options', ['class'=>'col-sm-12 col-md-4'])
+                    ->add('guid')
                     ->add('revivalChambers', null, ['help'=>'Does this island have revival chambers?'])
                     ->add('turrets', null, ['help'=>'Does this island have auto turrets/swivel guns?'])
                     ->add('dangerous', null, ['help'=>'Is the island dangerous to land on? (Cannons on top, swivels on top)'])
@@ -218,17 +224,17 @@ class IslandAdmin extends AbstractAdmin
 
 
     /**
-     * @param $object Island
+     * @param $island Island
      */
-    public function preUpdate($object)
+    public function preUpdate($island)
     {
         $user = $this->getUser();
         if($user) {
-            if (!$object->getSurveyCreatedBy()) {
-                $object->setSurveyCreatedBy($user);
+            if (!$island->getSurveyCreatedBy()) {
+                $island->setSurveyCreatedBy($user);
             }
-            $object->setUpdatedAt(new \DateTime());
-            $object->setSurveyUpdatedBy($user);
+            $island->setUpdatedAt(new \DateTime());
+            $island->setSurveyUpdatedBy($user);
         }
     }
 

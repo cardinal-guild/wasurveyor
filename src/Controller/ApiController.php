@@ -36,7 +36,7 @@ class ApiController extends FOSRestController
 {
     /**
      * Returns oEmbed json for an island
-     * 
+     *
      * @Route("/islands/{id}/oEmbed.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
      * @SWG\Response(
      *      response=200,
@@ -66,7 +66,7 @@ class ApiController extends FOSRestController
 
     /**
      * Returns all island creators
-     * 
+     *
      * @Route("/creators.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
      * @SWG\Response(
      *      response=200,
@@ -158,7 +158,20 @@ class ApiController extends FOSRestController
                 'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
-
+	        if($island->getPveTower() && $island->getPveTower()->getAlliance()) {
+		        $pveTower = $island->getPveTower();
+	        	$pveTowerData = [];
+		        $pveTowerData['name'] = $pveTower->getName();
+		        $pveTowerData['alliance'] = $pveTower->getAlliance()->getName();
+		        $data['pve_tower'] = $pveTowerData;
+	        }
+	        if($island->getPvpTower() && $island->getPvpTower()->getAlliance()) {
+		        $pvpTower = $island->getPvpTower();
+		        $pvpTowerData = [];
+		        $pvpTowerData['name'] = $pvpTower->getName();
+		        $pvpTowerData['alliance'] = $pvpTower->getAlliance()->getName();
+		        $data['pvp_tower'] = $pvpTowerData;
+	        }
             $data['trees'] = [];
             foreach($island->getTrees() as $tree) {
                 if($tree->__toString() !== "New Island Tree") {

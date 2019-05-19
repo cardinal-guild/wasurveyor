@@ -32,6 +32,13 @@ class Island
      */
     protected $id;
 
+	/**
+	 * @var string
+	 * @ORM\Column(type="string", nullable=true)
+	 * @JMS\Expose()
+	 */
+	protected $guid;
+
     /**
      * @var string
      * @ORM\Column(length=128)
@@ -69,7 +76,6 @@ class Island
      * @Assert\NotEqualTo(value="0")
      */
     protected $lng;
-
 
     /**
      * @var integer
@@ -158,6 +164,22 @@ class Island
      */
     protected $pvpMetals;
 
+	/**
+	 * @var TerritoryControlTower
+	 * @ORM\OneToOne(targetEntity="TerritoryControlTower", cascade={"persist"}, inversedBy="pveIsland", orphanRemoval=true)
+	 * @ORM\JoinColumn(nullable=true)
+	 * @JMS\Expose()
+	 */
+	protected $pveTower;
+
+	/**
+	 * @var TerritoryControlTower
+	 * @ORM\OneToOne(targetEntity="TerritoryControlTower", cascade={"persist"}, inversedBy="pvpIsland", orphanRemoval=true)
+	 * @ORM\JoinColumn(nullable=true)
+	 * @JMS\Expose()
+	 */
+	protected $pvpTower;
+
     /**
      * @var IslandCreator
      * @JMS\Expose
@@ -222,10 +244,26 @@ class Island
     /**
      * @param mixed $id
      */
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
+
+	/**
+	 * @return string
+	 */
+	public function getGuid()
+	{
+		return $this->guid;
+	}
+
+	/**
+	 * @param string $guid
+	 */
+	public function setGuid($guid)
+	{
+		$this->guid = $guid;
+	}
 
     /**
      * @return string
@@ -680,8 +718,45 @@ class Island
         $this->tier = $tier;
     }
 
+	/**
+	 * @return TerritoryControlTower
+	 */
+	public function getPveTower()
+	{
+		return $this->pveTower;
+	}
 
-    public function __toString()
+	/**
+	 * @param TerritoryControlTower $tower
+	 */
+	public function setPveTower(?TerritoryControlTower $tower)
+	{
+		$this->pveTower = $tower;
+		if($this->pveTower) {
+			$tower->setMode(TerritoryControlTower::PVE);
+		}
+	}
+
+	/**
+	 * @return TerritoryControlTower
+	 */
+	public function getPvpTower()
+	{
+		return $this->pvpTower;
+	}
+
+	/**
+	 * @param TerritoryControlTower $tower
+	 */
+	public function setPvpTower(?TerritoryControlTower $tower)
+	{
+		$this->pvpTower = $tower;
+		if($this->pvpTower) {
+			$tower->setMode(TerritoryControlTower::PVP);
+		}
+	}
+
+	public function __toString()
     {
         if($this->getName() && $this->getNickname()) {
             return $this->getName() . ' ('.$this->getNickname().')';
