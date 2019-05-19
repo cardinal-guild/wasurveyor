@@ -49,7 +49,7 @@ class ApiController extends FOSRestController
     public function updateInfo(Request $request)
     {
         $logfile = getcwd().'/tc_log.txt';
-        $webhookUrl = "";
+        $webhookUrl = "https://canary.discordapp.com/api/webhooks/579705292070191145/Y_BT7-2hvw0Za-L4h1-7Uk_XnF0V8HmXdVpCOUbKYTq55rzW_oRlJLeT-nTtWXam5k6H";
 
         $defs = ["island_id", "alliance_name", "island_name", "server"];
         if (count(array_diff($request->request->keys(), $defs))) {
@@ -77,33 +77,55 @@ class ApiController extends FOSRestController
         $new_post = json_encode($request->request->all())."\n";
         
         if (file_put_contents($logfile, $new_post, FILE_APPEND) !== FALSE) {
-            return new Response("Added new entry");
-        //     $file_lines = file($logfile);
-        //     $data[] = json_decode($file_lines);
-        //     foreach($data as $d) {
-        //         if($d->island_id == $request->request->get('island_id')) {
-        //             return $d;
-        //         }
-        //     }
-        //     // $post = json_encode([
-        //     //     "content" => "test embed"
-        //     // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $em = $this->getDoctrine()->getManager();
 
-        //     // $ch = curl_init();
+            /**
+             * @var island Island
+             */
+            $island = $em->getRepository('App:Island')->findOneBy(array('guid'=>$request->request->get('island_id')));
+            if (!$island) {
+                return new Response('Added new entry (no island found)');
+            }
 
-        //     // curl_setopt_array($ch, [
-        //     //     CURLOPT_URL => $webhookUrl,
-        //     //     CURLOPT_POST => true,
-        //     //     CURLOPT_POSTFIELDS => $post,
-        //     //     CURLOPT_HTTPHEADER => [
-        //     //         "Length" => strlen($post),
-        //     //         "Content-Type" => "application/json"
-        //     //     ]
-        //     // ]);
-        //     // $response = curl_exec($ch);
-        //     // curl_close($ch);
-        //     // return $response;
-        //     return new Response(end($file_lines));
+            $post = json_encode([
+                "embeds" => [
+                    [
+                        "title" => $island->getName(),
+                        "url" => "https://map.cardinalguild.com/".$request->request->get('server')."/".$island->getId(),
+                        "type" => "rich",
+                        "author" => [
+                            "name" => strtoupper($request->request->get('server'))
+                        ],
+                        "fields" => [
+                            [
+                                "name" => "Previous Owner",
+                                "value" => "<insert prev alliance owner>",
+                                "inline" => true
+                            ],
+                            [
+                                "name" => "New Owner",
+                                "value" => $request->request->get('alliance_name'),
+                                "inline" => true
+                            ]
+                        ]
+                    ]
+                ]
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+            $ch = curl_init();
+
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $webhookUrl,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $post,
+                CURLOPT_HTTPHEADER => [
+                    "Length" => strlen($post),
+                    "Content-Type" => "application/json"
+                ]
+            ]);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            return new Response('Added new entry (found island!)');
         }
         return new Response('Failed to add new entry');
     }
