@@ -45,16 +45,22 @@ class ExtractIslandGuidCommand extends Command
         $progressBar = new ProgressBar($output, $islands);
 
         $output->writeln('Trying to set island GUID (ID) by workshop url, '.$islandCount.' islands ...');
-        $i = 0;
         $totalCount = 0;
+        $i = 0;
         foreach($islands as $island) {
             /**
              * @var $island Island
              */
-
+            if ($island->getWorkshopUrl() && !$island->getGuid()) {
+                if(preg_match("/id=([^&]*)/", $island->getWorkshopUrl(), $match)) {
+                    $island->setGuid(explode("=", $match[0])[1]);
+                    $totalCount++;
+                }
+            }
             if ($i % 10 === 0) {
                 $this->em->flush();
             }
+            $i++;
             $progressBar->advance();
         }
         $progressBar->finish();
