@@ -37,7 +37,14 @@ class Island
 	 * @ORM\Column(type="string", nullable=true)
 	 * @JMS\Expose()
 	 */
-	protected $guid;
+    protected $guid;
+    
+    /**
+     * @var array
+     * @ORM\Column(type="array")
+     * @JMS\Expose()
+     */
+    protected $ptsTC;
 
     /**
      * @var string
@@ -263,7 +270,28 @@ class Island
 	public function setGuid($guid)
 	{
 		$this->guid = $guid;
-	}
+    }
+
+    /**
+     * @return array
+     */
+    public function getPtsTcChanges()
+    {
+        return $this->ptsTC;
+    }
+
+    /**
+     * @param string $newChange
+     */
+    public function addPtsTcChange($newChange)
+    {
+        if (!$this->ptsTC) {
+            $this->ptsTC = array($newChange);
+        }
+        else {
+            array_push($this->ptsTC, $newChange);
+        }
+    }
 
     /**
      * @return string
