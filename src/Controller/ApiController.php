@@ -44,6 +44,7 @@ class ApiController extends FOSRestController
      *      response=200,
      *      description="Post api for tc updates"
      * )
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="Bearer TOKEN", description="Bossa Authorization key" )
      * @SWG\Tag(name="TC API")
      * @View()
      */
@@ -51,59 +52,58 @@ class ApiController extends FOSRestController
     {
     	$logger = $this->get('monolog.logger.bossa');
 		$logger->info(json_encode($request->request->all()));
-        $webhookUrl = "https://canary.discordapp.com/api/webhooks/579705292070191145/Y_BT7-2hvw0Za-L4h1-7Uk_XnF0V8HmXdVpCOUbKYTq55rzW_oRlJLeT-nTtWXam5k6H";
-
-        $em = $this->getDoctrine()->getManager();
-
-        /**
-         * @var island Island
-         */
-        $island = $em->getRepository('App:Island')->findOneBy(array('guid'=>$request->request->get('island_id')));
-        if (!$island) {
-            return new Response('Added new entry (no island found)');
-        }
-
-        $post = json_encode([
-            "embeds" => [
-                [
-                    "title" => $island->getName(),
-                    "url" => "https://map.cardinalguild.com/".$request->request->get('server')."/".$island->getId(),
-                    "type" => "rich",
-                    "author" => [
-                        "name" => strtoupper($request->request->get('server'))
-                    ],
-                    "fields" => [
-                        [
-                            "name" => "Previous Owner",
-                            "value" => "<insert prev alliance owner>",
-                            "inline" => true
-                        ],
-                        [
-                            "name" => "New Owner",
-                            "value" => $request->request->get('alliance_name'),
-                            "inline" => true
-                        ]
-                    ]
-                ]
-            ]
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-        $ch = curl_init();
-
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $webhookUrl,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $post,
-            CURLOPT_HTTPHEADER => [
-                "Length" => strlen($post),
-                "Content-Type" => "application/json"
-            ]
-        ]);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        return new Response('Added new entry (found island!)');
+//        $webhookUrl = "https://canary.discordapp.com/api/webhooks/579705292070191145/Y_BT7-2hvw0Za-L4h1-7Uk_XnF0V8HmXdVpCOUbKYTq55rzW_oRlJLeT-nTtWXam5k6H";
+//
+//        $em = $this->getDoctrine()->getManager();
+//
+//        /**
+//         * @var island Island
+//         */
+//        $island = $em->getRepository('App:Island')->findOneBy(array('guid'=>$request->request->get('island_id')));
+//        if (!$island) {
+//            return new Response('Added new entry (no island found)');
+//        }
+//
+//        $post = json_encode([
+//            "embeds" => [
+//                [
+//                    "title" => $island->getName(),
+//                    "url" => "https://map.cardinalguild.com/".$request->request->get('server')."/".$island->getId(),
+//                    "type" => "rich",
+//                    "author" => [
+//                        "name" => strtoupper($request->request->get('server'))
+//                    ],
+//                    "fields" => [
+//                        [
+//                            "name" => "Previous Owner",
+//                            "value" => "<insert prev alliance owner>",
+//                            "inline" => true
+//                        ],
+//                        [
+//                            "name" => "New Owner",
+//                            "value" => $request->request->get('alliance_name'),
+//                            "inline" => true
+//                        ]
+//                    ]
+//                ]
+//            ]
+//        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+//
+//        $ch = curl_init();
+//
+//        curl_setopt_array($ch, [
+//            CURLOPT_URL => $webhookUrl,
+//            CURLOPT_POST => true,
+//            CURLOPT_POSTFIELDS => $post,
+//            CURLOPT_HTTPHEADER => [
+//                "Length" => strlen($post),
+//                "Content-Type" => "application/json"
+//            ]
+//        ]);
+//        $response = curl_exec($ch);
+//        curl_close($ch);
+        return new Response('ok');
     }
-
 
     /**
      * Returns oEmbed json for an island
