@@ -20,6 +20,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -34,6 +35,49 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
  */
 class ApiController extends FOSRestController
 {
+    /**
+     * Post for Bossa tc info
+     * 
+     * @Route("/bossa/island/info.{_format}", methods={"POST"}, defaults={ "_format": "json" })
+     * @SWG\Response(
+     *      response=200,
+     *      description="Post api for tc updates"
+     * )
+     * @SWG\Tag(name="TC API")
+     * @View()
+     */
+    public function updateInfo(Request $request)
+    {
+        $logfile = getcwd().'/tc_log.txt';
+        $webhookUrl = "";
+
+        $defs = ["island_id", "alliance_name", "island_name", "server"];
+        if (count(array_diff($request->request->keys(), $defs))) {
+            throw new BadRequestHttpException('Incorrect body format!');
+        }
+        if (file_put_contents($logfile, json_encode($request->request->all())."\n", FILE_APPEND) !== FALSE) {
+            $file_lines = file($logfile);
+            // $post = json_encode([
+            //     "content" => "test embed"
+            // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+            // $ch = curl_init();
+
+            // curl_setopt_array($ch, [
+            //     CURLOPT_URL => $webhookUrl,
+            //     CURLOPT_POST => true,
+            //     CURLOPT_POSTFIELDS => $post,
+            //     CURLOPT_HTTPHEADER => [
+            //         "Length" => strlen($post),
+            //         "Content-Type" => "application/json"
+            //     ]
+            // ]);
+            // $response = curl_exec($ch);
+            // curl_close($ch);
+            // return $response;
+            return new Response(end($file_lines));
+        }
+    }
     /**
      * Returns oEmbed json for an island
      *
