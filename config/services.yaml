@@ -44,6 +44,10 @@ services:
         public: true
         class: App\Security\TokenAuthenticator
 
+    bossa_authenticator:
+        public: true
+        class: App\Security\BossaAuthenticator
+        
     azine_hybrid_auth_service:
         public: true
         class:  Azine\HybridAuthBundle\Services\AzineHybridAuth

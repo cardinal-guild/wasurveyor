@@ -42,6 +42,7 @@ class AccountApiController extends FOSRestController
      *     description="Validate an account with api tokens"
      * )
      * @SWG\Tag(name="Account")
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @View()
      */
     public function validateApiKey(Request $request)
@@ -59,6 +60,7 @@ class AccountApiController extends FOSRestController
      *     description="Logout current authenticated user"
      * )
      * @SWG\Tag(name="Account")
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @View()
      */
     public function logout(Request $request)
@@ -88,6 +90,7 @@ class AccountApiController extends FOSRestController
      *     type="string",
      *     required=true
      * )
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @SWG\Tag(name="Account")
      * @View()
      */
@@ -128,6 +131,7 @@ class AccountApiController extends FOSRestController
      *     type="string",
      *     required=true
      * )
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @SWG\Tag(name="Account")
      * @View()
      */
@@ -155,6 +159,7 @@ class AccountApiController extends FOSRestController
      *     description="Get all your characters"
      * )
      * @SWG\Tag(name="Account")
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @View()
      */
     public function getCharacters(Request $request)
@@ -192,6 +197,7 @@ class AccountApiController extends FOSRestController
      *     required=true
      * )
      * @SWG\Tag(name="Account")
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @View()
      */
     public function addVisitedIsland(Request $request)
@@ -244,6 +250,7 @@ class AccountApiController extends FOSRestController
      *     required=true
      * )
      * @SWG\Tag(name="Account")
+     * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="UUID", description="UUID Authorization key" )
      * @View()
      */
     public function removeVisitedIsland(Request $request)

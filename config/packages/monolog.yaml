@@ -1,0 +1,8 @@
+monolog:
+    channels: ['bossa','doctrine', 'event', 'security', 'request']
+    handlers:
+        bossa:
+            type: stream
+            path: "%kernel.logs_dir%/bossa_%kernel.environment%.log"
+            level: info
+            channels: bossa

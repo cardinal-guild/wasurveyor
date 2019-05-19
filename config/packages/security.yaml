@@ -38,6 +38,7 @@ security:
             - ROLE_ADMIN_ISLAND_CREATOR_ADMIN
             - ROLE_ADMIN_TREETYPE_ADMIN
             - ROLE_ADMIN_METALTYPE_ADMIN
+        ROLE_BOSSA:             [ROLE_ADMIN]
         ROLE_SONATA_ADMIN:      [ROLE_ADMIN]
         ROLE_SUPER_ADMIN:       [ROLE_SONATA_ADMIN, ROLE_ALLOWED_TO_SWITCH]
     access_decision_manager:
@@ -48,22 +49,36 @@ security:
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username
+        bossa_provider:
+            id: App\Providers\BossaProvider
+
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+            pattern:            ^/(_(profiler|wdt)|bossa_log|css|images|js)/
+            security:           false
         api_account:
-            pattern:             ^/api/account.*
-            anonymous: ~
-            logout: ~
+            provider:           fos_userbundle
+            pattern:            ^/api/account.*
+            anonymous:          ~
+            logout:             ~
+            stateless:          true
             guard:
                 authenticators:
                     - token_authenticator
-            stateless: true
+        bossa:
+            provider:           bossa_provider
+            pattern:            ^/api/bossa.*
+            anonymous:          ~
+            logout:             ~
+            guard:
+                authenticators:
+                    - bossa_authenticator
+            stateless:          true
         api:
-            pattern:             ^/(api|media|images|uploads).*
+            pattern:            ^/(api|media|images|uploads).*
             security: false
         admin:
+            provider:           fos_userbundle
             pattern:            .*
             context:            user
             form_login:
@@ -105,6 +120,7 @@ security:
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 
         - { path: ^/api/account.*, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/bossa.*, roles: ROLE_BOSSA }
         # Secured part of the site
         # This config requires being logged for the whole site and having the admin role for the admin part.
         # Change these rules to adapt them to your needs
