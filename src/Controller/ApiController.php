@@ -50,88 +50,89 @@ class ApiController extends FOSRestController
      */
     public function updateInfo(Request $request)
     {
-    	// $logger = $this->get('monolog.logger.bossa');
-        // $logger->info(json_encode($request->request->all()));
+    	$logger = $this->get('monolog.logger.bossa');
+        $logger->info(json_encode($request->request->all()));
         
-        $em = $this->getDoctrine()->getManager();
+        // $em = $this->getDoctrine()->getManager();
 
-        $island = $em->getRepository('App:Island')->findOneBy(array("guid" => $request->request->get('island_id')));
+        // $island = $em->getRepository('App:Island')->findOneBy(array("guid" => $request->request->get('island_id')));
 
-        if (!$island) {
-            return new Response("Island with that ID not found (which doesn't mean it doesn't exist)");
-        }
+        // if (!$island) {
+        //     return new Response("Island with that ID not found (which doesn't mean it doesn't exist)");
+        // }
 
-        $changes = $island->getPtsTcChanges();
-        if ($changes !== false) {
-            $lastChange = json_decode(end($changes));
+        // $changes = $island->getPtsTcChanges();
+        // if ($changes !== false) {
+        //     $lastChange = json_decode(end($changes));
 
-            if ($lastChange->alliance_name === $request->request->get('alliance_name') && $lastChange->island_name === $request->request->get('island_name')) {
-                return new Response("Duplicate");
-            }
-        }
+        //     if ($lastChange->alliance_name === $request->request->get('alliance_name') && $lastChange->island_name === $request->request->get('island_name')) {
+        //         return new Response("Duplicate");
+        //     }
+        // }
 
-        $request->request->set("timestamp", time());
+        // $request->request->set("timestamp", time());
 
-        $mode = $request->request->get('server');
+        // $mode = $request->request->get('server');
 
-        if ($mode === "pts") {
-            $request->request->remove('server');
-            $island->addPtsTcChange(json_encode($request->request->all()));
-        }
+        // if ($mode === "pts") {
+        //     $request->request->remove('server');
+        //     $island->addPtsTcChange(json_encode($request->request->all()));
+        // }
 
-        if ($changes !== false && $lastChange->alliance_name === $request->request->get('alliance_name')) {
-            $em->flush();
-            return new Response("OK (name change)");
-        }
+        // if ($changes !== false && $lastChange->alliance_name === $request->request->get('alliance_name')) {
+        //     $em->flush();
+        //     return new Response("OK (name change)");
+        // }
 
-        $prevOwner = null;
-        if ($changes !== false) {
-            $prevOwner = $lastChange->alliance_name;
-        }
-        else {
-            $prevOwner = "Unclaimed";
-        }
+        // $prevOwner = null;
+        // if ($changes !== false) {
+        //     $prevOwner = $lastChange->alliance_name;
+        // }
+        // else {
+        //     $prevOwner = "Unclaimed";
+        // }
 
-        $post = json_encode([
-            "embeds" => [
-                [
-                    "title" => $island->getName(), 
-                    "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
-                    "type" => "rich",
-                    "author" => [
-                        "name" => strtoupper($mode)
-                    ],
-                    "fields" => [
-                        [
-                            "name" => "Previous Owner",
-                            "value" => $prevOwner,
-                            "inline" => true
-                        ],
-                        [
-                            "name" => "New Owner",
-                            "value" => $request->request->get('alliance_name'),
-                            "inline" => true
-                        ]
-                    ]
-                ]
-            ]
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        // $post = json_encode([
+        //     "embeds" => [
+        //         [
+        //             "title" => $island->getName(), 
+        //             "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
+        //             "type" => "rich",
+        //             "author" => [
+        //                 "name" => strtoupper($mode)
+        //             ],
+        //             "fields" => [
+        //                 [
+        //                     "name" => "Previous Owner",
+        //                     "value" => $prevOwner,
+        //                     "inline" => true
+        //                 ],
+        //                 [
+        //                     "name" => "New Owner",
+        //                     "value" => $request->request->get('alliance_name'),
+        //                     "inline" => true
+        //                 ]
+        //             ]
+        //         ]
+        //     ]
+        // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        $ch = curl_init();
+        // $ch = curl_init();
 
-        curl_setopt_array($ch, [
-            CURLOPT_URL => "https://canary.discordapp.com/api/webhooks/579705292070191145/Y_BT7-2hvw0Za-L4h1-7Uk_XnF0V8HmXdVpCOUbKYTq55rzW_oRlJLeT-nTtWXam5k6H",
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $post,
-            CURLOPT_HTTPHEADER => [
-                "Length" => strlen($post),
-                "Content-Type" => "application/json"
-            ]
-        ]);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $em->flush();
-        return new Response("OK (alliance change)");
+        // curl_setopt_array($ch, [
+        //     CURLOPT_URL => "https://canary.discordapp.com/api/webhooks/579705292070191145/Y_BT7-2hvw0Za-L4h1-7Uk_XnF0V8HmXdVpCOUbKYTq55rzW_oRlJLeT-nTtWXam5k6H",
+        //     CURLOPT_POST => true,
+        //     CURLOPT_POSTFIELDS => $post,
+        //     CURLOPT_HTTPHEADER => [
+        //         "Length" => strlen($post),
+        //         "Content-Type" => "application/json"
+        //     ]
+        // ]);
+        // $response = curl_exec($ch);
+        // curl_close($ch);
+        // $em->flush();
+        // return new Response("OK (alliance change)");
+        return new Response("OK");
     }
 
     /**
