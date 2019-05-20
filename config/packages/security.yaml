@@ -75,7 +75,7 @@ security:
                     - bossa_authenticator
             stateless:          true
         api:
-            pattern:            ^/(api|media|images|uploads).*
+            pattern:            ^/(bossa_log|api|media|images|uploads).*
             security: false
         admin:
             provider:           fos_userbundle
@@ -106,6 +106,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # Admin login page needs to be accessed without credential
+        - { path: ^/bossa_log, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login/map$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }
