@@ -1,4 +1,5 @@
 ###> symfony/framework-bundle ###
+.env
 .idea
 .mariadb-init
 *.DS_Store
@@ -18,8 +19,8 @@ Icon
 .vscode
 .vagrant
 node_modules
-/.env.local
-/.env.*.local
+.env.local
+.env.*.local
 /public/bundles/
 /public/images/
 /public/media/
@@ -36,4 +37,3 @@ node_modules
 
 public/tc_log\.txt
 
-\.env
