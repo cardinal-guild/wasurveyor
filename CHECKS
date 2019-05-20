@@ -1,6 +1,6 @@
-WAIT=10
+WAIT=3
 ATTEMPTS=4
-/
+/login
 /bundles/sonataadmin/Admin.js
 /api/doc
 /api/islands.json
