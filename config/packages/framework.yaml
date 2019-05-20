@@ -1,5 +1,6 @@
 parameters:
     bossa_key: '%env(BOSSA_KEY)%'
+    bossa_tc_channel: '%env(BOSSA_TC_CHANNEL)%'
     locale: en
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
 
