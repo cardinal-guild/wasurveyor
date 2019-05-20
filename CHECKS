@@ -1,3 +1,5 @@
+WAIT=10
+ATTEMPTS=4
 /
 /bundles/sonataadmin/Admin.js
 /api/doc
