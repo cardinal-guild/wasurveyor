@@ -33,7 +33,7 @@ class TCData
     private $alliance;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\TCHistory", cascade={"persist", "remove"}, fetch="LAZY")
+     * @ORM\OneToOne(targetEntity="App\Entity\TCHistory", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
     private $history;
 
