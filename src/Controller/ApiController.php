@@ -62,12 +62,12 @@ class ApiController extends FOSRestController
         $em = $this->getDoctrine()->getManager();
 
 	    if (!$params->has('island_id')) {
-		    throw new BadRequestHttpException("island_id must be given");
+		    return $this->view('ok');
 	    }
         $island = $em->getRepository('App:Island')->findOneBy(array("guid" => $params->get('island_id')));
 
         if (!$island) {
-            throw new BadRequestHttpException("Island with that ID not found (which doesn't mean it doesn't exist)");
+	        return $this->view('ok');
         }
 
         $tcData = $island->getPtsTC();

@@ -709,15 +709,15 @@ class Island
     }
 
 	public function __toString()
-             {
-                 if($this->getName() && $this->getNickname()) {
-                     return $this->getName() . ' ('.$this->getNickname().')';
-                 }
-                 if($this->getName()) {
-                     return $this->getName();
-                 }
-                 return "New island";
-             }
+     {
+         if($this->getName() && $this->getNickname()) {
+             return $this->getName() . ' ('.$this->getNickname().')';
+         }
+         if($this->getName()) {
+             return $this->getName();
+         }
+         return "New island";
+     }
 
     public function getPtsTC(): ?TCData
     {
