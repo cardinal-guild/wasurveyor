@@ -89,6 +89,10 @@ class IslandRepository extends EntityRepository
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
             ->orderBy('ii.position', 'ASC');
+        if(!empty($params["id"])) {
+            $qb->andWhere($qb->expr()->eq('island.id', ":ID"));
+            $qb->setParameter('ID', intval($params['id']));
+        }
         if(!empty($params['quality'])) {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('ipvem.quality', ":QUALITY"),

@@ -38,13 +38,6 @@ class Island
 	 * @JMS\Expose()
 	 */
     protected $guid;
-    
-    /**
-     * @var array
-     * @ORM\Column(type="array")
-     * @JMS\Expose()
-     */
-    protected $ptsTC;
 
     /**
      * @var string
@@ -171,22 +164,6 @@ class Island
      */
     protected $pvpMetals;
 
-	/**
-	 * @var TerritoryControlTower
-	 * @ORM\OneToOne(targetEntity="TerritoryControlTower", cascade={"persist"}, inversedBy="pveIsland", orphanRemoval=true)
-	 * @ORM\JoinColumn(nullable=true)
-	 * @JMS\Expose()
-	 */
-	protected $pveTower;
-
-	/**
-	 * @var TerritoryControlTower
-	 * @ORM\OneToOne(targetEntity="TerritoryControlTower", cascade={"persist"}, inversedBy="pvpIsland", orphanRemoval=true)
-	 * @ORM\JoinColumn(nullable=true)
-	 * @JMS\Expose()
-	 */
-	protected $pvpTower;
-
     /**
      * @var IslandCreator
      * @JMS\Expose
@@ -224,6 +201,11 @@ class Island
      */
     protected $workshopUrl;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\TCData", cascade={"persist", "remove"})
+     */
+    private $ptsTC;
+
     use TimestampableEntity;
     use SoftDeleteableEntity;
     use IslandMetalCollections;
@@ -238,6 +220,7 @@ class Island
         $this->lng = 0;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
+        //TODO: add constructors for the tc data entities for servers
     }
 
     /**
@@ -260,38 +243,17 @@ class Island
 	 * @return string
 	 */
 	public function getGuid()
-	{
-		return $this->guid;
-	}
+         	{
+         		return $this->guid;
+         	}
 
 	/**
 	 * @param string $guid
 	 */
 	public function setGuid($guid)
-	{
-		$this->guid = $guid;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPtsTcChanges()
-    {
-        return $this->ptsTC;
-    }
-
-    /**
-     * @param string $newChange
-     */
-    public function addPtsTcChange($newChange)
-    {
-        if (!$this->ptsTC) {
-            $this->ptsTC = array($newChange);
-        }
-        else {
-            array_push($this->ptsTC, $newChange);
-        }
-    }
+         	{
+         		$this->guid = $guid;
+             }
 
     /**
      * @return string
@@ -746,53 +708,27 @@ class Island
         $this->tier = $tier;
     }
 
-	/**
-	 * @return TerritoryControlTower
-	 */
-	public function getPveTower()
-	{
-		return $this->pveTower;
-	}
-
-	/**
-	 * @param TerritoryControlTower $tower
-	 */
-	public function setPveTower(?TerritoryControlTower $tower)
-	{
-		$this->pveTower = $tower;
-		if($this->pveTower) {
-			$tower->setMode(TerritoryControlTower::PVE);
-		}
-	}
-
-	/**
-	 * @return TerritoryControlTower
-	 */
-	public function getPvpTower()
-	{
-		return $this->pvpTower;
-	}
-
-	/**
-	 * @param TerritoryControlTower $tower
-	 */
-	public function setPvpTower(?TerritoryControlTower $tower)
-	{
-		$this->pvpTower = $tower;
-		if($this->pvpTower) {
-			$tower->setMode(TerritoryControlTower::PVP);
-		}
-	}
-
 	public function __toString()
+             {
+                 if($this->getName() && $this->getNickname()) {
+                     return $this->getName() . ' ('.$this->getNickname().')';
+                 }
+                 if($this->getName()) {
+                     return $this->getName();
+                 }
+                 return "New island";
+             }
+
+    public function getPtsTC(): ?TCData
     {
-        if($this->getName() && $this->getNickname()) {
-            return $this->getName() . ' ('.$this->getNickname().')';
-        }
-        if($this->getName()) {
-            return $this->getName();
-        }
-        return "New island";
+        return $this->ptsTC;
+    }
+
+    public function setPtsTC(?TCData $ptsTC): self
+    {
+        $this->ptsTC = $ptsTC;
+
+        return $this;
     }
 
 }

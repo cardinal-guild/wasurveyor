@@ -1,8 +1,13 @@
 monolog:
-    channels: ['bossa','doctrine', 'event', 'security', 'request']
+    channels: ['tc_updates', 'bossa','doctrine', 'event', 'security', 'request']
     handlers:
         bossa:
             type: stream
             path: "%kernel.logs_dir%/bossa_%kernel.environment%.log"
             level: info
             channels: bossa
+        tc_updates:
+            type: stream
+            path: "%kernel.logs_dir%/tc_updates_%kernel.environment%.log"
+            level: info
+            channels: 'tc_updates'

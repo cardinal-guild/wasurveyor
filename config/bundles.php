@@ -37,4 +37,5 @@ return [
     FOS\RestBundle\FOSRestBundle::class => ['all' => true],
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
     Minishlink\Bundle\WebPushBundle\MinishlinkWebPushBundle::class => ['all' => true],
+    Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
 ];

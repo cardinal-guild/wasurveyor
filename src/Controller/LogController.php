@@ -27,4 +27,21 @@ class LogController extends AbstractController
 		}
 		return new Response('no log file found');
 	}
+
+	/**
+	 * @Route(path="/tc_updates_log", name="TC Update Log")
+	 */
+	public function getTCUpdateLog() {
+		$projectDir = $this->getParameter('kernel.project_dir');
+		$environment = $this->getParameter('kernel.environment');
+		$finder = new Finder();
+		$finder->in($projectDir.'/var/logs')->files()->name('tc_updates_'.$environment.'.log');
+		if($finder->hasResults()) {
+			$iterator = $finder->getIterator();
+			$iterator->rewind();
+			$file = $iterator->current();
+			return new Response('<pre>'.$file->getContents().'</pre>');
+		}
+		return new Response('no log file found');
+	}
 }
