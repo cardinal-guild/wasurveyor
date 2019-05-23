@@ -51,7 +51,7 @@ class ExtractIslandGuidCommand extends Command
             /**
              * @var $island Island
              */
-            if ($island->getWorkshopUrl() && !$island->getGuid()) {
+            if ($island->getWorkshopUrl()) {
                 if(preg_match("/id=([^&]*)/", $island->getWorkshopUrl(), $match)) {
                     $island->setGuid(explode("=", $match[0])[1]);
                     $totalCount++;
