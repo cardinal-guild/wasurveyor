@@ -31,7 +31,6 @@ sonata_admin:
                 icon:  '<i class="fa fa-compass"></i>'
                 items:
                     - admin.alliance
-                    - admin.tower
             sonata.admin.group.administration:
                 label:           "User management"
                 label_catalogue: SonataAdminBundle
