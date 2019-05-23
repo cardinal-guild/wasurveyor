@@ -58,25 +58,25 @@ class ApiController extends FOSRestController
     	$bossaTcChannel = $this->getParameter('bossa_tc_channel');
         $logger = $this->get('monolog.logger.bossa');
         $uLogger = $this->get('monolog.logger.tc_updates');
-        $logger->info(json_encode($params->all()));
+        $logger->info(json_encode($request->request->all()));
 
         $em = $this->getDoctrine()->getManager();
 
-        $islands = $em->getRespository('App:Island');
+        $islands = $em->getRepository('App:Island');
         $alliances = $em->getRepository('App:Alliance');
 
-	    if (!$params->has('Region')) {
-		    return $this->view('ok');
+	    if (!$request->request->has('Region')) {
+		    return $this->view('No region provided');
         }
 
-        $responses = [];
+        $responses = array();
         
-        foreach($request->request->get('IslandDatas')->keys() as $key) {
+        foreach(array_keys($request->request->get('IslandDatas')) as $key) {
             $islandId = explode("@", $key)[0];
             $params = new ParameterBag(
                 array(
-                    "alliance_name"=>$request->request->get($key)->get('AllianceName'),
-                    "island_name"=>$request->request->get($key)->get('TctName'),
+                    "alliance_name"=>$request->request->get('IslandDatas')[$key]['AllianceName'],
+                    "island_name"=>$request->request->get('IslandDatas')[$key]['TctName'],
                     "timestamp"=>time()
                     )
             );
@@ -105,7 +105,7 @@ class ApiController extends FOSRestController
 
             $tcData->addToHistory(json_encode($params->all()));
 
-            $prevOwner = $tcData->getAllianceName() || 'Unclaimed';
+            $prevOwner = $tcData->getAllianceName() ? $tcData->getAllianceName() : 'Unclaimed';
 
             if ($params->get('alliance_name') == "Unclaimed") { //remove alliance
                 $tcData->setAllianceName("");
@@ -140,7 +140,8 @@ class ApiController extends FOSRestController
                 $tcData->setAllianceName($params->get('alliance_name'));
                 $tcData->setTowerName($params->get('island_name'));
 
-                $uLogger->info("Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('tower_name').")");
+                $uLogger->info("Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
+                array_push($responses, "Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
             }
 
             /** @var CacheManager */
@@ -161,7 +162,7 @@ class ApiController extends FOSRestController
                         "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
                         "type" => "rich",
                         "author" => [
-                            "name" => strtoupper($mode)
+                            "name" => strtoupper('pts') //TODO: replace with $mode var
                         ],
                         "thumbnail" => [
                             "url" => $url //url will be wrong for local development
@@ -201,7 +202,7 @@ class ApiController extends FOSRestController
 
         $em->flush();
         
-	    return $responses;
+	    return $this->view($responses);
     }
 
     /**
