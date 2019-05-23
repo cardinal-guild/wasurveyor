@@ -141,7 +141,6 @@ class ApiController extends FOSRestController
 
         $url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
 
-        return $url;
 
         $post = json_encode([
             "embeds" => [
