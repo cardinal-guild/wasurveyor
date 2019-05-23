@@ -54,7 +54,7 @@ security:
 
     firewalls:
         dev:
-            pattern:            ^/(_(profiler|wdt)|bossa_log|css|images|js)/
+            pattern:            ^/(_(profiler|wdt)|bossa_log|tc_updates_log|css|images|js)/
             security:           false
         api_account:
             provider:           fos_userbundle
@@ -75,7 +75,7 @@ security:
                     - bossa_authenticator
             stateless:          true
         api:
-            pattern:            ^/(bossa_log|api|media|images|uploads).*
+            pattern:            ^/(bossa_log|tc_updates_log|api|media|images|uploads).*
             security: false
         admin:
             provider:           fos_userbundle
@@ -107,6 +107,7 @@ security:
     access_control:
         # Admin login page needs to be accessed without credential
         - { path: ^/bossa_log, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/tc_updates_log, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login/map$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/connect, role: IS_AUTHENTICATED_ANONYMOUSLY }

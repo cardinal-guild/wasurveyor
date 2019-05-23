@@ -15,27 +15,27 @@ class TCData
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $alliance_name;
+    protected $alliance_name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $tower_name;
+    protected $tower_name;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="tcData")
      */
-    private $alliance;
+    protected $alliance;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\TCHistory", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
-    private $history;
+    protected $history;
 
     public function __construct()
     {

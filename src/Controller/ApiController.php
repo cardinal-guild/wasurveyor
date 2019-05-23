@@ -61,17 +61,20 @@ class ApiController extends FOSRestController
 
         $em = $this->getDoctrine()->getManager();
 
+	    if (!$params->has('island_id')) {
+		    throw new BadRequestHttpException("island_id must be given");
+	    }
         $island = $em->getRepository('App:Island')->findOneBy(array("guid" => $params->get('island_id')));
 
         if (!$island) {
-            return new Response("Island with that ID not found (which doesn't mean it doesn't exist)");
+            throw new BadRequestHttpException("Island with that ID not found (which doesn't mean it doesn't exist)");
         }
 
         $tcData = $island->getPtsTC();
 
         if ($tcData && $tcData->getAlliance() && $tcData->getAllianceName() == $params->get('alliance_name') && $tcData->getTowerName() === $params->Get('island_name')) {
             //Duplicate
-            return new Response("Duplicate request");
+            return $this->view(["info"=>"duplicate request"]);
         }
 
         if (!$tcData) { // not captured before
@@ -93,7 +96,8 @@ class ApiController extends FOSRestController
             $tcData->setAlliance(null);
             $em->flush();
             $uLogger->info("Alliance was removed from ".$island->getName());
-            return new Response("Removed alliance from ".$island->getName());
+
+	        return $this->view(["info"=>"removed alliance from ".strtolower($island->getName())]);
         }
 
         $alliances = $em->getRepository('App:Alliance');
@@ -118,7 +122,7 @@ class ApiController extends FOSRestController
         if ($tcData->getTowerName() != $params->get('island_name') && $tcData->getAllianceName() == $params->get('alliance_name')) {
             $tcData->setTowerName($params->get('island_name'));
             $em->flush();
-            return new Response('Island name updated');
+	        return $this->view(["info"=>"island name updated"]);
         }
 
         $tcData->setAllianceName($params->get('alliance_name'));
@@ -182,12 +186,13 @@ class ApiController extends FOSRestController
         $response = curl_exec($ch);
         curl_close($ch);
 
-        return new Response("Updated island tc info for ".$island->getName());
+
+	    return $this->view(["info"=>"updated island tc info for ".strtolower($island->getName())]);
     }
 
     /**
      * Returns tc history for a specific island
-     * 
+     *
      * @Route("/islands/{id}/{mode}/history.{_format}", methods={"GET"}, defaults={ "_format": "json"})
      * @SWG\Response(
      *      response=200,
@@ -349,7 +354,7 @@ class ApiController extends FOSRestController
                 $tcData = $island->getPtsTc();
                 $ptsTCData = [
                     'name'=>$tcData->getTowerName(),
-                    'alliance'=>$tcData->getAllianceName() 
+                    'alliance'=>$tcData->getAllianceName()
                 ];
                 $data['pts_tc_data'] = $ptsTCData;
             }

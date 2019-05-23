@@ -56,7 +56,7 @@ class Alliance
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\TCData", mappedBy="alliance")
      */
-    private $tcData;
+    protected $tcData;
 
 	use TimestampableEntity;
 	use SoftDeleteableEntity;

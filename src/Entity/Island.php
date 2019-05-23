@@ -204,7 +204,7 @@ class Island
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\TCData", cascade={"persist", "remove"})
      */
-    private $ptsTC;
+    protected $ptsTC;
 
     use TimestampableEntity;
     use SoftDeleteableEntity;

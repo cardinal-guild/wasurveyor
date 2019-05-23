@@ -14,12 +14,12 @@ class TCHistory
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      */
-    private $history = [];
+    protected $history = [];
 
     public function getId(): ?int
     {
