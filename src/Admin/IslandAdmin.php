@@ -116,8 +116,6 @@ class IslandAdmin extends AbstractAdmin
                     ->add('type', ChoiceType::class, ['choices'=>['Saborian'=>0,'Kioki'=>1]])
                     ->add('workshopUrl')
                     ->add('creator', ModelType::class, ['property'=>'name','btn_add'=>'Add new island creator', 'btn_catalogue'=>true,'help'=>'Please select a creator from the list or create a new one'])
-			        ->add('pveTower', ModelListType::class, ['label'=>'PVE Territory Control Tower','required'=>false, 'btn_list'=>false])
-			        ->add('pvpTower', ModelListType::class, ['label'=>'PVP Territory Control Tower','required'=>false, 'btn_list'=>false])
                 ->end()
                 ->with('Options', ['class'=>'col-sm-12 col-md-4'])
                     ->add('guid')
