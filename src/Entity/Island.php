@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\IslandRepository")
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\Loggable
  * @JMS\ExclusionPolicy("all")
  */
 class Island
@@ -203,22 +204,18 @@ class Island
 
 	/**
 	 * @var string
+	 * @Gedmo\Versioned
 	 * @ORM\Column(nullable=true)
 	 */
 	protected $towerName;
 
 	/**
 	 * @JMS\Expose
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="islands")
+	 * @Gedmo\Versioned
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="islands", cascade={"persist"})
 	 * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
 	 */
 	protected $alliance;
-
-	/**
-	 * @var \Doctrine\Common\Collections\Collection|TowerChange[]
-	 * @ORM\OneToMany(targetEntity="App\Entity\TowerChange", mappedBy="island", cascade={"persist"}, orphanRemoval=true, fetch="EXTRA_LAZY")
-	 */
-	protected $towerHistory;
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -230,12 +227,10 @@ class Island
         $this->trees = new ArrayCollection();
         $this->pveMetals = new ArrayCollection();
         $this->pvpMetals = new ArrayCollection();
-        $this->towerHistory = new ArrayCollection();
         $this->lat = 0;
         $this->lng = 0;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
-        //TODO: add constructors for the tc data entities for servers
     }
 
     /**
@@ -722,6 +717,40 @@ class Island
     {
         $this->tier = $tier;
     }
+
+	/**
+	 * @return string
+	 */
+	public function getTowerName(): ?string
+	{
+		return $this->towerName;
+	}
+
+	/**
+	 * @param string $towerName
+	 */
+	public function setTowerName(?string $towerName)
+	{
+		$this->towerName = $towerName;
+	}
+
+	/**
+	 * @return Alliance|null
+	 */
+	public function getAlliance()
+	{
+		return $this->alliance;
+	}
+
+	/**
+	 * @param Alliance|null $alliance
+	 */
+	public function setAlliance($alliance)
+	{
+		$this->alliance = $alliance;
+	}
+
+
 
 	public function __toString()
      {

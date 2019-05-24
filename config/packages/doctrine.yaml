@@ -32,6 +32,12 @@ doctrine:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
                 enabled: true
         mappings:
+            gedmo_loggable:
+                is_bundle: false
+                type:      annotation
+                dir:       '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity'
+                prefix:    'Gedmo\Loggable\Entity'
+                alias:     GedmoLoggable
             App:
                 is_bundle: false
                 type: annotation

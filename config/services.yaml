@@ -30,11 +30,6 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
-    App\Repository\TowerChangeRepository:
-        arguments: ['@doctrine', 'App\Entity\TowerChange']
-        tags:
-            - { name: doctrine.repository_service }
-            -
     App\Repository\AllianceRepository:
         arguments: ['@doctrine', 'App\Entity\Alliance']
         tags:
@@ -107,6 +102,13 @@ services:
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
 
+    gedmo.listener.loggable:
+        class: Gedmo\Loggable\LoggableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ '@annotation_reader' ] ]
+    
     security.acl.permission.map:
         class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
 

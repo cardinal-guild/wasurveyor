@@ -64,161 +64,179 @@ class BossaController extends FOSRestController
 		$em = $this->getDoctrine()->getManager();
 
 		/**
-		 * @var $alliances IslandRepository
+		 * @var $islandRepo IslandRepository
 		 */
-		$islands = $em->getRepository('App:Island');
+		$islandRepo = $em->getRepository('App:Island');
 
 		/**
-		 * @var $alliances AllianceRepository
+		 * @var $allianceRepo AllianceRepository
 		 */
-		$alliances = $em->getRepository('App:Alliance');
+		$allianceRepo = $em->getRepository('App:Alliance');
 
 		if (!$request->request->has('Region')) {
-			return $this->view('No region provided');
+			return $this->view('no region provided', 400);
+		}
+		if (!$request->request->has('IslandDatas')) {
+			return $this->view('no island data given', 400);
 		}
 
-		$responses = array();
+		$zeroedNames = ["unclaimed", "unnamed", "none"];
+		$islandDatas = $request->request->get('IslandDatas');
+		foreach ($islandDatas as $key => $islandData) {
+			$islandId = (int)explode("@", $key)[0];
+			if ($islandData['AllianceName'] && $islandData['TctName']) {
+				$allianceName = $islandData['AllianceName'];
+				$islandName = $islandData['TctName'];
 
-		foreach(array_keys($request->request->get('IslandDatas')) as $key) {
-			$islandId = explode("@", $key)[0];
-			$params = new ParameterBag(
-				array(
-					"alliance_name"=>$request->request->get('IslandDatas')[$key]['AllianceName'],
-					"island_name"=>$request->request->get('IslandDatas')[$key]['TctName'],
-					"timestamp"=>time()
-				)
-			);
-			$island = $islands->findOneBy(array("guid" => $islandId));
-			if (!$island || ($island->getTier() !== 3 && $island->getTier() !== 4)) {
-				$responses[] = $islandId." is not a valid island id or it is not in t3/t4";
-			}
-
-			// add server checks when we know what they are called
-			/**
-			 * @var $tcData TCData
-			 */
-			$tcData = $island->getPtsTC();
-			$zeroedIslandNames = ["unclaimed","unnamed","none"];
-
-			if ($tcData && $tcData->getAlliance() && in_array(strtolower($params->get('island_name')), $zeroedIslandNames)) {
-				(
-					$tcData->getAllianceName() === "" &&
-					$params->get('alliance_name') === "Unclaimed" &&
-					$tcData->getTowerName() === "" &&
-					($params->get('island_name') === "None" || $params->get('island_name') === "Unnamed"))
-				)) ||
-				(
-					$tcData->getAllianceName() === $params->get('alliance_name') &&
-					$tcData->getTowerName() === $params->get('island_name')
-				)) {
-				$responses[] = "Request for ".$island->getName()." was a duplicate";
-				continue;
-			}
-
-			if (!$tcData) {
-				$tcData = new TCData();
-				$em->persist($tcData);
-				$island->setPtsTc($tcData);
-			}
-
-			$tcData->addToHistory(json_encode($params->all()));
-
-			$prevOwner = $tcData->getAllianceName() ? $tcData->getAllianceName() : 'Unclaimed';
-
-			if ($params->get('alliance_name') == "Unclaimed") { //remove alliance
-				$tcData->setAllianceName("");
-				$tcData->setTowerName("");
-				$tcData->setAlliance(null);
-				$uLogger->info('Removed alliance from '.$island->getName());
-				array_push($responses, 'Removed alliance from '.$island->getName());
-			}
-			else if ( // only change name
-				$tcData->getTowerName() != $params->get('island_name') &&
-				$tcData->getAllianceName() == $params->get('alliance_name')
-			) {
-				$tcData->setTowerName($params->get('island_name'));
-				$uLogger->info("Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
-				array_push($responses, "Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
-				$em->flush();
-				continue;
-			}
-			else {
-				$alliance = $tcData->getAlliance();
-
-				if (!$alliance || $alliance->getName() !== $params->get('alliance_name')) {
-					$alliance = $alliances->findOneBy(array("name"=>$params->get('alliance_name')));
-					if (!$alliance) {
-						$alliance = new Alliance();
-						$alliance->setName($params->get('alliance_name'));
-						$em->persist($alliance);
-						$uLogger->info("Added the alliance ".$params->get('alliance_name'));
+				/**
+				 * @var Island $island
+				 */
+				$island = $islandRepo->findOneBy(["guid" => $islandId]);
+				if ($island && $island->getTier() > 2) {
+					if (in_array(strtolower($islandData['TctName']), $zeroedNames) && $island->getTowerName() !== null) {
+						$island->setTowerName(null);
+					} else {
+						$island->setTowerName($islandData['TctName']);
 					}
-					$tcData->setAlliance($alliance);
+					if (in_array(strtolower($islandData['AllianceName']), $zeroedNames) && $island->getAlliance() !== null) {
+						$island->setAlliance(null);
+					} else {
+						/**
+						 * @var $alliance Alliance
+						 */
+						$alliance = $allianceRepo->findOneBy(['name'=>trim($islandData['AllianceName'])]);
+						if(!$alliance) {
+							$alliance = new Alliance();
+						}
+						$alliance->setName(trim($islandData['AllianceName']));
+						$island->setAlliance($alliance);
+					}
+					$em->persist($island);
 				}
-
-				$tcData->setAllianceName($params->get('alliance_name'));
-				$tcData->setTowerName($params->get('island_name'));
-
-				$uLogger->info("Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
-				array_push($responses, "Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
 			}
-
-			/** @var CacheManager */
-			$imagineCacheManager = $this->get('liip_imagine.cache.manager');
-
-			/** @var UploaderHelper */
-			$uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
-
-			$image = $island->getImages()->first();
-
-			$url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
-
-			$post = json_encode([
-				"embeds" => [
-					[
-						"title" => $island->getName(),
-						"url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
-						"type" => "rich",
-						"author" => [
-							"name" => strtoupper('pts') //TODO: replace with $mode var
-						],
-						"thumbnail" => [
-							"url" => $url //url will be wrong for local development
-						],
-						"timestamp" => date('c'),
-						"color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
-						"fields" => [
-							[
-								"name" => "Previous Owner",
-								"value" => $prevOwner,
-								"inline" => true
-							],
-							[
-								"name" => "New Owner",
-								"value" => $params->get('alliance_name'),
-								"inline" => true
-							]
-						]
-					]
-				]
-			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-			$ch = curl_init();
-
-			curl_setopt_array($ch, [
-				CURLOPT_URL => $bossaTcChannel,
-				CURLOPT_POST => true,
-				CURLOPT_POSTFIELDS => $post,
-				CURLOPT_HTTPHEADER => [
-					"Length" => strlen($post),
-					"Content-Type" => "application/json"
-				]
-			]);
-			$response = curl_exec($ch);
-			curl_close($ch);
-			$em->flush();
 		}
-
-		return $this->view($responses);
+		$em->flush();
+		return $this->view('ok');
 	}
+//			if ($tcData && $tcData->getAlliance() && in_array(strtolower($params->get('island_name')), $zeroedIslandNames)) {
+//				(
+//					$tcData->getAllianceName() === "" &&
+//					$params->get('alliance_name') === "Unclaimed" &&
+//					$tcData->getTowerName() === "" &&
+//					($params->get('island_name') === "None" || $params->get('island_name') === "Unnamed"))
+//				)) ||
+//				(
+//					$tcData->getAllianceName() === $params->get('alliance_name') &&
+//					$tcData->getTowerName() === $params->get('island_name')
+//				)) {
+//				$responses[] = "Request for ".$island->getName()." was a duplicate";
+//				continue;
+//			}
+//
+//			if (!$tcData) {
+//				$tcData = new TCData();
+//				$em->persist($tcData);
+//				$island->setPtsTc($tcData);
+//			}
+//
+//			$tcData->addToHistory(json_encode($params->all()));
+//
+//			$prevOwner = $tcData->getAllianceName() ? $tcData->getAllianceName() : 'Unclaimed';
+//
+//			if ($params->get('alliance_name') == "Unclaimed") { //remove alliance
+//				$tcData->setAllianceName("");
+//				$tcData->setTowerName("");
+//				$tcData->setAlliance(null);
+//				$uLogger->info('Removed alliance from '.$island->getName());
+//				array_push($responses, 'Removed alliance from '.$island->getName());
+//			}
+//			else if ( // only change name
+//				$tcData->getTowerName() != $params->get('island_name') &&
+//				$tcData->getAllianceName() == $params->get('alliance_name')
+//			) {
+//				$tcData->setTowerName($params->get('island_name'));
+//				$uLogger->info("Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
+//				array_push($responses, "Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
+//				$em->flush();
+//				continue;
+//			}
+//			else {
+//				$alliance = $tcData->getAlliance();
+//
+//				if (!$alliance || $alliance->getName() !== $params->get('alliance_name')) {
+//					$alliance = $alliances->findOneBy(array("name"=>$params->get('alliance_name')));
+//					if (!$alliance) {
+//						$alliance = new Alliance();
+//						$alliance->setName($params->get('alliance_name'));
+//						$em->persist($alliance);
+//						$uLogger->info("Added the alliance ".$params->get('alliance_name'));
+//					}
+//					$tcData->setAlliance($alliance);
+//				}
+//
+//				$tcData->setAllianceName($params->get('alliance_name'));
+//				$tcData->setTowerName($params->get('island_name'));
+//
+//				$uLogger->info("Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
+//				array_push($responses, "Updated alliance (".$params->get('alliance_name').") and tower name (".$params->get('island_name').")");
+//			}
+//
+//			/** @var CacheManager */
+//			$imagineCacheManager = $this->get('liip_imagine.cache.manager');
+//
+//			/** @var UploaderHelper */
+//			$uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
+//
+//			$image = $island->getImages()->first();
+//
+//			$url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
+//
+//			$post = json_encode([
+//				"embeds" => [
+//					[
+//						"title" => $island->getName(),
+//						"url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
+//						"type" => "rich",
+//						"author" => [
+//							"name" => strtoupper('pts') //TODO: replace with $mode var
+//						],
+//						"thumbnail" => [
+//							"url" => $url //url will be wrong for local development
+//						],
+//						"timestamp" => date('c'),
+//						"color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
+//						"fields" => [
+//							[
+//								"name" => "Previous Owner",
+//								"value" => $prevOwner,
+//								"inline" => true
+//							],
+//							[
+//								"name" => "New Owner",
+//								"value" => $params->get('alliance_name'),
+//								"inline" => true
+//							]
+//						]
+//					]
+//				]
+//			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+//
+//			$ch = curl_init();
+//
+//			curl_setopt_array($ch, [
+//				CURLOPT_URL => $bossaTcChannel,
+//				CURLOPT_POST => true,
+//				CURLOPT_POSTFIELDS => $post,
+//				CURLOPT_HTTPHEADER => [
+//					"Length" => strlen($post),
+//					"Content-Type" => "application/json"
+//				]
+//			]);
+//			$response = curl_exec($ch);
+//			curl_close($ch);
+//			$em->flush();
+//		}
+
+//		return $this->view($responses);
+//	}
 }
