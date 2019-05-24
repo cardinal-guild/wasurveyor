@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\TCHistory;
+use App\Entity\TowerChange;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TCDataRepository")
@@ -28,12 +28,12 @@ class TCData
     protected $tower_name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="tcData")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="island")
      */
     protected $alliance;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\TCHistory", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToOne(targetEntity="TowerChange", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $history;
 
@@ -42,7 +42,7 @@ class TCData
         $this->alliance_name = "";
         $this->tower_name = "";
         $this->alliance = null;
-        $this->history = new TCHistory();
+        $this->history = new TowerChange();
     }
 
     public function getId(): ?int
@@ -86,7 +86,7 @@ class TCData
         return $this;
     }
 
-    public function getHistory(): ?TCHistory
+    public function getHistory(): ?TowerChange
     {
         return $this->history;
     }

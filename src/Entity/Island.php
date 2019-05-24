@@ -201,10 +201,24 @@ class Island
      */
     protected $workshopUrl;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\TCData", cascade={"persist", "remove"})
-     */
-    protected $ptsTC;
+	/**
+	 * @var string
+	 * @ORM\Column(nullable=true)
+	 */
+	protected $towerName;
+
+	/**
+	 * @JMS\Expose
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="islands")
+	 * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+	 */
+	protected $alliance;
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection|TowerChange[]
+	 * @ORM\OneToMany(targetEntity="App\Entity\TowerChange", mappedBy="island", cascade={"persist"}, orphanRemoval=true, fetch="EXTRA_LAZY")
+	 */
+	protected $towerHistory;
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -216,6 +230,7 @@ class Island
         $this->trees = new ArrayCollection();
         $this->pveMetals = new ArrayCollection();
         $this->pvpMetals = new ArrayCollection();
+        $this->towerHistory = new ArrayCollection();
         $this->lat = 0;
         $this->lng = 0;
         $this->createdAt = new \DateTime();
@@ -719,16 +734,5 @@ class Island
          return "New island";
      }
 
-    public function getPtsTC(): ?TCData
-    {
-        return $this->ptsTC;
-    }
-
-    public function setPtsTC(?TCData $ptsTC): self
-    {
-        $this->ptsTC = $ptsTC;
-
-        return $this;
-    }
 
 }

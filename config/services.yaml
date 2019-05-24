@@ -29,7 +29,12 @@ services:
         resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
-        
+
+    App\Repository\TowerChangeRepository:
+        arguments: ['@doctrine', 'App\Entity\TowerChange']
+        tags:
+            - { name: doctrine.repository_service }
+            -
     App\Repository\AllianceRepository:
         arguments: ['@doctrine', 'App\Entity\Alliance']
         tags:
