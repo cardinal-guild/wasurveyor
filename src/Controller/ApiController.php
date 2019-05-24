@@ -130,6 +130,7 @@ class ApiController extends FOSRestController
                 $tcData->setTowerName($params->get('island_name'));
                 $uLogger->info("Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
                 array_push($responses, "Renamed tower for ".$params->get('alliance_name')." to ".$params->get('island_name'));
+                $em->flush();
                 continue;
             }
             else {
@@ -206,10 +207,8 @@ class ApiController extends FOSRestController
             ]);
             $response = curl_exec($ch);
             curl_close($ch);
-
+            $em->flush();
         }
-
-        $em->flush();
         
 	    return $this->view($responses);
     }
