@@ -81,8 +81,8 @@ class ApiController extends FOSRestController
                     )
             );
             $island = $islands->findOneBy(array("guid" => $islandId));
-            if (!$island) {
-                array_push($responses, $islandId." is not a valid island id");
+            if (!$island || ($island->getTier() !== 3 && $island->getTier() !== 4)) {
+                array_push($responses, $islandId." is not a valid island id or it is not in t3/t4");
                 continue;
             }
 
@@ -142,8 +142,8 @@ class ApiController extends FOSRestController
                         $alliance = new Alliance();
                         $alliance->setName($params->get('alliance_name'));
                         $em->persist($alliance);
+                        $uLogger->info("Added the alliance ".$params->get('alliance_name'));
                     }
-                    $uLogger->info("Added the alliance ".$params->get('alliance_name'));
                     $tcData->setAlliance($alliance);
                 }
 
@@ -164,7 +164,6 @@ class ApiController extends FOSRestController
 
             $url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
 
-
             $post = json_encode([
                 "embeds" => [
                     [
@@ -178,6 +177,7 @@ class ApiController extends FOSRestController
                             "url" => $url //url will be wrong for local development
                         ],
                         "timestamp" => date('c'),
+                        "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
                         "fields" => [
                             [
                                 "name" => "Previous Owner",
