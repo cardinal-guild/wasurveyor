@@ -91,8 +91,10 @@ class ApiController extends FOSRestController
 
             if ($tcData &&
                 $tcData->getAlliance() &&
-                $tcData->getAllianceName() == $params->get('alliance_name') &&
-                $tcData->getTowerName() == $params->get('island_name')) {
+                $tcData->getAllianceName() == "" &&
+                $params->get('alliance_name') == "Unclaimed" &&
+                $tcData->getTowerName() == "" &&
+                $params->get('island_name') == "None") {
                     array_push($responses, "Request for ".$island->getName()." was a duplicate");
                     continue;
                 }
