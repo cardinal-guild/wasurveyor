@@ -89,12 +89,19 @@ class ApiController extends FOSRestController
             // add server checks when we know what they are called
             $tcData = $island->getPtsTC();
 
-            if ($tcData &&
+            if (
+                $tcData &&
                 $tcData->getAlliance() &&
-                $tcData->getAllianceName() == "" &&
-                $params->get('alliance_name') == "Unclaimed" &&
-                $tcData->getTowerName() == "" &&
-                $params->get('island_name') == "None") {
+                (
+                    $tcData->getAllianceName() === "" &&
+                    $params->get('alliance_name') === "Unclaimed" &&
+                    $tcData->getTowerName() === "" &&
+                    ($params->get('island_name') === "None" || $params->get('island_name') === "Unnamed")
+                ) ||
+                (
+                    $tcData->getAllianceName() === $params->get('alliance_name') &&
+                    $tcData->getTowerName() === $params->get('island_name')
+                )) {
                     array_push($responses, "Request for ".$island->getName()." was a duplicate");
                     continue;
                 }
@@ -128,7 +135,7 @@ class ApiController extends FOSRestController
             else {
                 $alliance = $tcData->getAlliance();
 
-                if (!$alliance || $alliance->getName() != $params->get('alliance_name')) {
+                if (!$alliance || $alliance->getName() !== $params->get('alliance_name')) {
                     $alliance = $alliances->findOneBy(array("name"=>$params->get('alliance_name')));
                     if (!$alliance) {
                         $alliance = new Alliance();
