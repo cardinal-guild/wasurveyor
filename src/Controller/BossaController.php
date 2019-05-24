@@ -120,59 +120,59 @@ class BossaController extends FOSRestController
                 $responses[] = "Updated alliance ".$params->get('alliance_name')." for ".$island->getName();
             }
 
-            // /** @var CacheManager */
-            // $imagineCacheManager = $this->get('liip_imagine.cache.manager');
+            /** @var CacheManager */
+            $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
-            // /** @var UploaderHelper */
-            // $uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
+            /** @var UploaderHelper */
+            $uploadHelper = $this->get('vich_uploader.templating.helper.uploader_helper');
 
-            // $image = $island->getImages()->first();
+            $image = $island->getImages()->first();
 
-            // $url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
+            $url = $imagineCacheManager->getBrowserPath($uploadHelper->asset($image, 'imageFile'), 'island_popup');
 
-            // $post = json_encode([
-            //     "embeds" => [
-            //         [
-            //             "title" => $island->getName(),
-            //             "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
-            //             "type" => "rich",
-            //             "author" => [
-            //                 "name" => strtoupper('pts') //TODO: replace with $mode var
-            //             ],
-            //             "thumbnail" => [
-            //                 "url" => $url //url will be wrong for local development
-            //             ],
-            //             "timestamp" => date('c'),
-            //             "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
-            //             "fields" => [
-            //                 [
-            //                     "name" => "Previous Owner",
-            //                     "value" => $prevOwner,
-            //                     "inline" => true
-            //                 ],
-            //                 [
-            //                     "name" => "New Owner",
-            //                     "value" => $params->get('alliance_name'),
-            //                     "inline" => true
-            //                 ]
-            //             ]
-            //         ]
-            //     ]
-            // ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $post = json_encode([
+                "embeds" => [
+                    [
+                        "title" => $island->getName(),
+                        "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
+                        "type" => "rich",
+                        "author" => [
+                            "name" => strtoupper('pts') //TODO: replace with $mode var
+                        ],
+                        "thumbnail" => [
+                            "url" => $url //url will be wrong for local development
+                        ],
+                        "timestamp" => date('c'),
+                        "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
+                        "fields" => [
+                            [
+                                "name" => "Previous Owner",
+                                "value" => $prevOwner,
+                                "inline" => true
+                            ],
+                            [
+                                "name" => "New Owner",
+                                "value" => $params->get('alliance_name'),
+                                "inline" => true
+                            ]
+                        ]
+                    ]
+                ]
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-            // $ch = curl_init();
+            $ch = curl_init();
 
-            // curl_setopt_array($ch, [
-            //     CURLOPT_URL => $bossaTcChannel,
-            //     CURLOPT_POST => true,
-            //     CURLOPT_POSTFIELDS => $post,
-            //     CURLOPT_HTTPHEADER => [
-            //         "Length" => strlen($post),
-            //         "Content-Type" => "application/json"
-            //     ]
-            // ]);
-            // $response = curl_exec($ch);
-            // curl_close($ch);
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $bossaTcChannel,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $post,
+                CURLOPT_HTTPHEADER => [
+                    "Length" => strlen($post),
+                    "Content-Type" => "application/json"
+                ]
+            ]);
+            $response = curl_exec($ch);
+            curl_close($ch);
             $em->flush();
         }
         
