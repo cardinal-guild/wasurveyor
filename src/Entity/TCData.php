@@ -39,8 +39,8 @@ class TCData
 
     public function __construct()
     {
-        $this->alliance_name = "";
-        $this->tower_name = "";
+        $this->alliance_name = "Unclaimed";
+        $this->tower_name = "None";
         $this->alliance = null;
         $this->history = new TCHistory();
     }
