@@ -8,6 +8,10 @@ use Swagger\Annotations as SWG;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\TCData;
+use App\Entity\Alliance;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 
 /**
  * @Route("/api")
@@ -55,8 +59,8 @@ class BossaController extends FOSRestController
                     "timestamp"=>time()
                     )
             );
-            $island = $islands->findOneBy(array("guid" => $islandId));
-            if (!$island || ($island->getTier() !== 3 && $island->getTier() !== 4)) {
+            $island = $islands->findOneBy(["guid" => $islandId]);
+            if (!$island || $island->getTier() <= 2) {
                 array_push($responses, $islandId." is not a valid island id or it is not in t3/t4");
                 continue;
             }
