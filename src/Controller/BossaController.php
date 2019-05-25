@@ -17,8 +17,6 @@ use Gedmo\Loggable\Entity\LogEntry;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -91,7 +89,9 @@ class BossaController extends FOSRestController
 	public function updateInfo(Request $request)
 	{
 		$logger = $this->get('monolog.logger.bossa');
-		$logger->info(json_encode($request->request->all()));
+        $logger->info(json_encode($request->request->all()));
+        
+        $uLogger = $this->get('monolog.logger.tc_updates');
 
 		if (!$request->request->has('Region')) {
 			return $this->view('no region provided', 400);
@@ -122,7 +122,7 @@ class BossaController extends FOSRestController
 				$island = $this->islandRepo->findOneBy(["guid" => $islandId]);
 
 				// Check if island has the correct tier
-				if ($island && $island->getTier() > 0) {
+				if ($island && $island->getTier() > 2) {
 					//Get territory control, if it exists
 					$territoryControl = $this->islandTCRepo->findOneBy(['server'=>$server, 'island'=>$island]);
 					if(!$territoryControl) {
@@ -130,8 +130,6 @@ class BossaController extends FOSRestController
 						$territoryControl->setServer($server);
 						$territoryControl->setIsland($island);
                     }
-
-                    return $territoryControl;
 
 					// Store previous tower and alliance name for discord channel updates, even if nulled
 					$prevAllianceName = $territoryControl->getAllianceName();
@@ -143,13 +141,6 @@ class BossaController extends FOSRestController
                         $territoryControl->setTowerName("None");
                         $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'");
                         $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'";
-                        $this->entityManager->flush();
-                    }
-                    else if ($prevTowerName !== $towerName) { // If tower name has changed
-                        $territoryControl->setTowerName($towerName);
-                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'");
-                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'";
-                        $this->entityManager->flush();
                     }
                     else if ($prevAllianceName !== $allianceName) {
                         /**
@@ -161,22 +152,36 @@ class BossaController extends FOSRestController
                             $alliance->setName(trim($allianceName));
                         }
                         $territoryControl->setAlliance($alliance);
+                        $territoryControl->setTowerName($towerName);
+                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'");
+                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'";
+                        $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $allianceName);
+                    }
+                    else if ($prevTowerName !== $towerName) { // If tower name has changed
+                        $territoryControl->setTowerName($towerName);
+                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'");
+                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'";
                     }
 					$this->entityManager->persist($territoryControl);
 					// Flush in every looped item because most times the api call does not contain a lot of changes
 					$this->entityManager->flush();
-
-					// Send island update to discord
-					$this->sendDiscordUpdate($territoryControl, $island, $prevTowerName, $prevAllianceName);
                 }
-                $responses[] = "Not a t3 or t4 island";
+                else if (!$island) {
+                    $uLogger->warning($islandId." is an UNKNOWN ID");
+                    $responses[] = $islandId." is an UNKNOWN ID";
+                } 
+                else {
+                    $responses[] = "Not a t3 or t4 island";
+                }
             }
-            $responses[] = "Missing AllianceName or TctName";
+            else {
+                $responses[] = "Missing AllianceName or TctName";
+            }
 		}
-		return new JsonResponse($responses);
+		return $this->view($responses);
     }
-
-    private function sendDiscordUpdate($island, $oldAllianceName, $newAllianceName)
+    
+    private function sendDiscordUpdate($server, $island, $oldAllianceName, $newAllianceName)
     {
         $bossaTcChannel = $this->getParameter('bossa_tc_channel');
 		$uLogger = $this->get('monolog.logger.tc_updates');
@@ -188,78 +193,45 @@ class BossaController extends FOSRestController
         $fields = [];
         $fields[] = [ "name" => "Previous Owner", "value" => $oldAllianceName, "inline" => true ];
         $fields[] = [ "name" => "New Owner", "value" => $newAllianceName, "inline" => true ];
+
+        $postBody = [
+            "embeds" => [
+                [
+                    "title" => $island->getName(),
+                    "url" => "https://map.cardinalguild.com/".'pvp'."/" . $island->getId(), // change pvp to server or make pts link to one of the modes
+                    "type" => "rich",
+                    "author" => [
+                        "name" => strtoupper($server)." server"
+                    ],
+                    "thumbnail" => [
+                        "url" => $url
+                    ],
+                    "timestamp" => date('c'),
+                    "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
+                    "fields" => $fields
+                ]
+            ]
+        ];
+
+        try {
+            $client = new \GuzzleHttp\Client(['headers'=>['Content-Type'=>'application/json']]);
+            $client->request('POST', $bossaTcChannel, ['json' => $postBody]);
+        } catch (\Exception $e) { }
     }
 
-	// private function sendDiscordUpdate(IslandTerritoryControl $territoryControl, Island $island, $prevTowerName = '', $prevAllianceName = '')
-	// {
-	// 	$bossaTcChannel = $this->getParameter('bossa_tc_channel');
-	// 	$uLogger = $this->get('monolog.logger.tc_updates');
-
-	// 	$image = $island->getImages()->first();
-
-	// 	$url = $this->cacheManager->getBrowserPath($this->uploadHelper->asset($image, 'imageFile'), 'island_popup');
-
-	// 	$fields = [];
-
-	// 	// Check if towername is changed
-	// 	if($territoryControl->getTowerName() !== $prevTowerName) {
-	// 		// Instead of using the empty string, rename to unclaimed for the tc channel
-	// 		$fields[] = [ "name" => "Previous tower name", "value" => $prevTowerName, "inline" => true ];
-	// 		$fields[] = [ "name" => "New tower name", "value" => $territoryControl->getTowerName(), "inline" => true ];
-
-	// 	}
-
-	// 	// Check if alliance is changed
-	// 	if($territoryControl->getAllianceName() !== $prevAllianceName) {
-	// 		$fields[] = [ "name" => "Previous alliance owner", "value" => $prevAllianceName, "inline" => true ];
-	// 		$fields[] = [ "name" => "New alliance owner", "value" => $territoryControl->getAllianceName(), "inline" => true ];
-	// 	}
-	// 	$server = $territoryControl->getServer();
-	// 	if($server === 'pts') {
-	// 		$server = 'pvp';
-	// 	}
-	// 	// Only send discord api call when there are fields changed
-	// 	if(count($fields)) {
-	// 		$postBody = [
-	// 			"embeds" => [
-	// 				[
-	// 					"title" => $island->getName(),
-	// 					"url" => "https://map.cardinalguild.com/".$server."/" . $island->getId(), // change pvp to server or make pts link to one of the modes
-	// 					"type" => "rich",
-	// 					"author" => [
-	// 						"name" => strtoupper($territoryControl->getServer())." server"
-	// 					],
-	// 					"thumbnail" => [
-	// 						"url" => $url
-	// 					],
-	// 					"timestamp" => date('c'),
-	// 					"color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
-	// 					"fields" => $fields
-	// 				]
-	// 			]
-	// 		];
-
-	// 		try {
-	// 			$client = new \GuzzleHttp\Client(['headers'=>['Content-Type'=>'application/json']]);
-	// 			$client->request('POST', $bossaTcChannel, ['json' => $postBody]);
-	// 		} catch (\Exception $e) { }
-	// 	}
-	// }
-	private function getPreviousAllianceName(IslandTerritoryControl $territoryControl) {
+    private function getPreviousAllianceName(IslandTerritoryControl $territoryControl) {
 		$logRepo = $this->entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
-
 		$logEntries = $logRepo->getLogEntries($territoryControl);
 		// slice off first one
 		$logEntries = array_slice($logEntries, 1);
-
 		/**
 		 * @var $logEntry LogEntry
 		 */
 		foreach($logEntries as $logEntry) {
 			$data = $logEntry->getData();
-			if(array_key_exists(array_key_exists('alliance', $data))) {
+			if(array_key_exists('alliance', $data)) {
 				if($data['alliance'] && isset($data['alliance']['id'])) {
-					$alliance = $this->allianceRepo>find($data['alliance']['id']);
+					$alliance = $this->allianceRepo->find($data['alliance']['id']);
 					if($alliance) {
 						return $alliance->getName();
 					}
