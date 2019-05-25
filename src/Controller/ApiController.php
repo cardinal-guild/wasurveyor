@@ -232,7 +232,6 @@ class ApiController extends FOSRestController
                     $data['tc'][$server]['tower_name'] = $tc->getTowerName();
                 }
             }
-            return $this->view($data['tc']);
 
             $data['trees'] = [];
             foreach($island->getTrees() as $tree) {
