@@ -11,6 +11,8 @@ use App\Repository\AllianceRepository;
 use App\Repository\IslandRepository;
 use App\Repository\IslandTerritoryControlRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\LockMode;
+use App\Utils\CustomEntityManager;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
 use Gedmo\Loggable\Entity\LogEntry;
@@ -56,7 +58,12 @@ class BossaController extends FOSRestController
 	/**
 	 * @var EntityManagerInterface
 	 */
-	protected $entityManager;
+    protected $entityManager;
+    
+    /**
+     * @var CustomEntityManager
+     */
+    protected $customEntityManager;
 
 	public function __construct(
 		CacheManager $cacheManager,
@@ -64,14 +71,16 @@ class BossaController extends FOSRestController
 		IslandRepository $islandRepo,
 		IslandTerritoryControlRepository $islandTCRepo,
 		AllianceRepository $allianceRepo,
-		EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        CustomEntityManager $customEntityManager
 	) {
 		$this->cacheManager = $cacheManager;
 		$this->uploadHelper = $uploaderHelper;
 		$this->islandRepo = $islandRepo;
 		$this->allianceRepo = $allianceRepo;
 		$this->islandTCRepo = $islandTCRepo;
-		$this->entityManager = $entityManager;
+        $this->entityManager = $entityManager;
+        $this->customEntityManager = $customEntityManager;
 	}
 
 	/**
@@ -111,67 +120,85 @@ class BossaController extends FOSRestController
 			// Double check if it has the required fields
 			if ($islandData['AllianceName'] && $islandData['TctName']) {
 
-				// Set variables
-				$allianceName = $islandData['AllianceName'];
-				$towerName = $islandData['TctName'];
-
-				/**
+                /**
 				 * @var Island $island
 				 */
-				$island = $this->islandRepo->findOneBy(["guid" => $islandId]);
+                $island = $this->islandRepo->findOneBy(["guid" => $islandId]);
+                $id = $island->getId();
 
-				// Check if island has the correct tier
-				if ($island && $island->getTier() > 2) {
-					//Get territory control, if it exists
-					$territoryControl = $this->islandTCRepo->findOneBy(['server'=>$server, 'island'=>$island]);
-					if(!$territoryControl) {
-						$territoryControl = new IslandTerritoryControl();
-						$territoryControl->setServer($server);
-						$territoryControl->setIsland($island);
-                    }
+                $callback = function() use ($id, $islandData, $islandId, $responses, $server, $uLogger) {
+                    $island = $this->islandRepo->find($id, LockMode::PESSIMISTIC_WRITE);
 
-					// Store previous tower and alliance name for discord channel updates, even if nulled
-					$prevAllianceName = $territoryControl->getAllianceName();
-					// Get the tower name, if null returned, you get 'Unnamed' as string back
-                    $prevTowerName = $territoryControl->getTowerName();
+                        // Set variables
+                    $allianceName = $islandData['AllianceName'];
+                    $towerName = $islandData['TctName'];
 
-                    if ($allianceName === "Unclaimed" && $towerName === "None") { // this will ONLY be Unclaimed if there is no alliance, not unnamed, or none or something else. better to be specific
-                        $territoryControl->setAlliance(null);
-                        $territoryControl->setTowerName("None");
-                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'");
-                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'";
-                    }
-                    else if ($prevAllianceName !== $allianceName) {
-                        /**
-                         * @var $alliance Alliance
-                         */
-                        $alliance = $this->allianceRepo->findOneBy(['name' => trim($allianceName)]);
-                        if (!$alliance) {
-                            $alliance = new Alliance();
-                            $alliance->setName(trim($allianceName));
+                    /**
+                     * @var Island $island
+                     */
+                    $island = $this->islandRepo->findOneBy(["guid" => $islandId]);
+
+                    // Check if island has the correct tier
+                    if ($island && $island->getTier() > 2) {
+                        //Get territory control, if it exists
+                        $territoryControl = $this->islandTCRepo->findOneBy(['server'=>$server, 'island'=>$island]);
+                        if(!$territoryControl) {
+                            $territoryControl = new IslandTerritoryControl();
+                            $territoryControl->setServer($server);
+                            $territoryControl->setIsland($island);
                         }
-                        $territoryControl->setAlliance($alliance);
-                        $territoryControl->setTowerName($towerName);
-                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'");
-                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'";
-                        $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $allianceName);
+
+                        // Store previous tower and alliance name for discord channel updates, even if nulled
+                        $prevAllianceName = $territoryControl->getAllianceName();
+                        // Get the tower name, if null returned, you get 'Unnamed' as string back
+                        $prevTowerName = $territoryControl->getTowerName();
+
+                        if ($allianceName === "Unclaimed" && $towerName === "None") { // this will ONLY be Unclaimed if there is no alliance, not unnamed, or none or something else. better to be specific
+                            $territoryControl->setAlliance(null);
+                            $territoryControl->setTowerName("None");
+                            $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'");
+                            $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'";
+                        }
+                        else if ($prevAllianceName !== $allianceName) {
+                            /**
+                             * @var $alliance Alliance
+                             */
+                            $alliance = $this->allianceRepo->findOneBy(['name' => trim($allianceName)]);
+                            if (!$alliance) {
+                                $alliance = new Alliance();
+                                $alliance->setName(trim($allianceName));
+                            }
+                            $territoryControl->setAlliance($alliance);
+                            $territoryControl->setTowerName($towerName);
+                            $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'");
+                            $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'";
+                            $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $allianceName);
+                        }
+                        else if ($prevTowerName !== $towerName) { // If tower name has changed
+                            $territoryControl->setTowerName($towerName);
+                            $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'");
+                            $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'";
+                        }
+                        else {
+                            $responses[] = "Duplicate";
+                        }
+                        $this->customEntityManager->persist($territoryControl);
+                        return $responses;
+                        // Flush in every looped item because most times the api call does not contain a lot of changes
+                        # $this->entityManager->flush();
                     }
-                    else if ($prevTowerName !== $towerName) { // If tower name has changed
-                        $territoryControl->setTowerName($towerName);
-                        $uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'");
-                        $responses[] = "Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'";
+                    else if (!$island) {
+                        $uLogger->warning($islandId." is an UNKNOWN ID");
+                        $responses[] = $islandId." is an UNKNOWN ID";
+                        return $responses;
                     }
-					$this->entityManager->persist($territoryControl);
-					// Flush in every looped item because most times the api call does not contain a lot of changes
-					$this->entityManager->flush();
-                }
-                else if (!$island) {
-                    $uLogger->warning($islandId." is an UNKNOWN ID");
-                    $responses[] = $islandId." is an UNKNOWN ID";
-                }
-                else {
-                    $responses[] = "Not a t3 or t4 island";
-                }
+                    else {
+                        $responses[] = "Not a t3 or t4 island";
+                        return $responses;
+                    }
+                };
+
+                $responses = $this->customEntityManager->transactional($callback);
             }
             else {
                 $responses[] = "Missing AllianceName or TctName";

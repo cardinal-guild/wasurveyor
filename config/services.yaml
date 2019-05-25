@@ -23,6 +23,12 @@ services:
         # but if a service is unused, it's removed anyway
         exclude: '../src/{Entity,Security,Migrations,Tests}'
 
+    app.custom_entity_manager:
+        class: App\Utils\CustomEntityManager
+        arguments:
+            $em: "@doctrine.orm.entity_manager"
+            $mr: "@doctrine.common.persistence.manager_registery"
+
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     App\Controller\:
