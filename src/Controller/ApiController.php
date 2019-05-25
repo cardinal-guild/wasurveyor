@@ -218,12 +218,7 @@ class ApiController extends FOSRestController
                 'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
-            if($island->getTowerName()) {
-	            $data['towerName'] = $island->getTowerName();
-            }
-	        if($island->getAlliance()) {
-		        $data['alliance'] = $island->getAllianceName();
-	        }
+
             $data['trees'] = [];
             foreach($island->getTrees() as $tree) {
                 if($tree->__toString() !== "New Island Tree") {
