@@ -60,8 +60,13 @@ class BossaController extends FOSRestController
                     )
             );
             $island = $islands->findOneBy(["guid" => $islandId]);
-            if (!$island || $island->getTier() <= 2) {
-                array_push($responses, $islandId." is not a valid island id or it is not in t3/t4");
+            if (!$island) {
+                $responses[] = $islandId." does not match an island with a guid";
+                $uLogger->warning($islandId." is an UNKNOWN ID");
+                continue;
+            }
+            if ($island->getTier() <= 2) {
+                $responses[] = $islandId." is not in tier 3 or tier 4";
                 continue;
             }
 
