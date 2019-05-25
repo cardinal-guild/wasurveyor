@@ -100,7 +100,6 @@ class BossaController extends FOSRestController
 			return $this->view('no island data given', 400);
 		}
 
-		# $zeroedNames = ["unclaimed", "unnamed", "none"];
 		$islandDatas = $request->request->get('IslandDatas');
         $server = $request->request->get('Region');
 

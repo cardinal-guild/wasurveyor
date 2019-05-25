@@ -176,6 +176,8 @@ class ApiController extends FOSRestController
          */
         $islandRepo = $em->getRepository('App:Island');
 
+        $territoryRepo =$em->getRepository('App:IslandTerritoryControl');
+
         if($request->query->count()) {
             $islands = $islandRepo->getPublishedIslandsByQuery($request->query->all());
         } else {
@@ -218,6 +220,19 @@ class ApiController extends FOSRestController
                 'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
+            
+            $servers = ['pts', 'pvp', 'pve'];
+
+            $data['tc'] = [];
+            foreach($servers as $server) {
+                $data['tc'][$server] = [];
+                foreach($territoryRepo->findBy(['server' => $server, 'island' => $island]) as $tc) {
+                    $data['tc'][$server] = [];
+                    $data['tc'][$server]['alliance'] = $tc->getAllianceName();
+                    $data['tc'][$server]['tower_name'] = $tc->getTowerName();
+                }
+            }
+            return $this->view($data['tc']);
 
             $data['trees'] = [];
             foreach($island->getTrees() as $tree) {
