@@ -210,6 +210,7 @@ class Island
 	protected $towerName;
 
 	/**
+	 * @var Alliance|null
 	 * @JMS\Expose
 	 * @Gedmo\Versioned
 	 * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="islands", cascade={"persist"})
@@ -727,6 +728,18 @@ class Island
 	}
 
 	/**
+	 * @return string
+	 * Get tower name, if nullified, return Unnamed
+	 */
+	public function getTowerNameUnnamed(): string
+	{
+		if(!$this->towerName) {
+			return "Unnamed";
+		}
+		return $this->towerName;
+	}
+
+	/**
 	 * @param string $towerName
 	 */
 	public function setTowerName(?string $towerName)
@@ -737,9 +750,22 @@ class Island
 	/**
 	 * @return Alliance|null
 	 */
-	public function getAlliance()
+	public function getAlliance():?string
 	{
+
 		return $this->alliance;
+	}
+
+	/**
+	 * @return Alliance|null
+	 * Get alliance name, if nullified, return Unclaimed
+	 */
+	public function getAllianceName():string
+	{
+		if(!$this->alliance) {
+			return "Unclaimed";
+		}
+		return $this->alliance->getName();
 	}
 
 	/**
@@ -749,8 +775,6 @@ class Island
 	{
 		$this->alliance = $alliance;
 	}
-
-
 
 	public function __toString()
      {

@@ -35,6 +35,11 @@ services:
         tags:
             - { name: doctrine.repository_service }
             
+    App\Repository\IslandRepository:
+        arguments: ['@doctrine', 'App\Entity\Island']
+        tags:
+            - { name: doctrine.repository_service }
+            
     token_authenticator:
         public: true
         class: App\Security\TokenAuthenticator
@@ -97,13 +102,6 @@ services:
 
     gedmo.listener.softdeleteable:
         class: Gedmo\SoftDeleteable\SoftDeleteableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ '@annotation_reader' ] ]
-
-    gedmo.listener.loggable:
-        class: Gedmo\Loggable\LoggableListener
         tags:
             - { name: doctrine.event_subscriber, connection: default }
         calls:

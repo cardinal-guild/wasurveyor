@@ -6,30 +6,20 @@ namespace App\Controller;
 
 use App\Entity\Island;
 use App\Entity\IslandImage;
-use App\Entity\Report;
-use App\Entity\TCData;
-use App\Entity\Alliance;
+use App\Repository\AllianceRepository;
 use App\Repository\IslandRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use function MongoDB\BSON\toJSON;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Swagger\Annotations as SWG;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 /**
@@ -50,28 +40,46 @@ class ApiController extends FOSRestController
      * @SWG\Tag(name="TC History")
      * @View()
      */
-    public function getTCHistory($id, $mode)
+    public function getTCHistory($id, $mode, IslandRepository $islandRepository, AllianceRepository $allianceRepository, EntityManagerInterface $em)
     {
-        $em = $this->getDoctrine()->getManager();
-
         /**
          * @var $island Island
          */
-        $island = $em->getRepository('App:Island')->findOneBy(array('id' => $id));
+        $island = $islandRepository->findOneBy(array('id' => $id));
         if(!$island) {
             throw new BadRequestHttpException('Island not found!');
         }
         if ($mode !== 'pts') {
             throw new BadRequestHttpException($mode." is not valid mode!");
         }
-        if ($island->getPtsTC()) {
+	    $logRepo = $em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+	    $logEntries = $logRepo->getLogEntries($island);
 
-            $data = array();
-            foreach($island->getPtsTc()->getHistory()->getHistory() as $h) {
-                array_push($data, json_decode($h));
-            }
-            return new JsonResponse($data);
-        }
+	    $history = [];
+
+	    foreach($logEntries as $logEntry) {
+	    	$data = $logEntry->getData();
+	    	$timeStr = $logEntry->getLoggedAt()->format('c');
+	    	if(array_key_exists('towerName', $data)) {
+	    		if($data['towerName']) {
+				    $history[$timeStr] = "Tower name set to: ".$data['towerName'];
+			    } else {
+	    			$history[$timeStr] = "Tower name cleared, set to Unnamed";
+			    }
+		    }
+		    if(array_key_exists('alliance', $data)) {
+			    if($data['alliance'] && isset($data['alliance']['id'])) {
+			    	$alliance = $allianceRepository->find($data['alliance']['id']);
+			    	if($alliance) {
+					    $history[$timeStr] = "Alliance set to: ".$alliance->getName();
+				    }
+			    } else {
+				    $history[$timeStr] = "Alliance cleared, set to Unclaimed";
+			    }
+		    }
+	    }
+
+		return $this->view($history);
     }
 
     /**
@@ -199,28 +207,12 @@ class ApiController extends FOSRestController
                 'createdAt'=>$intlDateFormatter->format($island->getCreatedAt()),
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
-            if ($island->getPtsTc() && $island->getPtsTc()->getAlliance()) {
-                $tcData = $island->getPtsTc();
-                $ptsTCData = [
-                    'name'=>$tcData->getTowerName(),
-                    'alliance'=>$tcData->getAllianceName()
-                ];
-                $data['pts_tc_data'] = $ptsTCData;
+            if($island->getTowerName()) {
+	            $data['towerName'] = $island->getTowerNameUnnamed();
             }
-	        // if($island->getPveTower() && $island->getPveTower()->getAlliance()) {
-		    //     $pveTower = $island->getPveTower();
-	        // 	$pveTowerData = [];
-		    //     $pveTowerData['name'] = $pveTower->getName();
-		    //     $pveTowerData['alliance'] = $pveTower->getAlliance()->getName();
-		    //     $data['pve_tower'] = $pveTowerData;
-	        // }
-	        // if($island->getPvpTower() && $island->getPvpTower()->getAlliance()) {
-		    //     $pvpTower = $island->getPvpTower();
-		    //     $pvpTowerData = [];
-		    //     $pvpTowerData['name'] = $pvpTower->getName();
-		    //     $pvpTowerData['alliance'] = $pvpTower->getAlliance()->getName();
-		    //     $data['pvp_tower'] = $pvpTowerData;
-	        // }
+	        if($island->getAlliance()) {
+		        $data['alliance'] = $island->getAllianceName();
+	        }
             $data['trees'] = [];
             foreach($island->getTrees() as $tree) {
                 if($tree->__toString() !== "New Island Tree") {
