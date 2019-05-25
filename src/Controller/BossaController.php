@@ -13,10 +13,12 @@ use App\Repository\IslandTerritoryControlRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
+use Gedmo\Loggable\Entity\LogEntry;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -101,7 +103,7 @@ class BossaController extends FOSRestController
 		# $zeroedNames = ["unclaimed", "unnamed", "none"];
 		$islandDatas = $request->request->get('IslandDatas');
         $server = $request->request->get('Region');
-        
+
         $responses = [];
 		// Loop over all islands that came back in api call
 		foreach ($islandDatas as $key => $islandData) {
@@ -128,14 +130,14 @@ class BossaController extends FOSRestController
 						$territoryControl->setServer($server);
 						$territoryControl->setIsland($island);
                     }
-                    
+
                     return $territoryControl;
 
 					// Store previous tower and alliance name for discord channel updates, even if nulled
 					$prevAllianceName = $territoryControl->getAllianceName();
 					// Get the tower name, if null returned, you get 'Unnamed' as string back
                     $prevTowerName = $territoryControl->getTowerName();
-                    
+
                     if ($allianceName === "Unclaimed" && $towerName === "None") { // this will ONLY be Unclaimed if there is no alliance, not unnamed, or none or something else. better to be specific
                         $territoryControl->setAlliance(null);
                         $territoryControl->setTowerName("None");
@@ -173,7 +175,7 @@ class BossaController extends FOSRestController
 		}
 		return new JsonResponse($responses);
     }
-    
+
     private function sendDiscordUpdate($island, $oldAllianceName, $newAllianceName)
     {
         $bossaTcChannel = $this->getParameter('bossa_tc_channel');
@@ -182,7 +184,7 @@ class BossaController extends FOSRestController
 		$image = $island->getImages()->first();
 
         $url = $this->cacheManager->getBrowserPath($this->uploadHelper->asset($image, 'imageFile'), 'island_popup');
-        
+
         $fields = [];
         $fields[] = [ "name" => "Previous Owner", "value" => $oldAllianceName, "inline" => true ];
         $fields[] = [ "name" => "New Owner", "value" => $newAllianceName, "inline" => true ];
@@ -204,7 +206,7 @@ class BossaController extends FOSRestController
 	// 		// Instead of using the empty string, rename to unclaimed for the tc channel
 	// 		$fields[] = [ "name" => "Previous tower name", "value" => $prevTowerName, "inline" => true ];
 	// 		$fields[] = [ "name" => "New tower name", "value" => $territoryControl->getTowerName(), "inline" => true ];
-			
+
 	// 	}
 
 	// 	// Check if alliance is changed
@@ -243,4 +245,27 @@ class BossaController extends FOSRestController
 	// 		} catch (\Exception $e) { }
 	// 	}
 	// }
+	private function getPreviousAllianceName(IslandTerritoryControl $territoryControl) {
+		$logRepo = $this->entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
+
+		$logEntries = $logRepo->getLogEntries($territoryControl);
+		// slice off first one
+		$logEntries = array_slice($logEntries, 1);
+
+		/**
+		 * @var $logEntry LogEntry
+		 */
+		foreach($logEntries as $logEntry) {
+			$data = $logEntry->getData();
+			if(array_key_exists(array_key_exists('alliance', $data))) {
+				if($data['alliance'] && isset($data['alliance']['id'])) {
+					$alliance = $this->allianceRepo>find($data['alliance']['id']);
+					if($alliance) {
+						return $alliance->getName();
+					}
+				}
+			}
+		}
+		return "Unclaimed";
+	}
 }
