@@ -133,6 +133,11 @@ class BossaController extends FOSRestController
 
                 $uLogger->info("Updated alliance ".$params->get('alliance_name')." for ".$island->getName());
                 $responses[] = "Updated alliance ".$params->get('alliance_name')." for ".$island->getName();
+
+                if ($tcData->getAllianceName() === $tcData->getPrevAllianceName()) {
+                    $em->flush();
+                    continue;
+                }
             }
 
             /** @var CacheManager */

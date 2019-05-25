@@ -40,7 +40,7 @@ class TCData
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected $prev_alliance_name;
+    private $prev_alliance_name;
 
     public function __construct()
     {
