@@ -217,7 +217,7 @@ class ApiController extends FOSRestController
                 'updatedAt'=>$intlDateFormatter->format($island->getUpdatedAt())
             ];
             if($island->getTowerName()) {
-	            $data['towerName'] = $island->getTowerNameUnnamed();
+	            $data['towerName'] = $island->getTowerName();
             }
 	        if($island->getAlliance()) {
 		        $data['alliance'] = $island->getAllianceName();

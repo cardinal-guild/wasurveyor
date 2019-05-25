@@ -66,6 +66,10 @@ class IslandTerritoryControl
 	 */
 	protected $alliance;
 
+	public function __construct() {
+		$this->towerName = "None";
+	}
+
 	/**
 	 * @return int
 	 */
@@ -107,18 +111,6 @@ class IslandTerritoryControl
 	}
 
 	/**
-	 * @return string
-	 * Get tower name, if nullified, return Unnamed
-	 */
-	public function getTowerNameUnnamed(): string
-	{
-		if(!$this->towerName) {
-			return "Unnamed";
-		}
-		return $this->towerName;
-	}
-
-	/**
 	 * @param string $towerName
 	 */
 	public function setTowerName(?string $towerName)
@@ -136,7 +128,7 @@ class IslandTerritoryControl
 	}
 
 	/**
-	 * @return Alliance|null
+	 * @return string
 	 * Get alliance name, if nullified, return Unclaimed
 	 */
 	public function getAllianceName():string
