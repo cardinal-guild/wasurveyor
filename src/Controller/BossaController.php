@@ -89,14 +89,17 @@ class BossaController extends FOSRestController
 
             $tcData->addToHistory(json_encode($params->all()));
 
-            $prevOwner = $tcData->getAllianceName(); //needed for webhook
-
             if ($params->get('alliance_name') == "Unclaimed") { //remove alliance
-                $tcData->setAllianceName("Unclaimed");
+                if ($tcData->getAllianceName() !== "Unclaimed") {
+                    $tcData->setPrevAllianceName($tcData->getAllianceName());
+                }
+                $tcData->setAllianceName("Unclaimed"); // commented out stores the last alliance to better show who it was taken from
                 $tcData->setTowerName("None");
                 $tcData->setAlliance(null);
                 $uLogger->info('Removed alliance from '.$island->getName());
                 $responses[] = 'Removed alliance from '.$island->getName();
+                $em->flush();
+                continue;
             }
             else if (
                 $tcData->getTowerName() != $params->get('island_name') &&
@@ -109,6 +112,9 @@ class BossaController extends FOSRestController
                 continue;
             }
             else { // new alliance on island
+                if ($tcData->getAllianceName() !== "Unclaimed") {
+                    $tcData->setPrevAllianceName($tcData->getAllianceName());   
+                }
                 $alliance = $tcData->getAlliance();
 
                 if (!$alliance || $alliance->getName() !== $params->get('alliance_name')) {
@@ -142,7 +148,7 @@ class BossaController extends FOSRestController
             $post = json_encode([
                 "embeds" => [
                     [
-                        "title" => $island->getName(),
+                        "title" => $island->getNickname() ? $island->getNickname() : $island->getName(),
                         "url" => "https://map.cardinalguild.com/"."pvp"."/".$island->getId(), // change pvp to server or make pts link to one of the modes
                         "type" => "rich",
                         "author" => [
@@ -156,7 +162,7 @@ class BossaController extends FOSRestController
                         "fields" => [
                             [
                                 "name" => "Previous Owner",
-                                "value" => $prevOwner,
+                                "value" => $tcData->getPrevAllianceName() ? $tcData->getPrevAllianceName() : "Unclaimed",
                                 "inline" => true
                             ],
                             [

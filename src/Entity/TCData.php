@@ -37,9 +37,15 @@ class TCData
      */
     protected $history;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $prev_alliance_name;
+
     public function __construct()
     {
         $this->alliance_name = "Unclaimed";
+        $this->prev_alliance_name = "Unclaimed";
         $this->tower_name = "None";
         $this->alliance = null;
         $this->history = new TCHistory();
@@ -94,5 +100,17 @@ class TCData
     public function addToHistory($newEvent)
     {
         $this->history->addToHistory($newEvent);
+    }
+
+    public function getPrevAllianceName(): ?string
+    {
+        return $this->prev_alliance_name;
+    }
+
+    public function setPrevAllianceName(?string $prev_alliance_name): self
+    {
+        $this->prev_alliance_name = $prev_alliance_name;
+
+        return $this;
     }
 }
