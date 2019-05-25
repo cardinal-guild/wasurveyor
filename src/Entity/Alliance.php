@@ -48,9 +48,9 @@ class Alliance
 	protected $description;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Island", mappedBy="alliance")
+	 * @ORM\OneToMany(targetEntity="App\Entity\IslandTerritoryControl", mappedBy="alliance")
 	 */
-	protected $islands;
+	protected $territories;
 
 	use TimestampableEntity;
 	use SoftDeleteableEntity;

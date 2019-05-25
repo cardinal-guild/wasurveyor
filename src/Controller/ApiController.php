@@ -8,6 +8,7 @@ use App\Entity\Island;
 use App\Entity\IslandImage;
 use App\Repository\AllianceRepository;
 use App\Repository\IslandRepository;
+use App\Repository\IslandTerritoryControlRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -19,6 +20,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -32,7 +34,7 @@ class ApiController extends FOSRestController
     /**
      * Returns tc history for a specific island
      *
-     * @Route("/islands/{id}/{mode}/history.{_format}", methods={"GET"}, defaults={ "_format": "json"})
+     * @Route("/islands/{id}/{server}/history.{_format}", methods={"GET"}, defaults={ "_format": "json"})
      * @SWG\Response(
      *      response=200,
      *      description="Returns the Territory Control history for an island"
@@ -40,8 +42,9 @@ class ApiController extends FOSRestController
      * @SWG\Tag(name="TC History")
      * @View()
      */
-    public function getTCHistory($id, $mode, IslandRepository $islandRepository, AllianceRepository $allianceRepository, EntityManagerInterface $em)
+    public function getTCHistory($id, $server, IslandRepository $islandRepository, AllianceRepository $allianceRepository, IslandTerritoryControlRepository $territoryControlRepo, EntityManagerInterface $em)
     {
+    	$servers = ['pve','pvp','pts'];
         /**
          * @var $island Island
          */
@@ -49,11 +52,17 @@ class ApiController extends FOSRestController
         if(!$island) {
             throw new BadRequestHttpException('Island not found!');
         }
-        if ($mode !== 'pts') {
-            throw new BadRequestHttpException($mode." is not valid mode!");
+        if (!in_array($server, $servers)) {
+            throw new BadRequestHttpException($server." is not a valid server!");
         }
 	    $logRepo = $em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-	    $logEntries = $logRepo->getLogEntries($island);
+
+        $territoryControl = $territoryControlRepo->findOneBy(['server'=>$server, 'island'=>$island]);
+	    if (!$territoryControl) {
+		    throw new NotFoundHttpException("No territory control defined for island: ".$island->getName());
+	    }
+
+	    $logEntries = $logRepo->getLogEntries($territoryControl);
 
 	    $history = [];
 
@@ -62,19 +71,19 @@ class ApiController extends FOSRestController
 	    	$timeStr = $logEntry->getLoggedAt()->format('c');
 	    	if(array_key_exists('towerName', $data)) {
 	    		if($data['towerName']) {
-				    $history[$timeStr] = "Tower name set to: ".$data['towerName'];
+				    $history[] = ['time'=>$timeStr, 'change'=>"Tower name set to: ".$data['towerName']];
 			    } else {
-	    			$history[$timeStr] = "Tower name cleared, set to Unnamed";
+	    			$history[] = ['time'=>$timeStr, 'change'=>"Tower name cleared, set to Unnamed"];
 			    }
 		    }
 		    if(array_key_exists('alliance', $data)) {
 			    if($data['alliance'] && isset($data['alliance']['id'])) {
 			    	$alliance = $allianceRepository->find($data['alliance']['id']);
 			    	if($alliance) {
-					    $history[$timeStr] = "Alliance set to: ".$alliance->getName();
+					    $history[] = ['time'=>$timeStr, 'change'=>"Alliance set to: ".$alliance->getName()];
 				    }
 			    } else {
-				    $history[$timeStr] = "Alliance cleared, set to Unclaimed";
+				    $history[] = ['time'=>$timeStr, 'change'=>"Alliance cleared, set to Unclaimed"];
 			    }
 		    }
 	    }

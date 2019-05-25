@@ -39,6 +39,11 @@ services:
         arguments: ['@doctrine', 'App\Entity\Island']
         tags:
             - { name: doctrine.repository_service }
+
+    App\Repository\IslandTerritoryControlRepository:
+        arguments: ['@doctrine', 'App\Entity\IslandTerritoryControl']
+        tags:
+            - { name: doctrine.repository_service }
             
     token_authenticator:
         public: true

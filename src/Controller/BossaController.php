@@ -6,8 +6,10 @@ namespace App\Controller;
 
 use App\Entity\Alliance;
 use App\Entity\Island;
+use App\Entity\IslandTerritoryControl;
 use App\Repository\AllianceRepository;
 use App\Repository\IslandRepository;
+use App\Repository\IslandTerritoryControlRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -46,16 +48,28 @@ class BossaController extends FOSRestController
 	protected $allianceRepo;
 
 	/**
+	 * @var IslandTerritoryControlRepository
+	 */
+	protected $islandTCRepo;
+
+	/**
 	 * @var EntityManagerInterface
 	 */
 	protected $entityManager;
 
-	public function __construct(CacheManager $cacheManager, UploaderHelper $uploaderHelper, IslandRepository $islandRepo, AllianceRepository $allianceRepo, EntityManagerInterface $entityManager)
-	{
+	public function __construct(
+		CacheManager $cacheManager,
+		UploaderHelper $uploaderHelper,
+		IslandRepository $islandRepo,
+		IslandTerritoryControlRepository $islandTCRepo,
+		AllianceRepository $allianceRepo,
+		EntityManagerInterface $entityManager
+	) {
 		$this->cacheManager = $cacheManager;
 		$this->uploadHelper = $uploaderHelper;
 		$this->islandRepo = $islandRepo;
 		$this->allianceRepo = $allianceRepo;
+		$this->islandTCRepo = $islandTCRepo;
 		$this->entityManager = $entityManager;
 	}
 
@@ -85,7 +99,7 @@ class BossaController extends FOSRestController
 
 		$zeroedNames = ["unclaimed", "unnamed", "none"];
 		$islandDatas = $request->request->get('IslandDatas');
-
+		$server = $request->request->get('Region');
 		// Loop over all islands that came back in api call
 		foreach ($islandDatas as $key => $islandData) {
 			// Get the id of the steam workshop id of an island and integer format
@@ -104,26 +118,35 @@ class BossaController extends FOSRestController
 
 				// Check if island has the correct tier
 				if ($island && $island->getTier() > 2) {
+
+					//Get territory control, if it exists
+					$territoryControl = $this->islandTCRepo->findOneBy(['server'=>$server, 'island'=>$island]);
+					if(!$territoryControl) {
+						$territoryControl = new IslandTerritoryControl();
+						$territoryControl->setServer($server);
+						$territoryControl->setIsland($island);
+					}
+
 					// Store previous tower and alliance name for discord channel updates, even if nulled
-					$prevAllianceName = $island->getAllianceName();
+					$prevAllianceName = $territoryControl->getAllianceName();
 					// Get the tower name, if null returned, you get 'Unnamed' as string back
-					$prevTowerName = $island->getTowerNameUnnamed();
+					$prevTowerName = $territoryControl->getTowerNameUnnamed();
 
 					// Check if the island became unnamed or unclaimed
 					if (in_array(strtolower($towerName), $zeroedNames)) {
-						$island->setTowerName(null);
+						$territoryControl->setTowerName(null);
 					} else {
 						// Check if previous island name is not the same
-						if ($island->getTowerName() !== $towerName) {
-							$island->setTowerName($towerName);
+						if ($territoryControl->getTowerName() !== $towerName) {
+							$territoryControl->setTowerName($towerName);
 						}
 					}
 					// Check if the alliance became unnamed or unclaimed
 					if (in_array(strtolower($allianceName), $zeroedNames)) {
-						$island->setAlliance(null);
+						$territoryControl->setAlliance(null);
 					} else {
 						// Check if previous alliance is not the same
-						if (!$island->getAlliance() || $island->getAllianceName() !== $allianceName) {
+						if (!$territoryControl->getAlliance() || $territoryControl->getAllianceName() !== $allianceName) {
 							/**
 							 * @var $alliance Alliance
 							 */
@@ -132,22 +155,22 @@ class BossaController extends FOSRestController
 								$alliance = new Alliance();
 							}
 							$alliance->setName(trim($allianceName));
-							$island->setAlliance($alliance);
+							$territoryControl->setAlliance($alliance);
 						}
 					}
-					$this->entityManager->persist($island);
+					$this->entityManager->persist($territoryControl);
 					// Flush in every looped item because most times the api call does not contain a lot of changes
 					$this->entityManager->flush();
 
 					// Send island update to discord
-					$this->sendDiscordUpdate($island, $prevTowerName, $prevAllianceName);
+					$this->sendDiscordUpdate($territoryControl, $island, $prevTowerName, $prevAllianceName);
 				}
 			}
 		}
 		return $this->view('ok');
 	}
 
-	private function sendDiscordUpdate(Island $island, $prevTowerName = '', $prevAllianceName = '')
+	private function sendDiscordUpdate(IslandTerritoryControl $territoryControl, Island $island, $prevTowerName = '', $prevAllianceName = '')
 	{
 		$bossaTcChannel = $this->getParameter('bossa_tc_channel');
 		$uLogger = $this->get('monolog.logger.tc_updates');
@@ -159,30 +182,33 @@ class BossaController extends FOSRestController
 		$fields = [];
 
 		// Check if towername is changed
-		if($island->getTowerNameUnnamed() !== $prevTowerName) {
+		if($territoryControl->getTowerNameUnnamed() !== $prevTowerName) {
 			// Instead of using the empty string, rename to unclaimed for the tc channel
 			$fields[] = [ "name" => "Previous tower name", "value" => $prevTowerName, "inline" => true ];
-			$fields[] = [ "name" => "New tower name", "value" => $island->getTowerNameUnnamed(), "inline" => true ];
-			$uLogger->info("Island '".$island->getName()."' changed from tower name '$prevTowerName' to '".$island->getTowerNameUnnamed()."'");
+			$fields[] = [ "name" => "New tower name", "value" => $territoryControl->getTowerNameUnnamed(), "inline" => true ];
+			$uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerNameUnnamed()."'");
 		}
 
 		// Check if alliance is changed
-		if($island->getAllianceName() !== $prevAllianceName) {
+		if($territoryControl->getAllianceName() !== $prevAllianceName) {
 			$fields[] = [ "name" => "Previous alliance owner", "value" => $prevAllianceName, "inline" => true ];
-			$fields[] = [ "name" => "New alliance owner", "value" => $island->getAllianceName(), "inline" => true ];
-			$uLogger->info("Island '".$island->getName()."' changed from alliance '$prevAllianceName' to '".$island->getAllianceName()."'");
+			$fields[] = [ "name" => "New alliance owner", "value" => $territoryControl->getAllianceName(), "inline" => true ];
+			$uLogger->info("Island '".$island->getName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'");
 		}
-
+		$server = $territoryControl->getServer();
+		if($server === 'pts') {
+			$server = 'pvp';
+		}
 		// Only send discord api call when there are fields changed
 		if(count($fields)) {
 			$postBody = [
 				"embeds" => [
 					[
 						"title" => $island->getName(),
-						"url" => "https://map.cardinalguild.com/pvp/" . $island->getId(), // change pvp to server or make pts link to one of the modes
+						"url" => "https://map.cardinalguild.com/".$server."/" . $island->getId(), // change pvp to server or make pts link to one of the modes
 						"type" => "rich",
 						"author" => [
-							"name" => strtoupper('pts') //TODO: replace with $mode var
+							"name" => strtoupper($territoryControl->getServer())." server"
 						],
 						"thumbnail" => [
 							"url" => $url

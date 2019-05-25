@@ -17,7 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\IslandRepository")
  * @ORM\HasLifecycleCallbacks
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
- * @Gedmo\Loggable
  * @JMS\ExclusionPolicy("all")
  */
 class Island
@@ -203,20 +202,10 @@ class Island
     protected $workshopUrl;
 
 	/**
-	 * @var string
-	 * @Gedmo\Versioned
-	 * @ORM\Column(nullable=true)
+	 * @var \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
+	 * @ORM\OneToMany(targetEntity="App\Entity\IslandTerritoryControl", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
 	 */
-	protected $towerName;
-
-	/**
-	 * @var Alliance|null
-	 * @JMS\Expose
-	 * @Gedmo\Versioned
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Alliance", inversedBy="islands", cascade={"persist"})
-	 * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
-	 */
-	protected $alliance;
+	protected $territories;
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -254,9 +243,9 @@ class Island
 	 * @return string
 	 */
 	public function getGuid()
-         	{
-         		return $this->guid;
-         	}
+    {
+        return $this->guid;
+    }
 
 	/**
 	 * @param string $guid
@@ -682,8 +671,6 @@ class Island
         return $this;
     }
 
-
-
     public function getLeaflet(){}
     public function setLeaflet($data){}
 
@@ -720,60 +707,49 @@ class Island
     }
 
 	/**
-	 * @return string
+	 * @return IslandTerritoryControl[]|\Doctrine\Common\Collections\Collection
 	 */
-	public function getTowerName(): ?string
+	public function getTerritories()
 	{
-		return $this->towerName;
+		return $this->territories;
 	}
 
 	/**
-	 * @return string
-	 * Get tower name, if nullified, return Unnamed
+	 * @param IslandTerritoryControl[]|\Doctrine\Common\Collections\Collection $territories
+	 * @return \Doctrine\Common\Collections\Collection|IslandImage[]
 	 */
-	public function getTowerNameUnnamed(): string
+	public function setTerritories($territories)
 	{
-		if(!$this->towerName) {
-			return "Unnamed";
+		$this->territories = new ArrayCollection();
+		foreach($territories as $territory) {
+			$this->addTerritory($territory);
 		}
-		return $this->towerName;
+		return $this->territories;
 	}
 
 	/**
-	 * @param string $towerName
+	 * @param IslandTerritoryControl $territory
+	 * @return \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
 	 */
-	public function setTowerName(?string $towerName)
+	public function addTerritory(IslandTerritoryControl $territory)
 	{
-		$this->towerName = $towerName;
-	}
-
-	/**
-	 * @return Alliance|null
-	 */
-	public function getAlliance():?string
-	{
-
-		return $this->alliance;
-	}
-
-	/**
-	 * @return Alliance|null
-	 * Get alliance name, if nullified, return Unclaimed
-	 */
-	public function getAllianceName():string
-	{
-		if(!$this->alliance) {
-			return "Unclaimed";
+		if(!$this->territories->contains($territory)) {
+			$territory->setIsland($this);
+			$this->territories->add($territory);
 		}
-		return $this->alliance->getName();
+		return $this->reports;
 	}
 
 	/**
-	 * @param Alliance|null $alliance
+	 * @param IslandTerritoryControl $territory
+	 * @return \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
 	 */
-	public function setAlliance($alliance)
+	public function removeTerritory(IslandTerritoryControl $territory)
 	{
-		$this->alliance = $alliance;
+		if($this->territories->contains($territory)) {
+			$this->territories->removeElement($territory);
+		}
+		return $this->territories;
 	}
 
 	public function __toString()
