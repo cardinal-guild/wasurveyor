@@ -29,9 +29,19 @@ services:
         resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
-        
+
     App\Repository\AllianceRepository:
         arguments: ['@doctrine', 'App\Entity\Alliance']
+        tags:
+            - { name: doctrine.repository_service }
+            
+    App\Repository\IslandRepository:
+        arguments: ['@doctrine', 'App\Entity\Island']
+        tags:
+            - { name: doctrine.repository_service }
+
+    App\Repository\IslandTerritoryControlRepository:
+        arguments: ['@doctrine', 'App\Entity\IslandTerritoryControl']
         tags:
             - { name: doctrine.repository_service }
             
@@ -101,7 +111,7 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
-
+    
     security.acl.permission.map:
         class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
 

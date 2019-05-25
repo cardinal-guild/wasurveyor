@@ -10,6 +10,7 @@
         "ext-mbstring": "*",
         "ext-simplexml": "*",
         "ext-sockets": "*",
+        "ext-json": "*",
         "azine/hybridauth-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "^2.0",
         "friendsofsymfony/ckeditor-bundle": "^1.2",

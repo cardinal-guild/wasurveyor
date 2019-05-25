@@ -201,10 +201,11 @@ class Island
      */
     protected $workshopUrl;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\TCData", cascade={"persist", "remove"})
-     */
-    protected $ptsTC;
+	/**
+	 * @var \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
+	 * @ORM\OneToMany(targetEntity="App\Entity\IslandTerritoryControl", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
+	 */
+	protected $territories;
 
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -220,7 +221,6 @@ class Island
         $this->lng = 0;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
-        //TODO: add constructors for the tc data entities for servers
     }
 
     /**
@@ -243,9 +243,9 @@ class Island
 	 * @return string
 	 */
 	public function getGuid()
-         	{
-         		return $this->guid;
-         	}
+    {
+        return $this->guid;
+    }
 
 	/**
 	 * @param string $guid
@@ -671,8 +671,6 @@ class Island
         return $this;
     }
 
-
-
     public function getLeaflet(){}
     public function setLeaflet($data){}
 
@@ -708,6 +706,52 @@ class Island
         $this->tier = $tier;
     }
 
+	/**
+	 * @return IslandTerritoryControl[]|\Doctrine\Common\Collections\Collection
+	 */
+	public function getTerritories()
+	{
+		return $this->territories;
+	}
+
+	/**
+	 * @param IslandTerritoryControl[]|\Doctrine\Common\Collections\Collection $territories
+	 * @return \Doctrine\Common\Collections\Collection|IslandImage[]
+	 */
+	public function setTerritories($territories)
+	{
+		$this->territories = new ArrayCollection();
+		foreach($territories as $territory) {
+			$this->addTerritory($territory);
+		}
+		return $this->territories;
+	}
+
+	/**
+	 * @param IslandTerritoryControl $territory
+	 * @return \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
+	 */
+	public function addTerritory(IslandTerritoryControl $territory)
+	{
+		if(!$this->territories->contains($territory)) {
+			$territory->setIsland($this);
+			$this->territories->add($territory);
+		}
+		return $this->reports;
+	}
+
+	/**
+	 * @param IslandTerritoryControl $territory
+	 * @return \Doctrine\Common\Collections\Collection|IslandTerritoryControl[]
+	 */
+	public function removeTerritory(IslandTerritoryControl $territory)
+	{
+		if($this->territories->contains($territory)) {
+			$this->territories->removeElement($territory);
+		}
+		return $this->territories;
+	}
+
 	public function __toString()
      {
          if($this->getName() && $this->getNickname()) {
@@ -719,16 +763,5 @@ class Island
          return "New island";
      }
 
-    public function getPtsTC(): ?TCData
-    {
-        return $this->ptsTC;
-    }
-
-    public function setPtsTC(?TCData $ptsTC): self
-    {
-        $this->ptsTC = $ptsTC;
-
-        return $this;
-    }
 
 }

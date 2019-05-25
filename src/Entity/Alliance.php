@@ -48,127 +48,74 @@ class Alliance
 	protected $description;
 
 	/**
-	 * @var string
-	 * @ORM\Column(type="string", nullable=true)
+	 * @ORM\OneToMany(targetEntity="App\Entity\IslandTerritoryControl", mappedBy="alliance")
 	 */
-	protected $guid;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\TCData", mappedBy="alliance")
-     */
-    protected $tcData;
+	protected $territories;
 
 	use TimestampableEntity;
 	use SoftDeleteableEntity;
 
 	public function __construct()
-                  	{
-                  		$this->createdAt = new \DateTime();
-                  		$this->updatedAt = new \DateTime();
-                    	$this->tcData = new ArrayCollection();
-                  	}
+	{
+		$this->createdAt = new \DateTime();
+		$this->updatedAt = new \DateTime();
+	}
 
 	/**
 	 * @return mixed
 	 */
 	public function getId()
-                  	{
-                  		return $this->id;
-                  	}
+	{
+		return $this->id;
+	}
 
 	/**
 	 * @param mixed $id
 	 */
 	public function setId($id)
-                  	{
-                  		$this->id = $id;
-                  	}
+	{
+		$this->id = $id;
+	}
 
 	/**
 	 * @return string
 	 */
 	public function getName()
-                  	{
-                  		return $this->name;
-                  	}
+	{
+		return $this->name;
+	}
 
 	/**
 	 * @param string $name
 	 */
 	public function setName($name)
-                  	{
-                  		$this->name = $name;
-                  	}
+	{
+		$this->name = $name;
+	}
 
 	/**
 	 * @return string
 	 */
 	public function getDescription()
-                  	{
-                  		return $this->description;
-                  	}
+	{
+		return $this->description;
+	}
 
 	/**
 	 * @param string $description
 	 */
 	public function setDescription($description)
-                  	{
-                  		$this->description = $description;
-                  	}
+	{
+		$this->description = $description;
+	}
 
-	/**
-	 * @return string
-	 */
-	public function getGuid()
-                  	{
-                  		return $this->guid;
-                  	}
 
-	/**
-	 * @param string $guid
-	 */
-	public function setGuid($guid)
-                  	{
-                  		$this->guid = $guid;
-                  	}
 
 	public function __toString()
-                  	{
-                  		if($this->getName()) {
-                  			return $this->getName();
-                  		}
-                  		return "New Alliance";
-                  	}
-
-    /**
-     * @return Collection|TCData[]
-     */
-    public function getTcData(): Collection
-    {
-        return $this->tcData;
-    }
-
-    public function addTcData(TCData $tcData): self
-    {
-        if (!$this->tcData->contains($tcData)) {
-            $this->tcData[] = $tcData;
-            $tcData->setAlliance($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTcData(TCData $tcData): self
-    {
-        if ($this->tcData->contains($tcData)) {
-            $this->tcData->removeElement($tcData);
-            // set the owning side to null (unless already changed)
-            if ($tcData->getAlliance() === $this) {
-                $tcData->setAlliance(null);
-            }
-        }
-
-        return $this;
-    }
-
+	{
+		if ($this->getName()) {
+			return $this->getName();
+		}
+		return "New Alliance";
+	}
 }
