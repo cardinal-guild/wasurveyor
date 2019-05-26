@@ -109,8 +109,21 @@ class Alliance
 		$this->description = $description;
 	}
 
-	public function getTerritories() {
+	public function getTerritories()
+	{
 		return $this->territories;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getTerritoryCount()
+	{
+		if ($this->territories) {
+			return count($this->territories);
+		}
+		return 0;
 	}
 
 
