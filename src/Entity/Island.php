@@ -290,6 +290,17 @@ class Island
     }
 
     /**
+     * @var string $usedName
+     */
+    public function getUsedName()
+    {
+        if ($this->nickname) {
+            return $this->nickname;
+        }
+        return $this->name;
+    }
+
+    /**
      * @return string
      */
     public function getSlug(): ?string
