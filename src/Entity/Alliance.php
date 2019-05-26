@@ -109,6 +109,10 @@ class Alliance
 		$this->description = $description;
 	}
 
+	public function getTerritories() {
+		return $this->territories;
+	}
+
 
 
 	public function __toString()

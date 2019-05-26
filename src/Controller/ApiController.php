@@ -94,6 +94,37 @@ class ApiController extends FOSRestController
     }
 
     /**
+     * Returns alliances
+     * 
+     * @Route("/alliances.{_format}", methods={"GET"}, defaults={"_format": "json"})
+     */
+    public function getAlliances()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $alliances = $em->getRepository('App:Alliance')->findAll();
+
+        $data = [];
+        foreach($alliances as $a) {
+            $add = [
+                "id" => $a->getId(),
+                "name" => $a->getName(),
+                "count" => count($a->getTerritories())
+            ];
+            $add['tc'] = [];
+            foreach($a->getTerritories() as $tc) {
+                $add['tc'][] = [
+                    "island_name" => $tc->getIsland()->getName(),
+                    "tower_name" => $tc->getTowerName()
+                ];
+            }
+            $data[] = $add;
+        }
+
+        return $this->view($data);
+    }
+
+    /**
      * Returns oEmbed json for an island
      *
      * @Route("/islands/{id}/oEmbed.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
