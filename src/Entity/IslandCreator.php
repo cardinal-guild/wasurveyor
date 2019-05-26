@@ -97,7 +97,7 @@ class IslandCreator
     /**
      * @param string $workshopUrl
      */
-    public function setWorkshopUrl(string $workshopUrl): void
+    public function setWorkshopUrl(?string $workshopUrl): void
     {
         $this->workshopUrl = $workshopUrl;
     }
