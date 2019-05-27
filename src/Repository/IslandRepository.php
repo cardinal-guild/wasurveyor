@@ -94,6 +94,13 @@ class IslandRepository extends ServiceEntityRepository
             $qb->andWhere($qb->expr()->eq('island.id', ":ID"));
             $qb->setParameter('ID', intval($params['id']));
         }
+        if(!empty($params["tier"])) {
+            $ors = [];
+            foreach(str_split($params["tier"]) as $t) {
+                $ors[] = $qb->expr()->orx('island.tier = '.$qb->expr()->literal($t));
+            }
+            $qb->andWhere(join(' OR ', $ors));
+        }
         if(!empty($params['quality'])) {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('ipvem.quality', ":QUALITY"),
