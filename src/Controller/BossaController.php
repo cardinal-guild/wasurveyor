@@ -137,7 +137,7 @@ class BossaController extends FOSRestController
                     $towerName = $islandData['TctName'];
 
                     // filter out known islands missing from the workshop (I checked all of them)
-                    $missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093"];
+                    $missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093", "1416236875"];
 
                     /**
                      * @var Island $island
