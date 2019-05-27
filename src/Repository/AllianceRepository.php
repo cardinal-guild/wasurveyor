@@ -19,8 +19,8 @@ class AllianceRepository extends ServiceEntityRepository
         }
 
         if (!empty($params['name'])) {
-            $qb->andWhere($qb->expr()->like('alliance.name', ':NAME'));
-            $qb->setParameter('NAME', '%'.$params['name'].'%');
+            $qb->andWhere($qb->expr()->eq('alliance.name', ':NAME'));
+            $qb->setParameter('NAME', $params['name']);
         }
 
         $qry = $qb->getQuery();
