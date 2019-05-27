@@ -98,11 +98,18 @@ class ApiController extends FOSRestController
      * 
      * @Route("/alliances.{_format}", methods={"GET"}, defaults={"_format": "json"})
      */
-    public function getAlliances()
+    public function getAlliances(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $alliances = $em->getRepository('App:Alliance')->findAll();
+        $allianceRepo = $em->getRepository('App:Alliance');
+
+        if ($request->query->count()) {
+            $alliances = $allianceRepo->getAlliancesByQuery($request->query->all());
+        }
+        else {
+            $alliances = $allianceRepo->findAll();
+        }
 
         $data = [];
         foreach($alliances as $a) {
