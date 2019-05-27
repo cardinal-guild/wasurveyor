@@ -109,24 +109,13 @@ class Alliance
 		$this->description = $description;
 	}
 
+	/**
+	 * @return IslandTerritoryControl[]|\Doctrine\Common\Collections\Collection
+	 */
 	public function getTerritories()
 	{
 		return $this->territories;
 	}
-
-
-	/**
-	 * @return int
-	 */
-	public function getTerritoryCount()
-	{
-		if ($this->territories) {
-			return count($this->territories);
-		}
-		return 0;
-	}
-
-
 
 	public function __toString()
 	{

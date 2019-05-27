@@ -133,6 +133,9 @@ class BossaController extends FOSRestController
                     $allianceName = $islandData['AllianceName'];
                     $towerName = $islandData['TctName'];
 
+                    // filter out known islands missing from the workshop (I checked all of them)
+                    $missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093"];
+
                     /**
                      * @var Island $island
                      */
@@ -189,7 +192,7 @@ class BossaController extends FOSRestController
                         $this->customEntityManager->persist($territoryControl);
                         return $responses;
                     }
-                    else if (!$island) {
+                    else if (!$island && !in_array($islandId, $missingFromWorkshop)) {
                         $uLogger->warning($islandId." is an UNKNOWN ID");
                         $responses[] = $islandId." is an UNKNOWN ID";
                         return $responses;
@@ -231,8 +234,15 @@ class BossaController extends FOSRestController
             $description = "**`".$newAlliance->getName()."`** has taken control of ".$island->getUsedName()." from **`".$oldAllianceName."`**";
         }
 
-        if ($newAlliance === "Unclaimed") {
-            $footer = null;
+        $footer = null;
+        if ($newAlliance === "Unclaimed" && $oldAllianceName !== "Unclaimed") { // when an alliance loses an island to Unclaimed
+            $oldAlliance = $this->allianceRepo->findOneBy(["name" => $oldAllianceName]);
+            $territories = $this->islandTCRepo->findBy(["alliance" => $oldAlliance]);
+            if ($oldAlliance && $territories) {
+                $count = $territories ? count($territories) - 1 : 0;
+                $footer = $oldAllianceName." has " .$count." island".($count === 1 ? "" : "s")." now";
+            }
+            
         }
         else {
             $count = $newAlliance->getTerritories() ? count($newAlliance->getTerritories()) + 1 : 1;
