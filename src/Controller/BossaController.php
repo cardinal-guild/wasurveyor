@@ -124,8 +124,11 @@ class BossaController extends FOSRestController
 				 * @var Island $island
 				 */
                 $island = $this->islandRepo->findOneBy(["guid" => $islandId]);
-                $id = $island->getId();
-
+                $id = '';
+                if ($island) {
+                    $id = $island->getId();
+                }
+                
                 $callback = function() use ($id, $islandData, $islandId, $responses, $server, $uLogger) {
                     $island = $this->islandRepo->find($id, LockMode::PESSIMISTIC_WRITE);
 
