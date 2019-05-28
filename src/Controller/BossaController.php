@@ -87,12 +87,10 @@ class BossaController extends FOSRestController
 	 * Post for Bossa tc info
 	 *
 	 * @Route("/island/info.{_format}", methods={"POST"}, defaults={ "_format": "json" })
-	 * @SWG\Response(
-	 *      response=200,
-	 *      description="Post api for tc updates"
-	 * )
+	 * @SWG\Response(response=200, description="Post api for tc updates")
+     * @SWG\Response(response=400, description="No region or island data provided")
 	 * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="Bearer TOKEN", description="Bossa Authorization key" )
-	 * @SWG\Tag(name="TC API")
+	 * @SWG\Tag(name="Islands")
 	 * @View()
 	 */
 	public function updateInfo(Request $request)
