@@ -36,7 +36,7 @@ class AccountApiController extends FOSRestController
     /**
      * Validate an account with api tokens
      *
-     * @Route("/validate.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/validate.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Validate an account with api tokens"
@@ -54,7 +54,7 @@ class AccountApiController extends FOSRestController
     /**
      * Logout current authenticated user
      *
-     * @Route("/logout.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/logout.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Logout current authenticated user"
@@ -79,7 +79,7 @@ class AccountApiController extends FOSRestController
     /**
      * Create a new character
      *
-     * @Route("/character/create.{_format}", methods={"POST","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/character/create.{_format}", methods={"POST"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Validate an account with api tokens"
@@ -120,7 +120,7 @@ class AccountApiController extends FOSRestController
     /**
      * Delete an existing new character
      *
-     * @Route("/character/delete/{guid}.{_format}", methods={"DELETE","OPTIONS"}, defaults={ "_format": "json" }, requirements={"guid"="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" })
+     * @Route("/character/delete/{guid}.{_format}", methods={"DELETE"}, defaults={ "_format": "json" }, requirements={"guid"="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" })
      * @SWG\Response(
      *     response=200,
      *     description="Delete an existing new character"
@@ -153,7 +153,7 @@ class AccountApiController extends FOSRestController
     /**
      * Get all your characters
      *
-     * @Route("/characters.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/characters.{_format}", methods={"GET"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Get all your characters"
@@ -177,7 +177,7 @@ class AccountApiController extends FOSRestController
     /**
      * Set an island as visited
      *
-     * @Route("/character/visit.{_format}", methods={"POST","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/character/visit.{_format}", methods={"POST"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Set an island as visited"
@@ -230,7 +230,7 @@ class AccountApiController extends FOSRestController
     /**
      * Set an island as unvisited
      *
-     * @Route("/character/unvisit.{_format}", methods={"POST","OPTIONS"}, defaults={ "_format": "json" })
+     * @Route("/character/unvisit.{_format}", methods={"POST"}, defaults={ "_format": "json" })
      * @SWG\Response(
      *     response=200,
      *     description="Set an island as unvisited"

@@ -42,16 +42,10 @@ class ReportController extends FOSRestController
     /**
      * Post a report of materials of an island
      *
-     * @Route("/report.{_format}", methods={"OPTIONS","POST"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Reporting is send correctly"
-     * )*
-     * @SWG\Response(
-     *     response=400,
-     *     description="Reporting is not accepted"
-     * )
-     * @SWG\Tag(name="Reporting")
+     * @Route("/report.{_format}", methods={"POST"}, defaults={ "_format": "json" })
+     * @SWG\Response(response=200, description="Reporting is send correctly")
+     * @SWG\Response(response=400, description="Reporting is not accepted")
+     * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
     public function postReportAction(Request $request, EntityManagerInterface $entityManager)

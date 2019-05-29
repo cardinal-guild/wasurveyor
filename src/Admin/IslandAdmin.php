@@ -85,6 +85,7 @@ class IslandAdmin extends AbstractAdmin
             ->add('published', null, ['editable'=>true])
             ->add('createdAt')
             ->add('updatedAt')
+            ->add('guid', null, ['editable'=>true, 'label'=>'Workshop ID'])
             ->add('_action', null, array(
                 'actions' => array(
                     'show' => array(),
@@ -185,6 +186,7 @@ class IslandAdmin extends AbstractAdmin
     {
         $showMapper
             ->add('id')
+            ->add('guid', null, ['label' => 'Workshop ID'])
             ->add('name')
             ->add('nickname')
             ->add('slug')
