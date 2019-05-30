@@ -13,6 +13,8 @@ use Swagger\Annotations as SWG;
 class LogController extends AbstractController
 {
 	/**
+	 * Direct logs of Territory Control updates sent by Bossa
+	 * 
 	 * @Route(path="/bossa_log", methods={"GET"}, name="bossa_log")\
 	 * @SWG\Response(response=200, description="Log of all Territory Control actions sent from Bossa")
 	 * @SWG\Tag(name="Logs")
@@ -32,6 +34,8 @@ class LogController extends AbstractController
 	}
 
 	/**
+	 * Logs of all actions taken based on input from bossa_log
+	 * 
 	 * @Route(path="/tc_updates_log", methods={"GET"}, name="TC Update Log")
 	 * @SWG\Response(response=200, description="Log of all actions taken based on TC Updates")
 	 * @SWG\Tag(name="Logs")
