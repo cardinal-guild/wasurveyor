@@ -181,7 +181,7 @@ class ImportIslandsCommand extends Command
 		$output->writeln($failedCount.' island GUIDs failed to retrieve data for.');
 	}
 	private function convertHeight($coord) {
-		return (int) 2150+($coord/1.625);
+		return (int) 1200+($coord*2);
 	}
 	private function convertLng($coord) {
 		return 4750+($coord/3.85);
