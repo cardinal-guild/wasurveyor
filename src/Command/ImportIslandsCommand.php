@@ -132,6 +132,7 @@ class ImportIslandsCommand extends Command
 								$island = new Island();
 								$island->setLng($this->convertLng($dataIsland->x));
 								$island->setLat($this->convertLat($dataIsland->z));
+								$island->setAltitude($this->convertHeight($dataIsland->y));
 								$island->setPublished(true);
 								$island->setName($islandName);
 								$island->setWorkshopUrl($steamUrl);
@@ -181,7 +182,7 @@ class ImportIslandsCommand extends Command
 		$output->writeln($failedCount.' island GUIDs failed to retrieve data for.');
 	}
 	private function convertHeight($coord) {
-		return (int) 1200+($coord*2);
+		return (int) 1800+($coord*2);
 	}
 	private function convertLng($coord) {
 		return 4750+($coord/3.85);
