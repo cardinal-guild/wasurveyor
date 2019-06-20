@@ -407,6 +407,9 @@
     "symfony/doctrine-bridge": {
         "version": "v4.1.7"
     },
+    "symfony/dom-crawler": {
+        "version": "v4.3.1"
+    },
     "symfony/dotenv": {
         "version": "v4.2.1"
     },
