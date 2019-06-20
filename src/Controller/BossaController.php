@@ -59,7 +59,7 @@ class BossaController extends FOSRestController
 	 * @var EntityManagerInterface
 	 */
     protected $entityManager;
-    
+
     /**
      * @var CustomEntityManager
      */
@@ -129,9 +129,9 @@ class BossaController extends FOSRestController
                 $callback = function() use ($id, $islandData, $islandId, $responses, $server, $uLogger) {
                     $island = $this->islandRepo->find($id, LockMode::PESSIMISTIC_WRITE);
 
-                        // Set variables
-                    $allianceName = $islandData['AllianceName'];
-                    $towerName = $islandData['TctName'];
+                    // Set variables
+                    $newAllianceName = $islandData['AllianceName'];
+                    $newTowerName = $islandData['TctName'];
 
                     /**
                      * @var Island $island
@@ -149,39 +149,39 @@ class BossaController extends FOSRestController
                         }
 
                         // Store previous tower and alliance name for discord channel updates, even if nulled
-                        $prevAllianceName = $territoryControl->getAllianceName();
+                        $currentAllianceName = $territoryControl->getAllianceName();
                         // Get the tower name, if null returned, you get 'Unnamed' as string back
-                        $prevTowerName = $territoryControl->getTowerName();
+                        $currentTowerName = $territoryControl->getTowerName();
 
-                        if ($allianceName === "Unclaimed" && $towerName === "None") { // this will ONLY be Unclaimed if there is no alliance, not unnamed, or none or something else. better to be specific
+                        if ($newAllianceName === "Unclaimed" && $newTowerName === "None") { // this will ONLY be Unclaimed if there is no alliance, not unnamed, or none or something else. better to be specific
                             $territoryControl->setAlliance(null);
                             $territoryControl->setTowerName("None");
-                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'");
-                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to Unclaimed'";
+                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to Unclaimed'");
+                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to Unclaimed'";
                             if ($this->getPreviousAllianceName($territoryControl, true) !== "Unclaimed") {
-                                $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl, true), "Unclaimed");
+                                $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), "Unclaimed");
                             }
                         }
-                        else if ($prevAllianceName !== $allianceName) {
+                        else if ($currentAllianceName !== $newAllianceName) {
                             /**
                              * @var $alliance Alliance
                              */
-                            $alliance = $this->allianceRepo->findOneBy(['name' => trim($allianceName)]);
+                            $alliance = $this->allianceRepo->findOneBy(['name' => trim($newAllianceName)]);
                             if (!$alliance) {
                                 $alliance = new Alliance();
-                                $alliance->setName(trim($allianceName));
+                                $alliance->setName(trim($newAllianceName));
                             }
                             $territoryControl->setAlliance($alliance);
-                            $territoryControl->setTowerName($towerName);
-                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'");
-                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$prevAllianceName' to '".$territoryControl->getAllianceName()."'";
+                            $territoryControl->setTowerName($newTowerName);
+                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to '".$territoryControl->getAllianceName()."'");
+                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to '".$territoryControl->getAllianceName()."'";
 
                             $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $alliance);
                         }
-                        else if ($prevTowerName !== $towerName) { // If tower name has changed
-                            $territoryControl->setTowerName($towerName);
-                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'");
-                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from tower name '$prevTowerName' to '".$territoryControl->getTowerName()."'";
+                        else if ($currentTowerName !== $newTowerName) { // If tower name has changed
+                            $territoryControl->setTowerName($newTowerName);
+                            $uLogger->info("Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from tower name '$currentTowerName' to '".$territoryControl->getTowerName()."'");
+                            $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from tower name '$currentTowerName' to '".$territoryControl->getTowerName()."'";
                         }
                         else {
                             $responses[] = "Duplicate";
@@ -267,7 +267,7 @@ class BossaController extends FOSRestController
         } catch (\Exception $e) { }
     }
 
-    private function getPreviousAllianceName(IslandTerritoryControl $territoryControl, bool $getLiteralFirst = false) {
+    private function getPreviousAllianceName(IslandTerritoryControl $territoryControl) {
 		$logRepo = $this->entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
 		$logEntries = $logRepo->getLogEntries($territoryControl);
 		/**
@@ -281,9 +281,6 @@ class BossaController extends FOSRestController
 					if($alliance) {
 						return $alliance->getName();
                     }
-                }
-                else if ($getLiteralFirst) {
-                    return "Unclaimed";
                 }
 			}
 		}
