@@ -87,12 +87,10 @@ class BossaController extends FOSRestController
 	 * Post for Bossa tc info
 	 *
 	 * @Route("/island/info.{_format}", methods={"POST"}, defaults={ "_format": "json" })
-	 * @SWG\Response(
-	 *      response=200,
-	 *      description="Post api for tc updates"
-	 * )
+	 * @SWG\Response(response=200, description="Post api for tc updates")
+     * @SWG\Response(response=400, description="No region or island data provided")
 	 * @SWG\Parameter( name="Authorization", in="header", required=true, type="string", default="Bearer TOKEN", description="Bossa Authorization key" )
-	 * @SWG\Tag(name="TC API")
+	 * @SWG\Tag(name="Islands")
 	 * @View()
 	 */
 	public function updateInfo(Request $request)
@@ -124,14 +122,20 @@ class BossaController extends FOSRestController
 				 * @var Island $island
 				 */
                 $island = $this->islandRepo->findOneBy(["guid" => $islandId]);
-                $id = $island->getId();
-
+                $id = '';
+                if ($island) {
+                    $id = $island->getId();
+                }
+                
                 $callback = function() use ($id, $islandData, $islandId, $responses, $server, $uLogger) {
                     $island = $this->islandRepo->find($id, LockMode::PESSIMISTIC_WRITE);
 
                     // Set variables
                     $newAllianceName = $islandData['AllianceName'];
                     $newTowerName = $islandData['TctName'];
+
+                    // filter out known islands missing from the workshop (I checked all of them)
+                    $missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093", "1416236875"];
 
                     /**
                      * @var Island $island
@@ -189,7 +193,7 @@ class BossaController extends FOSRestController
                         $this->customEntityManager->persist($territoryControl);
                         return $responses;
                     }
-                    else if (!$island) {
+                    else if (!$island && !in_array($islandId, $missingFromWorkshop)) {
                         $uLogger->warning($islandId." is an UNKNOWN ID");
                         $responses[] = $islandId." is an UNKNOWN ID";
                         return $responses;
@@ -231,8 +235,15 @@ class BossaController extends FOSRestController
             $description = "**`".$newAlliance->getName()."`** has taken control of ".$island->getUsedName()." from **`".$oldAllianceName."`**";
         }
 
-        if ($newAlliance === "Unclaimed") {
-            $footer = null;
+        $footer = null;
+        if ($newAlliance === "Unclaimed" && $oldAllianceName !== "Unclaimed") { // when an alliance loses an island to Unclaimed
+            $oldAlliance = $this->allianceRepo->findOneBy(["name" => $oldAllianceName]);
+            $territories = $this->islandTCRepo->findBy(["alliance" => $oldAlliance]);
+            if ($oldAlliance && $territories) {
+                $count = $territories ? count($territories) - 1 : 0;
+                $footer = $oldAllianceName." has " .$count." island".($count === 1 ? "" : "s")." now";
+            }
+            
         }
         else {
             $count = $newAlliance->getTerritories() ? count($newAlliance->getTerritories()) + 1 : 1;

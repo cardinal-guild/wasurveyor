@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Island;
 use App\Entity\IslandImage;
+use App\Entity\Alliance;
 use App\Repository\AllianceRepository;
 use App\Repository\IslandRepository;
 use App\Repository\IslandTerritoryControlRepository;
@@ -16,6 +17,7 @@ use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -37,11 +39,12 @@ class ApiController extends FOSRestController
      * Returns tc history for a specific island
      *
      * @Route("/islands/{id}/{server}/history.{_format}", methods={"GET"}, defaults={ "_format": "json"})
-     * @SWG\Response(
-     *      response=200,
-     *      description="Returns the Territory Control history for an island"
-     * )
-     * @SWG\Tag(name="TC History")
+     * @SWG\Response(response=200, description="Returns the Territory Control history for an island")
+     * @SWG\Response(response=400, description="Server or ID is not valid")
+     * @SWG\Response(response=404, description="No territory control defined for that island")
+     * @SWG\Parameter(name="id", in="path", type="string", description="Island ID")
+     * @SWG\Parameter(name="server", in="path", type="string", description="Server that the island is on")
+     * @SWG\Tag(name="Islands")
      * @View()
      */
     public function getTCHistory($id, $server, IslandRepository $islandRepository, AllianceRepository $allianceRepository, IslandTerritoryControlRepository $territoryControlRepo, EntityManagerInterface $em)
@@ -97,12 +100,24 @@ class ApiController extends FOSRestController
      * Returns alliances
      * 
      * @Route("/alliances.{_format}", methods={"GET"}, defaults={"_format": "json"})
+     * @SWG\Response(response=200, description="Returns a list of all alliances" )
+     * @SWG\Parameter(name="id", in="query", type="string", description="Finds an alliance by an ID")
+     * @SWG\Parameter(name="name", in="query", type="string", description="Finds a match (case insensitive) by alliance name")
+     * @SWG\Tag(name="Alliances")
+     * @View()
      */
-    public function getAlliances()
+    public function getAlliances(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $alliances = $em->getRepository('App:Alliance')->findAll();
+        $allianceRepo = $em->getRepository('App:Alliance');
+
+        if ($request->query->count()) {
+            $alliances = $allianceRepo->getAlliancesByQuery($request->query->all());
+        }
+        else {
+            $alliances = $allianceRepo->findAll();
+        }
 
         $data = [];
         foreach($alliances as $a) {
@@ -127,12 +142,11 @@ class ApiController extends FOSRestController
     /**
      * Returns oEmbed json for an island
      *
-     * @Route("/islands/{id}/oEmbed.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
-     * @SWG\Response(
-     *      response=200,
-     *      description="Returns oEmbed.json for an island"
-     * )
-     * @SWG\Tag(name="Island oEmbed")
+     * @Route("/islands/{id}/oEmbed.{_format}", methods={"GET"}, defaults={ "_format": "json"})
+     * @SWG\Response(response=200, description="Returns oEmbed.json for an island (used for embeds on websites)")
+     * @SWG\Response(response=400, description="Island not found")
+     * @SWG\Parameter(name="id", in="path", type="string", description="ID of the island")
+     * @SWG\Tag(name="Islands")
      * @View()
      */
     public function getIslandOEmbed($id)
@@ -157,12 +171,9 @@ class ApiController extends FOSRestController
     /**
      * Returns all island creators
      *
-     * @Route("/creators.{_format}", methods={"GET", "OPTIONS"}, defaults={ "_format": "json"})
-     * @SWG\Response(
-     *      response=200,
-     *      description="Returns all island creators"
-     * )
-     * @SWG\Tag(name="Creators")
+     * @Route("/creators.{_format}", methods={"GET"}, defaults={ "_format": "json"})
+     * @SWG\Response(response=200, description="Returns all island creators")
+     * @SWG\Tag(name="Islands")
      * @View()
      */
     public function getAllIslandCreators()
@@ -184,11 +195,16 @@ class ApiController extends FOSRestController
     /**
      * Returns all marker data for islands, if query input given, gives islands by search
      *
-     * @Route("/islands.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all marker data for islands, if query input given, gives islands by search"
-     * )
+     * @Route("/islands.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @SWG\Response(response=200, description="Returns all marker data for islands, if query input given, gives islands by search")
+     * @SWG\Parameter(name="id", in="query", type="string", description="Island ID")
+     * @SWG\Parameter(name="tier", in="query", type="string", description="Tier of islands (format: 13, 34, 1234)")
+     * @SWG\Parameter(name="quality", in="query", type="integer", description="Quality of metal (used with metal param)")
+     * @SWG\Parameter(name="minquality", in="query", type="integer", description="Minimum quality (used with metal param)")
+     * @SWG\Parameter(name="maxquality", in="query", type="integer", description="Maximum quality (used with metal param)")
+     * @SWG\Parameter(name="tree", in="query", type="string", description="Type of trees")
+     * @SWG\Parameter(name="creator", in="query", type="string", description="Made by creator")
+     * @SWG\Parameter(name="island", in="query", type="string", description="Island name")
      * @SWG\Tag(name="Islands")
      * @Cache(public=true, expires="now", mustRevalidate=true)
      */
@@ -327,12 +343,9 @@ class ApiController extends FOSRestController
     /**
      * Returns all metaltypes
      *
-     * @Route("/metaltypes.{_format}", methods={"GET","OPTIONS"}, defaults={ "_format": "json" })
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns all metaltypes"
-     * )
-     * @SWG\Tag(name="Types")
+     * @Route("/metaltypes.{_format}", methods={"GET"}, defaults={ "_format": "json" })
+     * @SWG\Response(response=200,description="Returns all metaltypes")
+     * @SWG\Tag(name="Info")
      * @View()
      */
     public function getAllMetalTypes(Request $request)

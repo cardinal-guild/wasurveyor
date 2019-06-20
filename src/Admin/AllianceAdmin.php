@@ -32,7 +32,6 @@ class AllianceAdmin extends AbstractAdmin
 	{
 		$datagridMapper
 			->add('id')
-			->add('guid')
 			->add('name')
 			->add('description')
 			->add('createdAt')
@@ -47,8 +46,8 @@ class AllianceAdmin extends AbstractAdmin
 	{
 		$listMapper
 			->add('id')
-			->addIdentifier('guid')
 			->addIdentifier('name')
+			->add('territories', null, ['template' => 'admin/territory_count.html.twig', 'label' => 'Territory Count'])
 			->add('createdAt')
 			->add('updatedAt')
 		;
@@ -61,7 +60,6 @@ class AllianceAdmin extends AbstractAdmin
 	{
 		$formMapper
 			->add('name')
-			->add('guid')
 			->add('description', TextareaType::class, ['required'=>false])
 		;
 	}
@@ -73,8 +71,8 @@ class AllianceAdmin extends AbstractAdmin
 	{
 		$showMapper
 			->add('id')
-			->add('guid')
 			->add('name')
+			->add('territories', null, ['label' => 'Territory Count', 'template' => 'admin/territory_count.html.twig'])
 			->add('description')
 			->add('createdAt')
 			->add('updatedAt')
