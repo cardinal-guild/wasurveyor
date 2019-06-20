@@ -8,6 +8,7 @@ use App\Entity\IslandPVETree;
 use App\Entity\IslandTree;
 use App\Repository\IslandRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -77,6 +78,15 @@ class ImportIslandsCommand extends Command
 				$island->setPublished(true);
 				$this->em->persist($island);
 				$totalCount++;
+			} else {
+				$steamUrl = 'https://steamcommunity.com/sharedfiles/filedetails/?id='.$guid;
+				$client = new Client();
+				$res = $client->get('GET', $steamUrl);
+				$finder = new \DomXPath($res->getBody());
+				$workshopTitle = $finder->query("//*[contains(@class, 'workshopItemTitle')]");
+				dump($workshopTitle);
+
+				sleep(2);
 			}
 
 			if ($i % 10 === 0) {
