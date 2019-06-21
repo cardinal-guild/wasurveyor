@@ -138,6 +138,7 @@ class Island
 
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandTree[]
+     * @ORM\OrderBy({'type' = 'ASC')
      * @ORM\OneToMany(targetEntity="App\Entity\IslandTree", mappedBy="island", cascade={"persist","remove"}, orphanRemoval=true)
      */
     protected $trees;
@@ -145,6 +146,7 @@ class Island
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandPVEMetal[]
      * @ORM\ManyToMany(targetEntity="IslandPVEMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\OrderBy({"type"="ASC")
      * @ORM\JoinTable(name="island_pve_metals",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
@@ -156,6 +158,7 @@ class Island
     /**
      * @var \Doctrine\Common\Collections\Collection|IslandPVPMetal[]
      * @ORM\ManyToMany(targetEntity="IslandPVPMetal", cascade={"persist","remove"}, orphanRemoval=true, inversedBy="islands")
+     * @ORM\OrderBy({"type"="ASC")
      * @ORM\JoinTable(name="island_pvp_metals",
      *      joinColumns={@ORM\JoinColumn(name="island_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="metal_id", referencedColumnName="id")}
