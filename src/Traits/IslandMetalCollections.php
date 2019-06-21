@@ -64,7 +64,9 @@ trait IslandMetalCollections
     {
 	    $iterator = $this->pvpMetals->getIterator();
 	    $iterator->uasort(function ($a, $b) {
-		    return strcmp($a->getType()->getName(), $b->getType()->getName());
+	    	if($a && $b && $a->getType() && $b->getType()) {
+			    return strcmp($a->getType()->getName(), $b->getType()->getName());
+		    }
 	    });
 	    return new ArrayCollection(iterator_to_array($iterator));
     }
