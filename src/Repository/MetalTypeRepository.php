@@ -9,6 +9,6 @@ class MetalTypeRepository extends EntityRepository
 {
 	public function findAll()
 	{
-		return $this->findBy(array(), array('type' => 'ASC'));
+		return $this->findBy(array(), array('name' => 'ASC'));
 	}
 }
