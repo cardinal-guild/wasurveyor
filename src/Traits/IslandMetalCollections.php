@@ -15,7 +15,11 @@ trait IslandMetalCollections
      */
     public function getPveMetals()
     {
-        return $this->pveMetals;
+	    $iterator = $this->pveMetals->getIterator();
+	    $iterator->uasort(function ($a, $b) {
+		    return strcmp($a->getType()->getName(), $b->getType()->getName());
+	    });
+	    return new ArrayCollection(iterator_to_array($iterator));
     }
 
     /**
@@ -58,7 +62,11 @@ trait IslandMetalCollections
      */
     public function getPvpMetals()
     {
-        return $this->pvpMetals;
+	    $iterator = $this->pvpMetals->getIterator();
+	    $iterator->uasort(function ($a, $b) {
+		    return strcmp($a->getType()->getName(), $b->getType()->getName());
+	    });
+	    return new ArrayCollection(iterator_to_array($iterator));
     }
 
     /**

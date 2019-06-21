@@ -69,9 +69,6 @@ class IslandRepository extends ServiceEntityRepository
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
             ->addOrderBy('ii.position', 'ASC')
-            ->addOrderBy('ipvpmt.name', 'ASC')
-            ->addOrderBy('ipvemt.name', 'ASC')
-            ->addOrderBy('itt.name', 'ASC')
             ->groupBy('island.id');
         $qry = $qb->getQuery();
         return $qry->getResult();
@@ -92,10 +89,7 @@ class IslandRepository extends ServiceEntityRepository
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
-            ->addOrderBy('ii.position', 'ASC')
-	        ->addOrderBy('ipvpmt.name', 'ASC')
-	        ->addOrderBy('ipvemt.name', 'ASC')
-	        ->addOrderBy('itt.name', 'ASC');
+            ->addOrderBy('ii.position', 'ASC');
         if(!empty($params["id"])) {
             $qb->andWhere($qb->expr()->eq('island.id', ":ID"));
             $qb->setParameter('ID', intval($params['id']));
@@ -171,10 +165,7 @@ class IslandRepository extends ServiceEntityRepository
             ->leftJoin('ipvpm.type', 'ipvpmt')
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
-            ->orderBy('ii.position', 'ASC')
-	        ->orderBy('ipvpmt.name', 'ASC')
-	        ->orderBy('ipvemt.name', 'ASC')
-	        ->orderBy('itt.name', 'ASC');
+            ->addOrderBy('ii.position', 'ASC');
         if(!empty($params['quality'])) {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->gte('ipvem.quality', ":MINQUALITY"),
@@ -228,10 +219,7 @@ class IslandRepository extends ServiceEntityRepository
         ->leftJoin('ipvem.type', 'ipvemt')
         ->where('island.published = 1')
         ->orderBy('island.id', 'DESC')
-        ->orderBy('ii.position', 'ASC')
-        ->orderBy('ipvpmt.name', 'ASC')
-        ->orderBy('ipvemt.name', 'ASC')
-        ->orderBy('itt.name', 'ASC')
+        ->addOrderBy('ii.position', 'ASC')
         ->groupBy('island.id');
         $qry = $qb->getQuery();
         return $qry->getResult();
@@ -255,9 +243,6 @@ class IslandRepository extends ServiceEntityRepository
             ->where('island.published = 1')
             ->orderBy('island.id', 'DESC')
             ->orderBy('ii.position', 'ASC')
-	        ->orderBy('ipvpmt.name', 'ASC')
-	        ->orderBy('ipvemt.name', 'ASC')
-	        ->orderBy('itt.name', 'ASC')
             ->groupBy('island.id');
         $qry = $qb->getQuery();
         return $qry->getResult();

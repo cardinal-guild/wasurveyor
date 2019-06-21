@@ -26,6 +26,7 @@ trait IslandMetalTrait
      * @var MetalType
      * @JMS\Expose
      * @ORM\ManyToOne(targetEntity="App\Entity\MetalType")
+     * @ORM\OrderBy({"name"="ASC"})
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id", nullable=false)
      * @Assert\NotBlank()
      */
