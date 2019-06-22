@@ -176,6 +176,7 @@ class ImportIslandsCommand extends Command
 			$i++;
 			$progressBar->advance();
 		}
+		$this->em->flush();
 		$progressBar->finish();
 		$output->writeln('');
 		$output->writeln($totalCount.' island GUIDs found and coordinates set.');
