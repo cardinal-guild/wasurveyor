@@ -354,7 +354,7 @@ class BossaController extends FOSRestController
 				'adm_big_picture' => $url,
 				'chrome_big_picture' => $url,
 				'included_segments' => ['Subscribed Users'],
-				'data' => ['island' => $island->getGuid(), 'alliance'=>$newAlliance]
+				'data' => ['island_id' => $island->getId(), 'island_guid' => $island->getGuid(), 'alliance'=>$newAlliance->getName()]
 			]);
 		} catch (\Exception $e) { }
 	}

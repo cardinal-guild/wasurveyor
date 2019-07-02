@@ -21,9 +21,9 @@ class CustomEntityManager
 
     public function transactional(callable $callback)
     {
-	    $this->beginTransaction();
-	    $ret = $callback();
-	    return $ret;
+//	    $this->beginTransaction();
+//	    $ret = $callback();
+//	    return $ret;
         $retries = 0;
         do {
             $this->beginTransaction();
