@@ -24,6 +24,7 @@
         "minishlink/web-push-bundle": "^3.0",
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
+        "norkunas/onesignal-php-api": "^1.10",
         "php-http/guzzle6-adapter": "^1.1",
         "php-http/httplug-bundle": "^1.12",
         "predis/predis": "^1.1",

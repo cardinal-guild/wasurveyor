@@ -21,22 +21,25 @@ class CustomEntityManager
 
     public function transactional(callable $callback)
     {
+	    $this->beginTransaction();
+	    $ret = $callback();
+	    return $ret;
         $retries = 0;
         do {
             $this->beginTransaction();
-            
+
             try {
                 $ret = $callback();
 
                 $this->flush();
                 $this->commit();
-                
+
                 return $ret;
             } catch (RetryableException $e) {
                 $this->rollback();
                 $this->close();
                 $this->resetManager();
-                
+
                 ++$retries;
             } catch (\Exception $e) {
                 $this->rollback();

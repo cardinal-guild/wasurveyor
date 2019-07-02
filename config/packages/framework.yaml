@@ -1,6 +1,10 @@
 parameters:
     bossa_key: '%env(BOSSA_KEY)%'
-    bossa_tc_channel: '%env(BOSSA_TC_CHANNEL)%'
+    bossa_pve_tc_channel: '%env(BOSSA_PVE_TC_CHANNEL)%'
+    bossa_pvp_tc_channel: '%env(BOSSA_PVP_TC_CHANNEL)%'
+    onesignal_app_id: '%env(ONESIGNAL_APPLICATION_ID)%'
+    onesignal_app_auth_key: '%env(ONESIGNAL_APPLICATION_AUTH_KEY)%'
+    onesignal_user_auth_key: '%env(ONESIGNAL_USER_AUTH_KEY)%'
     locale: en
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
 

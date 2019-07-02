@@ -21,6 +21,11 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use OneSignal\Config;
+use OneSignal\OneSignal;
+use Http\Client\Common\HttpMethodsClient as HttpClient;
+use Http\Message\MessageFactory\GuzzleMessageFactory;
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 
 /**
  * Class ApiController
@@ -109,7 +114,13 @@ class BossaController extends FOSRestController
 
 		$islandDatas = $request->request->get('IslandDatas');
         $server = $request->request->get('Region');
-
+		if($server == 'us_pve_01') {
+			$server = IslandTerritoryControl::PVE;
+		} else if($server == 'us_pvp_01') {
+			$server = IslandTerritoryControl::PVP;
+		} else {
+			$server = IslandTerritoryControl::PTS;
+		}
         $responses = [];
 		// Loop over all islands that came back in api call
 		foreach ($islandDatas as $key => $islandData) {
@@ -126,7 +137,7 @@ class BossaController extends FOSRestController
                 if ($island) {
                     $id = $island->getId();
                 }
-                
+
                 $callback = function() use ($id, $islandData, $islandId, $responses, $server, $uLogger) {
                     $island = $this->islandRepo->find($id, LockMode::PESSIMISTIC_WRITE);
 
@@ -135,7 +146,7 @@ class BossaController extends FOSRestController
                     $newTowerName = $islandData['TctName'];
 
                     // filter out known islands missing from the workshop (I checked all of them)
-                    $missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093", "1416236875"];
+                    //$missingFromWorkshop = ["1225029340", "1416243538", "1419417076", "1431299145", "1223923982", "1223292949", "1224180786", "1264742668", "1270483746", "1228734909", "1223311135", "1263728093", "1416236875"];
 
                     /**
                      * @var Island $island
@@ -164,6 +175,7 @@ class BossaController extends FOSRestController
                             $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to Unclaimed'";
                             if ($this->getPreviousAllianceName($territoryControl, true) !== "Unclaimed") {
                                 $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), "Unclaimed");
+                                $this->sendOneSignalMessage($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), "Unclaimed");
                             }
                         }
                         else if ($currentAllianceName !== $newAllianceName) {
@@ -181,6 +193,7 @@ class BossaController extends FOSRestController
                             $responses[] = "Island '".$island->getUsedName()."' with id '".$island->getGuid()."' changed from alliance '$currentAllianceName' to '".$territoryControl->getAllianceName()."'";
 
                             $this->sendDiscordUpdate($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $alliance);
+                            $this->sendOneSignalMessage($territoryControl->getServer(), $island, $this->getPreviousAllianceName($territoryControl), $alliance);
                         }
                         else if ($currentTowerName !== $newTowerName) { // If tower name has changed
                             $territoryControl->setTowerName($newTowerName);
@@ -193,7 +206,7 @@ class BossaController extends FOSRestController
                         $this->customEntityManager->persist($territoryControl);
                         return $responses;
                     }
-                    else if (!$island && !in_array($islandId, $missingFromWorkshop)) {
+                    else if (!$island) {
                         $uLogger->warning($islandId." is an UNKNOWN ID");
                         $responses[] = $islandId." is an UNKNOWN ID";
                         return $responses;
@@ -215,7 +228,8 @@ class BossaController extends FOSRestController
 
     private function sendDiscordUpdate($server, $island, $oldAllianceName, $newAlliance)
     {
-        $bossaTcChannel = $this->getParameter('bossa_tc_channel');
+        $bossaPVETcChannel = $this->getParameter('bossa_pve_tc_channel');
+        $bossaPVPTcChannel = $this->getParameter('bossa_pvp_tc_channel');
 		$uLogger = $this->get('monolog.logger.tc_updates');
 
 		$image = $island->getImages()->first();
@@ -243,40 +257,107 @@ class BossaController extends FOSRestController
                 $count = $territories ? count($territories) - 1 : 0;
                 $footer = $oldAllianceName." has " .$count." island".($count === 1 ? "" : "s")." now";
             }
-            
+
         }
         else {
             $count = $newAlliance->getTerritories() ? count($newAlliance->getTerritories()) + 1 : 1;
             $footer = $newAlliance->getName()." has ".$count." island".($count === 1 ? "" : "s");
         }
+        if(in_array($server, ['pvp','pve'])) {
+	        $channel = $bossaPVPTcChannel;
+        	if($server === IslandTerritoryControl::PVE) {
+        		$channel = $bossaPVETcChannel;
+	        }
+	        $postBody = [
+		        "embeds" => [
+			        [
+				        "title" => $island->getUsedName(),
+				        "url" => "https://map.cardinalguild.com/" . $server . "/" . $island->getId(), // change pvp to server or make pts link to one of the modes
+				        "type" => "rich",
+				        "author" => [
+					        "name" => strtoupper($server) . " server"
+				        ],
+				        "thumbnail" => [
+					        "url" => $url
+				        ],
+				        "timestamp" => date('c'),
+				        "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
+				        "description" => $description,
+				        "footer" => [
+					        "text" => $footer
+				        ]
+			        ]
+		        ]
+	        ];
 
-        $postBody = [
-            "embeds" => [
-                [
-                    "title" => $island->getUsedName(),
-                    "url" => "https://map.cardinalguild.com/".'pvp'."/" . $island->getId(), // change pvp to server or make pts link to one of the modes
-                    "type" => "rich",
-                    "author" => [
-                        "name" => strtoupper($server)." server"
-                    ],
-                    "thumbnail" => [
-                        "url" => $url
-                    ],
-                    "timestamp" => date('c'),
-                    "color" => $island->getTier() === 4 ? hexdec('f7c38f') : hexdec('e3c9f9'),
-                    "description" => $description,
-                    "footer" => [
-                        "text" => $footer
-                    ]
-                ]
-            ]
-        ];
-
-        try {
-            $client = new \GuzzleHttp\Client(['headers'=>['Content-Type'=>'application/json']]);
-            $client->request('POST', $bossaTcChannel, ['json' => $postBody]);
-        } catch (\Exception $e) { }
+	        try {
+		        $client = new \GuzzleHttp\Client(['headers' => ['Content-Type' => 'application/json']]);
+		        $client->request('POST', $channel, ['json' => $postBody]);
+	        } catch (\Exception $e) {
+	        }
+        }
     }
+
+	private function sendOneSignalMessage($server, $island, $oldAllianceName, $newAlliance)
+	{
+		$image = $island->getImages()->first();
+
+		$url = $this->cacheManager->getBrowserPath($this->uploadHelper->asset($image, 'imageFile'), 'island_popup');
+
+		if ($oldAllianceName === "Unclaimed") {
+			$title = "".$newAlliance->getName()." has taken over ".$island->getUsedName()."";
+		}
+		else if ($newAlliance === "Unclaimed") {
+			$title = "".$oldAllianceName." has lost their tower on ".$island->getUsedName()."";
+		}
+		else if ($oldAllianceName === $newAlliance->getName()) {
+			$title = "".$newAlliance->getName()." has reclaimed ".$island->getUsedName()."";
+		}
+		else {
+			$title = $newAlliance->getName()." has taken control of ".$island->getUsedName()." from ".$oldAllianceName."";
+		}
+
+		$infoText = null;
+		if ($newAlliance === "Unclaimed" && $oldAllianceName !== "Unclaimed") { // when an alliance loses an island to Unclaimed
+			$oldAlliance = $this->allianceRepo->findOneBy(["name" => $oldAllianceName]);
+			$territories = $this->islandTCRepo->findBy(["alliance" => $oldAlliance]);
+			if ($oldAlliance && $territories) {
+				$count = $territories ? count($territories) - 1 : 0;
+				$infoText = $oldAllianceName." has " .$count." island".($count === 1 ? "" : "s")." now";
+			}
+
+		}
+		else {
+			$count = $newAlliance->getTerritories() ? count($newAlliance->getTerritories()) + 1 : 1;
+			$infoText = $newAlliance->getName()." has ".$count." island".($count === 1 ? "" : "s");
+		}
+		$config = new Config();
+
+		$config->setApplicationId($this->getParameter('onesignal_app_id'));
+		$config->setApplicationAuthKey($this->getParameter('onesignal_app_auth_key'));
+		$config->setUserAuthKey($this->getParameter('onesignal_user_auth_key'));
+
+		$guzzleClient = new \GuzzleHttp\Client(['headers'=>['Content-Type'=>'application/json']]);
+		$client = new HttpClient(new GuzzleAdapter($guzzleClient), new GuzzleMessageFactory());
+		$api = new OneSignal($config, $client);
+
+		try {
+			$api->notifications->add([
+				'headings' => [
+					'en' => $title
+				],
+				'contents' => [
+					'en' => $infoText
+				],
+				'url' => "https://map.cardinalguild.com/" . $server . "/" . $island->getId(),
+				'big_picture' => $url,
+				'adm_big_picture' => $url,
+				'chrome_big_picture' => $url,
+				'included_segments' => ['Subscribed Users'],
+				'data' => ['island' => $island->getGuid(), 'alliance'=>$newAlliance]
+			]);
+		} catch (\Exception $e) { }
+	}
 
     private function getPreviousAllianceName(IslandTerritoryControl $territoryControl) {
 		$logRepo = $this->entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
