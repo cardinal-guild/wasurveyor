@@ -305,16 +305,16 @@ class BossaController extends FOSRestController
 		$url = $this->cacheManager->getBrowserPath($this->uploadHelper->asset($image, 'imageFile'), 'island_popup');
 
 		if ($oldAllianceName === "Unclaimed") {
-			$title = "".$newAlliance->getName()." has taken over ".$island->getUsedName()."";
+			$title = strtoupper($server).": ".$newAlliance->getName()." has taken over ".$island->getUsedName()."";
 		}
 		else if ($newAlliance === "Unclaimed") {
-			$title = "".$oldAllianceName." has lost their tower on ".$island->getUsedName()."";
+			$title = strtoupper($server).": ".$oldAllianceName." has lost their tower on ".$island->getUsedName()."";
 		}
 		else if ($oldAllianceName === $newAlliance->getName()) {
-			$title = "".$newAlliance->getName()." has reclaimed ".$island->getUsedName()."";
+			$title = strtoupper($server).": ".$newAlliance->getName()." has reclaimed ".$island->getUsedName()."";
 		}
 		else {
-			$title = $newAlliance->getName()." has taken control of ".$island->getUsedName()." from ".$oldAllianceName."";
+			$title = strtoupper($server).": ".$newAlliance->getName()." has taken control of ".$island->getUsedName()." from ".$oldAllianceName."";
 		}
 
 		$infoText = null;
