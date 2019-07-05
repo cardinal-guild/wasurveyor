@@ -284,6 +284,9 @@
     "psr/log": {
         "version": "1.0.2"
     },
+    "psr/simple-cache": {
+        "version": "1.0.1"
+    },
     "ralouphie/getallheaders": {
         "version": "2.0.5"
     },
@@ -385,6 +388,9 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
+    },
+    "symfony/contracts": {
+        "version": "v1.1.5"
     },
     "symfony/debug": {
         "version": "v4.1.7"
