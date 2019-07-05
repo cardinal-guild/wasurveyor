@@ -83,6 +83,9 @@
     "exsyst/swagger": {
         "version": "v0.4.1"
     },
+    "facebook/graph-sdk": {
+        "version": "5.7.0"
+    },
     "fgrosse/phpasn1": {
         "version": "v2.1.1"
     },
@@ -371,9 +374,6 @@
     "symfony/cache": {
         "version": "v4.1.7"
     },
-    "symfony/cache-contracts": {
-        "version": "v1.1.5"
-    },
     "symfony/config": {
         "version": "v4.1.7"
     },
@@ -385,9 +385,6 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
-    },
-    "symfony/contracts": {
-        "version": "v1.0.2"
     },
     "symfony/debug": {
         "version": "v4.1.7"
@@ -415,9 +412,6 @@
     },
     "symfony/event-dispatcher": {
         "version": "v4.1.7"
-    },
-    "symfony/event-dispatcher-contracts": {
-        "version": "v1.1.5"
     },
     "symfony/expression-language": {
         "version": "v4.1.7"
@@ -547,9 +541,6 @@
     },
     "symfony/serializer": {
         "version": "v4.1.7"
-    },
-    "symfony/service-contracts": {
-        "version": "v1.1.5"
     },
     "symfony/stopwatch": {
         "version": "v4.1.7"
