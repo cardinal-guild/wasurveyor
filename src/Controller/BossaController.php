@@ -228,9 +228,6 @@ class BossaController extends FOSRestController
 
     private function sendDiscordUpdate($server, $island, $oldAllianceName, $newAlliance)
     {
-    	if($server !== IslandTerritoryControl::PVP) {
-    		return;
-	    }
         $bossaPVETcChannel = $this->getParameter('bossa_pve_tc_channel');
         $bossaPVPTcChannel = $this->getParameter('bossa_pvp_tc_channel');
 		$uLogger = $this->get('monolog.logger.tc_updates');
